@@ -1,0 +1,94 @@
+name: 'Flutter C++ Packager'
+description: 'A GitHub Action to build and package Flutter applications with C++ components'
+author: 'Binah-Arbitor'
+branding:
+  icon: 'package'
+  color: 'blue'
+
+inputs:
+  flutter-version:
+    description: 'Flutter SDK version to use'
+    required: false
+    default: 'stable'
+  flutter-channel:
+    description: 'Flutter channel (stable, beta, dev, master)'
+    required: false
+    default: 'stable'
+  target-platform:
+    description: 'Target platform (android, ios, linux, windows, macos, web)'
+    required: true
+  build-mode:
+    description: 'Build mode (debug, profile, release)'
+    required: false
+    default: 'release'
+  cpp-compiler:
+    description: 'C++ compiler to use (gcc, clang, msvc)'
+    required: false
+    default: 'gcc'
+  output-path:
+    description: 'Output path for packaged application'
+    required: false
+    default: './dist'
+  app-name:
+    description: 'Application name for packaging'
+    required: true
+  include-cpp-libs:
+    description: 'Include C++ libraries in package'
+    required: false
+    default: 'true'
+
+outputs:
+  package-path:
+    description: 'Path to the generated package'
+    value: ${{ steps.package.outputs.path }}
+  package-size:
+    description: 'Size of the generated package'
+    value: ${{ steps.package.outputs.size }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ inputs.flutter-version }}
+        channel: ${{ inputs.flutter-channel }}
+
+    - name: Setup C++ Environment
+      shell: bash
+      run: |
+        echo "Setting up C++ build environment..."
+        if [ "${{ runner.os }}" = "Linux" ]; then
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake ninja-build
+        elif [ "${{ runner.os }}" = "macOS" ]; then
+          brew install cmake ninja
+        elif [ "${{ runner.os }}" = "Windows" ]; then
+          choco install cmake ninja
+        fi
+
+    - name: Install Flutter Dependencies
+      shell: bash
+      run: |
+        echo "Installing Flutter dependencies..."
+        flutter pub get
+        flutter doctor -v
+
+    - name: Build C++ Components
+      shell: bash
+      run: |
+        echo "Building C++ components..."
+        ${{ github.action_path }}/scripts/build-cpp.sh "${{ inputs.cpp-compiler }}" "${{ inputs.target-platform }}"
+
+    - name: Build Flutter Application
+      shell: bash
+      run: |
+        echo "Building Flutter application for ${{ inputs.target-platform }}..."
+        ${{ github.action_path }}/scripts/build-flutter.sh "${{ inputs.target-platform }}" "${{ inputs.build-mode }}"
+
+    - name: Package Application
+      id: package
+      shell: bash
+      run: |
+        echo "Packaging application..."
+        ${{ github.action_path }}/scripts/package.sh "${{ inputs.target-platform }}" "${{ inputs.app-name }}" "${{ inputs.output-path }}" "${{ inputs.include-cpp-libs }}"

@@ -1,0 +1,40 @@
+# Build outputs
+build/
+dist/
+packages/
+test-output/
+
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+pubspec.lock
+
+# C++
+*.o
+*.so
+*.dll
+*.dylib
+*.a
+*.lib
+CMakeCache.txt
+CMakeFiles/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+/tmp/
+*.tmp
+*.temp
+
+# Logs
+*.log

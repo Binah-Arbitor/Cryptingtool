@@ -1,0 +1,89 @@
+name: Build Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-multi-platform:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            artifact-name: linux-x64
+          - os: ubuntu-latest
+            platform: android
+            artifact-name: android-apk
+          - os: windows-latest
+            platform: windows
+            artifact-name: windows-x64
+          - os: macos-latest
+            platform: macos
+            artifact-name: macos-x64
+          - os: macos-latest
+            platform: ios
+            artifact-name: ios-app
+          - os: ubuntu-latest
+            platform: web
+            artifact-name: web-app
+    
+    runs-on: ${{ matrix.os }}
+    name: Build for ${{ matrix.platform }}
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: Build and Package
+        uses: ./
+        with:
+          target-platform: ${{ matrix.platform }}
+          app-name: 'CryptingTool'
+          build-mode: 'release'
+          flutter-version: 'stable'
+          cpp-compiler: 'gcc'
+          output-path: './releases'
+          include-cpp-libs: 'true'
+        id: build
+        
+      - name: Upload Release Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: ${{ steps.build.outputs.package-path }}
+          retention-days: 90
+          
+      - name: Create Release Info
+        run: |
+          echo "Platform: ${{ matrix.platform }}" > release-info.txt
+          echo "Package: ${{ steps.build.outputs.package-path }}" >> release-info.txt
+          echo "Size: ${{ steps.build.outputs.package-size }}" >> release-info.txt
+          echo "Build Date: $(date)" >> release-info.txt
+          
+      - name: Upload Release Info
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact-name }}-info
+          path: release-info.txt
+
+  create-github-release:
+    needs: build-multi-platform
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            */CryptingTool*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
