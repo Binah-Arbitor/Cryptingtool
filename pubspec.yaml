@@ -1,0 +1,54 @@
+name: cryptingtool
+description: A high-performance, multi-threaded file encryption/decryption utility for Android.
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State management
+  flutter_riverpod: ^2.4.9
+  
+  # File operations
+  file_picker: ^6.1.1
+  
+  # UI enhancements
+  flutter_glow: ^0.3.0
+  dotted_border: ^2.1.0
+  
+  # System info
+  device_info_plus: ^9.1.1
+  
+  # Icons
+  cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  
+  # Custom fonts for PCB/Cyber-tech theme
+  fonts:
+    - family: FiraCode
+      fonts:
+        - asset: assets/fonts/FiraCode-Regular.ttf
+        - asset: assets/fonts/FiraCode-Bold.ttf
+          weight: 700
+    - family: IBMPlexMono
+      fonts:
+        - asset: assets/fonts/IBMPlexMono-Regular.ttf
+        - asset: assets/fonts/IBMPlexMono-Bold.ttf
+          weight: 700
+
+  assets:
+    - assets/images/
+    - assets/fonts/
