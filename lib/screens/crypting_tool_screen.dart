@@ -6,6 +6,7 @@ import '../widgets/encryption_config_panel.dart';
 import '../widgets/advanced_settings_panel.dart';
 import '../widgets/log_console_panel.dart';
 import '../widgets/status_bar.dart';
+import '../widgets/cpu_chip_icon.dart';
 import '../theme/app_theme.dart';
 
 class CryptingToolScreen extends StatefulWidget {
@@ -45,7 +46,7 @@ class _CryptingToolScreenState extends State<CryptingToolScreen>
       appBar: AppBar(
         title: Row(
           children: [
-            // App icon with circuit pattern
+            // App icon with CPU chip design
             Container(
               width: 32,
               height: 32,
@@ -57,10 +58,9 @@ class _CryptingToolScreenState extends State<CryptingToolScreen>
                   width: 1,
                 ),
               ),
-              child: const Icon(
-                Icons.security,
-                color: AppTheme.tealAccent,
+              child: const CpuChipIcon(
                 size: 20,
+                showGlow: true,
               ),
             ),
             const SizedBox(width: 12),

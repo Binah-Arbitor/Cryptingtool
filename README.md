@@ -1,11 +1,25 @@
-# Flutter C++ Packager Action
+# CryptingTool - High-Performance Flutter Encryption Suite
 
-A GitHub Action to build and package Flutter applications with C++ components using GitHub Actions V4 (Node 20 runtime).
+A cross-platform Flutter application with integrated C++ cryptographic components, featuring a professional PCB/cyber-tech design theme and custom CPU chip app icon.
+
+## 🎨 App Icon Design
+
+The CryptingTool features a **custom-designed app icon** that embodies the hardware-level encryption concept:
+
+- **Core Symbol**: Top-down view of a CPU chip with realistic pin layout
+- **Central Focus**: Glowing keyhole symbol etched into the chip surface
+- **Background**: Dark circuit board with teal traces and connection nodes  
+- **Colors**: Teal (#00FFD4) and cyan (#00E5FF) glow effects against deep black (#0A0A0A)
+- **Theme**: Hardware-level security and professional technical aesthetics
+
+The icon is implemented as both SVG assets and a custom Flutter widget for maximum flexibility and performance.
 
 ## Features
 
 - ✅ Supports multiple platforms: Android, iOS, Linux, Windows, macOS, Web
 - ✅ Integrates C++ component compilation
+- ✅ Custom CPU chip app icon with hardware encryption theme
+- ✅ PCB/cyber-tech UI design with circuit board aesthetics
 - ✅ Flexible build configuration
 - ✅ Automatic dependency management
 - ✅ Cross-platform packaging
