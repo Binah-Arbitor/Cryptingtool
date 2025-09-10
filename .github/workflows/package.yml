@@ -1,0 +1,216 @@
+name: Package Flutter/C++ Application
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ published ]
+
+jobs:
+  build-native-library:
+    name: Build Native Library
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            lib-name: libcrypto_native.so
+            cmake-args: ""
+          - os: windows-latest
+            lib-name: crypto_native.dll
+            cmake-args: "-A x64"
+          - os: macos-latest
+            lib-name: libcrypto_native.dylib
+            cmake-args: ""
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup CMake
+      uses: jwlawson/actions-setup-cmake@v2
+      with:
+        cmake-version: '3.25'
+    
+    - name: Configure CMake (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        cd native
+        cmake -B build -DCMAKE_BUILD_TYPE=Release ${{ matrix.cmake-args }}
+    
+    - name: Configure CMake (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        cd native
+        cmake -B build -DCMAKE_BUILD_TYPE=Release ${{ matrix.cmake-args }}
+      shell: cmd
+    
+    - name: Build native library
+      run: |
+        cd native
+        cmake --build build --config Release
+    
+    - name: Copy library to artifacts (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        mkdir -p artifacts
+        find native/build -name "${{ matrix.lib-name }}" -exec cp {} artifacts/ \;
+    
+    - name: Copy library to artifacts (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        mkdir artifacts
+        Get-ChildItem -Path "native/build" -Recurse -Name "${{ matrix.lib-name }}" | ForEach-Object { Copy-Item "native/build/$_" "artifacts/" }
+      shell: powershell
+    
+    - name: Upload native library
+      uses: actions/upload-artifact@v4
+      with:
+        name: native-lib-${{ runner.os }}
+        path: artifacts/${{ matrix.lib-name }}
+        retention-days: 1
+
+  build-flutter-app:
+    name: Build Flutter Application
+    needs: build-native-library
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            flutter-platform: linux
+            build-command: flutter build linux --release
+            artifact-path: build/linux/x64/release/bundle/
+            artifact-name: cryptingtool-linux
+          - os: windows-latest
+            flutter-platform: windows
+            build-command: flutter build windows --release
+            artifact-path: build/windows/x64/runner/Release/
+            artifact-name: cryptingtool-windows
+          - os: macos-latest
+            flutter-platform: macos
+            build-command: flutter build macos --release
+            artifact-path: build/macos/Build/Products/Release/
+            artifact-name: cryptingtool-macos
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.0'
+        channel: 'stable'
+    
+    - name: Download native library
+      uses: actions/download-artifact@v4
+      with:
+        name: native-lib-${{ runner.os }}
+        path: native-libs/
+    
+    - name: Install Linux dependencies
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
+    
+    - name: Setup library permissions (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        mkdir -p lib-native
+        cp native-libs/* lib-native/
+        chmod +x lib-native/*
+    
+    - name: Setup library permissions (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        mkdir lib-native
+        Copy-Item "native-libs/*" "lib-native/"
+      shell: powershell
+    
+    - name: Get dependencies
+      run: flutter pub get
+    
+    - name: Analyze code
+      run: flutter analyze
+    
+    - name: Run tests
+      run: flutter test
+    
+    - name: Build Flutter application
+      run: ${{ matrix.build-command }}
+    
+    - name: Copy native library to build output (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        cp lib-native/* ${{ matrix.artifact-path }}/lib/
+    
+    - name: Copy native library to build output (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        Copy-Item "lib-native/*" "${{ matrix.artifact-path }}"
+      shell: powershell
+    
+    - name: Copy native library to build output (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        cp lib-native/* "${{ matrix.artifact-path }}/cryptingtool.app/Contents/MacOS/"
+    
+    - name: Create release package (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        cd ${{ matrix.artifact-path }}
+        tar -czf ../../../${{ matrix.artifact-name }}.tar.gz .
+    
+    - name: Create release package (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        cd "${{ matrix.artifact-path }}"
+        Compress-Archive -Path "." -DestinationPath "../../../${{ matrix.artifact-name }}.zip"
+      shell: powershell
+    
+    - name: Create release package (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        cd ${{ matrix.artifact-path }}
+        zip -r ../../../${{ matrix.artifact-name }}.zip .
+    
+    - name: Upload Flutter app (Linux)
+      if: runner.os == 'Linux'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.artifact-name }}
+        path: ${{ matrix.artifact-name }}.tar.gz
+    
+    - name: Upload Flutter app (Windows/macOS)
+      if: runner.os != 'Linux'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.artifact-name }}
+        path: ${{ matrix.artifact-name }}.zip
+
+  create-release:
+    name: Create Release
+    if: github.event_name == 'release'
+    needs: build-flutter-app
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: release-assets/
+    
+    - name: Upload release assets
+      uses: softprops/action-gh-release@v2
+      with:
+        files: release-assets/*/*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

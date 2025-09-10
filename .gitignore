@@ -1,0 +1,32 @@
+# Flutter/Dart specific
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+
+# Native build artifacts
+native/build/
+*.so
+*.dll
+*.dylib
+*.a
+*.lib
+lib-native/
+native-libs/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
