@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="cpuGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#2E2E2E;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#1A1A1A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0A0A0A;stop-opacity:1" />
+    </radialGradient>
+    
+    <radialGradient id="keyholeGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#00FFD4;stop-opacity:0.8" />
+      <stop offset="40%" style="stop-color:#00E5FF;stop-opacity:0.6" />
+      <stop offset="80%" style="stop-color:#00FFD4;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#00FFD4;stop-opacity:0" />
+    </radialGradient>
+    
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Dark background -->
+  <rect width="128" height="128" fill="#0A0A0A"/>
+  
+  <!-- Circuit board traces (simplified) -->
+  <g opacity="0.4">
+    <line x1="0" y1="32" x2="128" y2="32" stroke="#00FFD4" stroke-width="1"/>
+    <line x1="0" y1="64" x2="128" y2="64" stroke="#00FFD4" stroke-width="1"/>
+    <line x1="0" y1="96" x2="128" y2="96" stroke="#00FFD4" stroke-width="1"/>
+    <line x1="32" y1="0" x2="32" y2="128" stroke="#00FFD4" stroke-width="1"/>
+    <line x1="64" y1="0" x2="64" y2="128" stroke="#00FFD4" stroke-width="1"/>
+    <line x1="96" y1="0" x2="96" y2="128" stroke="#00FFD4" stroke-width="1"/>
+    
+    <circle cx="32" cy="32" r="1.5" fill="#00FFD4"/>
+    <circle cx="96" cy="32" r="1.5" fill="#00FFD4"/>
+    <circle cx="32" cy="96" r="1.5" fill="#00FFD4"/>
+    <circle cx="96" cy="96" r="1.5" fill="#00FFD4"/>
+  </g>
+  
+  <!-- CPU chip -->
+  <g transform="translate(64,64)">
+    <!-- CPU pins (simplified) -->
+    <g>
+      <!-- Top pins -->
+      <rect x="-20" y="-25" width="2" height="5" fill="#4A4A4A"/>
+      <rect x="-15" y="-25" width="2" height="5" fill="#4A4A4A"/>
+      <rect x="-10" y="-25" width="2" height="5" fill="#4A4A4A"/>
+      <rect x="-5" y="-25" width="2" height="5" fill="#4A4A4A"/>
+      <rect x="0" y="-25" width="2" height="5" fill="#4A4A4A"/>
+      <rect x="5" y="-25" width="2" height="5" fill="#4A4A4A"/>
+      <rect x="10" y="-25" width="2" height="5" fill="#4A4A4A"/>
+      <rect x="15" y="-25" width="2" height="5" fill="#4A4A4A"/>
+      
+      <!-- Bottom pins -->
+      <rect x="-20" y="20" width="2" height="5" fill="#4A4A4A"/>
+      <rect x="-15" y="20" width="2" height="5" fill="#4A4A4A"/>
+      <rect x="-10" y="20" width="2" height="5" fill="#4A4A4A"/>
+      <rect x="-5" y="20" width="2" height="5" fill="#4A4A4A"/>
+      <rect x="0" y="20" width="2" height="5" fill="#4A4A4A"/>
+      <rect x="5" y="20" width="2" height="5" fill="#4A4A4A"/>
+      <rect x="10" y="20" width="2" height="5" fill="#4A4A4A"/>
+      <rect x="15" y="20" width="2" height="5" fill="#4A4A4A"/>
+      
+      <!-- Side pins -->
+      <rect x="-25" y="-15" width="5" height="2" fill="#4A4A4A"/>
+      <rect x="-25" y="-10" width="5" height="2" fill="#4A4A4A"/>
+      <rect x="-25" y="-5" width="5" height="2" fill="#4A4A4A"/>
+      <rect x="-25" y="0" width="5" height="2" fill="#4A4A4A"/>
+      <rect x="-25" y="5" width="5" height="2" fill="#4A4A4A"/>
+      <rect x="-25" y="10" width="5" height="2" fill="#4A4A4A"/>
+      
+      <rect x="20" y="-15" width="5" height="2" fill="#4A4A4A"/>
+      <rect x="20" y="-10" width="5" height="2" fill="#4A4A4A"/>
+      <rect x="20" y="-5" width="5" height="2" fill="#4A4A4A"/>
+      <rect x="20" y="0" width="5" height="2" fill="#4A4A4A"/>
+      <rect x="20" y="5" width="5" height="2" fill="#4A4A4A"/>
+      <rect x="20" y="10" width="5" height="2" fill="#4A4A4A"/>
+    </g>
+    
+    <!-- CPU body -->
+    <rect x="-20" y="-20" width="40" height="40" fill="url(#cpuGradient)" rx="3" 
+          stroke="#00FFD4" stroke-width="1.5" filter="url(#glow)"/>
+    
+    <!-- CPU surface detail -->
+    <rect x="-15" y="-15" width="30" height="30" fill="none" stroke="#4A4A4A" stroke-width="0.5" rx="2"/>
+    
+    <!-- Central keyhole symbol -->
+    <g>
+      <!-- Glow background -->
+      <circle cx="0" cy="-2" r="8" fill="url(#keyholeGlow)" opacity="0.5"/>
+      
+      <!-- Keyhole circle -->
+      <circle cx="0" cy="-2" r="4" fill="#00FFD4" opacity="1"/>
+      <circle cx="0" cy="-2" r="2.5" fill="#0A0A0A"/>
+      
+      <!-- Keyhole slot -->
+      <rect x="-1" y="2" width="2" height="5" fill="#00FFD4" rx="0.5"/>
+      <rect x="-0.5" y="2.5" width="1" height="4" fill="#0A0A0A"/>
+      
+      <!-- Glow ring -->
+      <circle cx="0" cy="-2" r="6" fill="none" stroke="#00FFD4" stroke-width="0.5" opacity="0.4"/>
+    </g>
+  </g>
+</svg>
