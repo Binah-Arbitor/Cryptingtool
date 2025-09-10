@@ -1,0 +1,29 @@
+name: cryptingtool
+description: High-Performance File Encryption/Decryption Utility with PCB/Cyber-Tech UI
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  file_picker: ^6.1.1
+  path_provider: ^2.1.1
+  provider: ^6.1.1
+  flutter_riverpod: ^2.4.9
+  equatable: ^2.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
