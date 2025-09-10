@@ -1,0 +1,124 @@
+name: Test APK Builder
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - '.github/workflows/build-apk.yml'
+      - 'scripts/build-flutter.sh'
+      - 'scripts/package.sh'
+      - 'action.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/build-apk.yml'
+      - 'scripts/build-flutter.sh'
+      - 'scripts/package.sh'
+      - 'action.yml'
+
+jobs:
+  test-apk-build:
+    runs-on: ubuntu-latest
+    name: Test APK Build Process
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Java for Android builds
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+        
+      - name: Test Debug APK Build
+        uses: ./
+        with:
+          target-platform: 'android'
+          app-name: 'CryptingTool-Test'
+          build-mode: 'debug'
+          flutter-version: 'stable'
+          cpp-compiler: 'gcc'
+          output-path: './test-apk-debug'
+          include-cpp-libs: 'true'
+        id: test-debug-build
+        
+      - name: Verify Debug APK Output
+        run: |
+          echo "Debug APK Build Results:"
+          echo "Package path: ${{ steps.test-debug-build.outputs.package-path }}"
+          echo "Package size: ${{ steps.test-debug-build.outputs.package-size }}"
+          
+          # Check if APK files were created
+          if find ./test-apk-debug -name "*.apk" -type f | head -1 | grep -q ".apk"; then
+            echo "✅ Debug APK files found"
+            find ./test-apk-debug -name "*.apk" -type f -exec ls -lh {} \;
+          else
+            echo "❌ No debug APK files found"
+            echo "Contents of output directory:"
+            find ./test-apk-debug -type f | head -10
+            exit 1
+          fi
+        
+      - name: Test Release APK Build
+        uses: ./
+        with:
+          target-platform: 'android'
+          app-name: 'CryptingTool-Test'
+          build-mode: 'release'
+          flutter-version: 'stable'
+          cpp-compiler: 'gcc'
+          output-path: './test-apk-release'
+          include-cpp-libs: 'true'
+        id: test-release-build
+        
+      - name: Verify Release APK Output
+        run: |
+          echo "Release APK Build Results:"
+          echo "Package path: ${{ steps.test-release-build.outputs.package-path }}"
+          echo "Package size: ${{ steps.test-release-build.outputs.package-size }}"
+          
+          # Check if APK files were created
+          if find ./test-apk-release -name "*.apk" -type f | head -1 | grep -q ".apk"; then
+            echo "✅ Release APK files found"
+            find ./test-apk-release -name "*.apk" -type f -exec ls -lh {} \;
+          else
+            echo "❌ No release APK files found"
+            echo "Contents of output directory:"
+            find ./test-apk-release -type f | head -10
+            exit 1
+          fi
+          
+      - name: Compare Debug vs Release APK Sizes
+        run: |
+          echo "APK Size Comparison:"
+          echo "===================="
+          
+          DEBUG_APK=$(find ./test-apk-debug -name "*.apk" -type f | head -1)
+          RELEASE_APK=$(find ./test-apk-release -name "*.apk" -type f | head -1)
+          
+          if [ -f "$DEBUG_APK" ] && [ -f "$RELEASE_APK" ]; then
+            DEBUG_SIZE=$(stat -f%z "$DEBUG_APK" 2>/dev/null || stat -c%s "$DEBUG_APK")
+            RELEASE_SIZE=$(stat -f%z "$RELEASE_APK" 2>/dev/null || stat -c%s "$RELEASE_APK")
+            
+            echo "Debug APK: $(basename "$DEBUG_APK") - $(numfmt --to=iec $DEBUG_SIZE)"
+            echo "Release APK: $(basename "$RELEASE_APK") - $(numfmt --to=iec $RELEASE_SIZE)"
+            
+            if [ $RELEASE_SIZE -lt $DEBUG_SIZE ]; then
+              echo "✅ Release APK is smaller than debug APK (expected)"
+            else
+              echo "⚠️ Release APK is not smaller than debug APK (unusual but might be okay)"
+            fi
+          else
+            echo "Cannot compare sizes - missing APK files"
+          fi
+        
+      - name: Upload Test APK Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-apk-builds
+          path: |
+            ./test-apk-debug/**/*.apk
+            ./test-apk-release/**/*.apk
+          retention-days: 7
+          if-no-files-found: warn
