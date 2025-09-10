@@ -19,8 +19,15 @@ dependencies:
   ffi: ^2.1.0
   path: ^1.8.3
   
-  # UI
+  # UI Components
   cupertino_icons: ^1.0.6
+  file_picker: ^8.0.0+1
+  
+  # State Management
+  provider: ^6.1.1
+  
+  # Fonts and Styling
+  google_fonts: ^6.1.0
 
 dev_dependencies:
   flutter_test:
