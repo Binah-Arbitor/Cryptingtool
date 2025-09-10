@@ -36,6 +36,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         
+      - name: Setup Java for Android builds
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          
       - name: Build APK using Flutter C++ Packager
         uses: ./
         with:
@@ -105,6 +111,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         
+      - name: Setup Java for Android builds
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          
       - name: Build APK (${{ matrix.build_mode }})
         uses: ./
         with:
