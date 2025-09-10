@@ -1,5 +1,7 @@
 # CryptingTool
 
+[![Package Flutter/C++ Application](https://github.com/Binah-Arbitor/Cryptingtool/actions/workflows/package.yml/badge.svg)](https://github.com/Binah-Arbitor/Cryptingtool/actions/workflows/package.yml)
+
 A Flutter application with C++ native integration for cryptographic operations.
 
 ## Features

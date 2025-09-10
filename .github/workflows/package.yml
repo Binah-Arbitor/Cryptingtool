@@ -7,6 +7,16 @@ on:
     branches: [ main ]
   release:
     types: [ published ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'Release'
+        type: choice
+        options:
+        - Release
+        - Debug
 
 jobs:
   build-native-library:
@@ -52,7 +62,7 @@ jobs:
     - name: Build native library
       run: |
         cd native
-        cmake --build build --config Release
+        cmake --build build --config Release --verbose
     
     - name: Copy library to artifacts (Linux/macOS)
       if: runner.os != 'Windows'
@@ -139,7 +149,7 @@ jobs:
       run: flutter pub get
     
     - name: Analyze code
-      run: flutter analyze
+      run: flutter analyze --fatal-infos
     
     - name: Run tests
       run: flutter test
