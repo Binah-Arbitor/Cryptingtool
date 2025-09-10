@@ -11,6 +11,7 @@ include_directories(include)
 # Source files
 set(SOURCES
     src/crypting.cpp
+    src/crypto_bridge.cpp
 )
 
 # Create shared library
@@ -18,6 +19,11 @@ add_library(crypting SHARED ${SOURCES})
 
 # Create static library (for platforms that need it)
 add_library(crypting_static STATIC ${SOURCES})
+
+# Link Crypto++ library
+find_library(CRYPTOPP_LIB cryptopp REQUIRED)
+target_link_libraries(crypting ${CRYPTOPP_LIB})
+target_link_libraries(crypting_static ${CRYPTOPP_LIB})
 
 # Set output directory
 set_target_properties(crypting PROPERTIES
