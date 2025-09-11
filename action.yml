@@ -110,7 +110,7 @@ runs:
         if [ "${{ runner.os }}" = "Linux" ]; then
           echo "📦 Installing Linux dependencies..."
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake ninja-build pkg-config
+          sudo apt-get install -y build-essential cmake ninja-build pkg-config libgtk-3-dev mesa-utils
           
           # Try to install crypto++ library with multiple package names
           CRYPTO_INSTALLED=false
