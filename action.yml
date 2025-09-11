@@ -60,21 +60,94 @@ runs:
       with:
         flutter-version: ${{ inputs.flutter-version }}
 
+    - name: Check and Install Dependencies
+      shell: bash
+      run: |
+        echo "🔍 Running dependency check..."
+        ${{ github.action_path }}/scripts/check-dependencies.sh
+
     - name: Setup C++ Environment
       shell: bash
       run: |
         echo "Setting up C++ build environment..."
         if [ "${{ runner.os }}" = "Linux" ]; then
+          echo "📦 Installing Linux dependencies..."
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake ninja-build libcrypto++-dev
-          echo "✅ Installed libcrypto++-dev for cryptopp library support"
+          sudo apt-get install -y build-essential cmake ninja-build pkg-config
+          
+          # Try to install crypto++ library with multiple attempts
+          if ! sudo apt-get install -y libcrypto++-dev; then
+            echo "⚠️  libcrypto++-dev package not available, trying alternatives..."
+            
+            # Try alternative package names
+            if sudo apt-get install -y libcrypto++8-dev 2>/dev/null; then
+              echo "✅ Installed libcrypto++8-dev"
+            elif sudo apt-get install -y libcryptoppdev 2>/dev/null; then
+              echo "✅ Installed libcryptoppdev"
+            else
+              echo "📥 Installing crypto++ from source..."
+              cd /tmp
+              wget https://github.com/weidai11/cryptopp/releases/download/CRYPTOPP_8_9_0/cryptopp890.zip
+              unzip cryptopp890.zip -d cryptopp
+              cd cryptopp
+              make -j$(nproc)
+              sudo make install PREFIX=/usr/local
+              sudo ldconfig
+              echo "✅ Built and installed crypto++ from source"
+            fi
+          else
+            echo "✅ Installed libcrypto++-dev package"
+          fi
+          
+          # Verify installation
+          if pkg-config --exists cryptopp || pkg-config --exists libcrypto++ || [ -f "/usr/include/cryptopp/cryptlib.h" ] || [ -f "/usr/local/include/cryptopp/cryptlib.h" ]; then
+            echo "✅ Crypto++ library verification successful"
+          else
+            echo "❌ Crypto++ library verification failed"
+            exit 1
+          fi
+          
         elif [ "${{ runner.os }}" = "macOS" ]; then
-          brew install cmake ninja cryptopp
-          echo "✅ Installed cryptopp via Homebrew"
+          echo "📦 Installing macOS dependencies..."
+          brew install cmake ninja pkg-config
+          
+          if ! brew install cryptopp; then
+            echo "⚠️  Homebrew cryptopp not available, trying alternatives..."
+            # Try building from source as fallback
+            cd /tmp
+            git clone https://github.com/weidai11/cryptopp.git
+            cd cryptopp
+            make -j$(sysctl -n hw.ncpu)
+            sudo make install PREFIX=/usr/local
+            echo "✅ Built and installed crypto++ from source"
+          else
+            echo "✅ Installed cryptopp via Homebrew"
+          fi
+          
         elif [ "${{ runner.os }}" = "Windows" ]; then
+          echo "📦 Installing Windows dependencies..."
           choco install cmake ninja
-          echo "⚠️  Windows: cryptopp may require manual installation or vcpkg"
+          
+          # Check if vcpkg is available
+          if command -v vcpkg >/dev/null 2>&1; then
+            echo "📦 Installing crypto++ via vcpkg..."
+            vcpkg install cryptopp:x64-windows
+            echo "✅ Installed cryptopp via vcpkg"
+          else
+            echo "📥 Setting up vcpkg and installing crypto++..."
+            cd /tmp
+            git clone https://github.com/Microsoft/vcpkg.git
+            cd vcpkg
+            ./bootstrap-vcpkg.bat
+            ./vcpkg install cryptopp:x64-windows
+            echo "VCPKG_ROOT=/tmp/vcpkg" >> $GITHUB_ENV
+            echo "✅ Installed crypto++ via vcpkg"
+          fi
         fi
+        
+        echo "🔍 Checking for crypto++ installation..."
+        echo "Library search paths:"
+        find /usr /usr/local /opt -name "*crypto*" -type f 2>/dev/null | grep -E "\.(so|a|dylib|lib)$" | head -10 || echo "No crypto libraries found in standard paths"
 
     - name: Install Flutter Dependencies
       shell: bash
@@ -101,3 +174,9 @@ runs:
       run: |
         echo "Packaging application..."
         ${{ github.action_path }}/scripts/package.sh "${{ inputs.target-platform }}" "${{ inputs.app-name }}" "${{ inputs.output-path }}" "${{ inputs.include-cpp-libs }}"
+
+    - name: Test Built Libraries
+      shell: bash
+      run: |
+        echo "Testing built C++ libraries..."
+        ${{ github.action_path }}/scripts/test-libraries.sh

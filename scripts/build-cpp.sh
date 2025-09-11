@@ -64,8 +64,38 @@ esac
 if [ -f "CMakeLists.txt" ]; then
     echo "Found CMakeLists.txt, using CMake build..."
     cd build/cpp
-    cmake ../.. -G Ninja -DCMAKE_BUILD_TYPE=Release
-    ninja
+    
+    # Run CMake with verbose output to catch library issues
+    if ! cmake ../.. -G Ninja -DCMAKE_BUILD_TYPE=Release; then
+        echo "❌ CMake configuration failed. Checking for missing dependencies..."
+        
+        # Try to help with common issues
+        if [ "${{ runner.os }}" = "Linux" ]; then
+            echo "🔍 Checking for crypto++ library on Linux..."
+            if ! dpkg -l | grep -q libcrypto++; then
+                echo "📦 Installing crypto++ library..."
+                sudo apt-get update && sudo apt-get install -y libcrypto++-dev
+            fi
+            
+            # Update library cache
+            sudo ldconfig
+            
+            # Try CMake again
+            echo "🔄 Retrying CMake configuration..."
+            cmake ../.. -G Ninja -DCMAKE_BUILD_TYPE=Release
+        else
+            echo "❌ CMake failed on ${{ runner.os }}. Please check crypto++ installation."
+            exit 1
+        fi
+    fi
+    
+    if ! ninja; then
+        echo "❌ Build failed. Checking library linking issues..."
+        echo "Available libraries:"
+        find /usr /usr/local -name "*crypto*" 2>/dev/null | head -10
+        exit 1
+    fi
+    
     cd ../..
 elif [ -f "Makefile" ]; then
     echo "Found Makefile, using make build..."
