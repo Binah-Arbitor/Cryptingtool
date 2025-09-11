@@ -99,6 +99,18 @@ if(NOT CRYPTOPP_LIB_FOUND)
             target_link_libraries(crypting_static ${CRYPTOPP_LIB})
             set(CRYPTOPP_LIB_FOUND TRUE)
         else()
+            message(STATUS "⚠️  Found headers but no matching library, will try manual linking")
+            # Try common library names in standard paths as last resort
+            find_library(CRYPTOPP_LIB 
+                NAMES cryptopp crypto++ libcrypto++
+                PATHS /usr/lib /usr/local/lib /usr/lib/x86_64-linux-gnu
+            )
+            if(CRYPTOPP_LIB)
+                message(STATUS "✅ Found Crypto++ library via fallback: ${CRYPTOPP_LIB}")
+                target_link_libraries(crypting ${CRYPTOPP_LIB})
+                target_link_libraries(crypting_static ${CRYPTOPP_LIB})
+                set(CRYPTOPP_LIB_FOUND TRUE)
+            endif()
             message(STATUS "⚠️  Found headers but no matching library, trying system library")
             # Try linking with standard name
             target_link_libraries(crypting cryptopp)
@@ -122,6 +134,7 @@ endif()
 # Final check - if still not found, provide comprehensive error message with instructions
 if(NOT CRYPTOPP_LIB_FOUND)
     message(FATAL_ERROR 
+"Crypto++ library not found. Please install it using one of these methods:\n"
         "❌ Crypto++ library not found!\n"
         "\n"
         "Please install Crypto++ using one of these methods:\n"
@@ -137,6 +150,13 @@ if(NOT CRYPTOPP_LIB_FOUND)
         "🔨 BUILD FROM SOURCE (latest stable v8.9.0):\n"
         "  wget https://github.com/weidai11/cryptopp/releases/download/CRYPTOPP_8_9_0/cryptopp890.zip\n"
         "  unzip cryptopp890.zip && cd cryptopp\n"
+        "  make -j\\$(nproc) && sudo make install\n"
+        "  sudo ldconfig  # Linux only\n"
+        "\n"
+        "📋 TROUBLESHOOTING:\n"
+        "  Check pkg-config: pkg-config --exists libcrypto++\n"
+        "  Check library:    find /usr -name '*crypto*' -type f 2>/dev/null\n"
+        "  Check headers:    find /usr -name 'cryptlib.h' 2>/dev/null"
         "  make -j\$(nproc) && sudo make install\n"
         "  sudo ldconfig  # Linux only\n"
         "\n"

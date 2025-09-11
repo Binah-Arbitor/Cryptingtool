@@ -1,4 +1,16 @@
 #!/bin/bash
+set -e
+
+echo "🔍 CRYPTO++ VERIFICATION SCRIPT"
+echo "================================"
+echo "This comprehensive script tests all crypto++ detection methods"
+echo "and provides detailed debugging information."
+echo ""
+
+# Color output functions
+success() { echo "✅ $1"; }
+warning() { echo "⚠️  $1"; }
+error() { echo "❌ $1"; }
 # Crypto++ Library Verification Script
 # Checks if Crypto++ is properly installed and provides detailed diagnostics
 
@@ -75,6 +87,19 @@ echo "🔍 Method 2: Direct library detection"
 LIBRARY_FOUND=false
 for lib_path in /usr/lib /usr/local/lib /opt/homebrew/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu; do
     if [ -d "$lib_path" ]; then
+        for lib_name in libcrypto++.so libcrypto++.a libcryptopp.so libcryptopp.a libcrypto++.dylib; do
+            if [ -f "$lib_path/$lib_name" ]; then
+                success "Found library: $lib_path/$lib_name"
+                info "   Size: $(ls -lh "$lib_path/$lib_name" | awk '{print $5}')"
+                LIBRARY_FOUND=true
+                CRYPTO_FOUND=true
+                CRYPTO_METHODS_FOUND+=("direct library search")
+                break
+            fi
+        done
+        if [ "$LIBRARY_FOUND" = true ]; then
+            break
+        fi
         for lib_name in libcryptopp.so libcrypto++.so libcryptopp.a libcrypto++.a libcryptopp.dylib libcrypto++.dylib; do
             if [ -f "$lib_path/$lib_name" ]; then
                 success "Found library: $lib_path/$lib_name"
@@ -93,6 +118,21 @@ fi
 echo ""
 
 # Check 3: Header detection
+echo "🔍 Method 3: Header detection"
+HEADERS_FOUND=false
+for include_path in /usr/include /usr/local/include /opt/homebrew/include; do
+    if [ -f "$include_path/cryptopp/cryptlib.h" ]; then
+        success "Found headers: $include_path/cryptopp/"
+        HEADERS_FOUND=true
+        CRYPTO_FOUND=true
+        CRYPTO_METHODS_FOUND+=("header detection")
+        break
+    elif [ -f "$include_path/crypto++/cryptlib.h" ]; then
+        success "Found headers: $include_path/crypto++/"
+        HEADERS_FOUND=true
+        CRYPTO_FOUND=true
+        CRYPTO_METHODS_FOUND+=("header detection")
+        break
 echo "🔍 Method 3: Header file detection"
 HEADERS_FOUND=false
 for header_path in /usr/include /usr/local/include /opt/homebrew/include; do
@@ -114,6 +154,14 @@ if [ "$HEADERS_FOUND" = false ]; then
 fi
 echo ""
 
+# Check 4: Package manager specific
+echo "🔍 Method 4: Package manager detection"
+case $OS in
+    "linux")
+        if command_exists dpkg; then
+            if dpkg -l | grep -q libcrypto++; then
+                success "Found crypto++ packages via dpkg"
+                dpkg -l | grep libcrypto++ | head -3
 # Check 4: Package manager detection
 echo "🔍 Method 4: Package manager verification"
 case $OS in
@@ -196,6 +244,7 @@ else
     echo "🔨 BUILD FROM SOURCE (latest stable):"
     echo "   wget https://github.com/weidai11/cryptopp/releases/download/CRYPTOPP_8_9_0/cryptopp890.zip"
     echo "   unzip cryptopp890.zip && cd cryptopp"
+    echo "   make -j\\$(nproc) && sudo make install"
     echo "   make -j\$(nproc) && sudo make install"
     echo ""
 fi
@@ -216,6 +265,31 @@ if(PKG_CONFIG_FOUND)
         pkg_check_modules(CRYPTOPP QUIET cryptopp)
     endif()
     if(CRYPTOPP_FOUND)
+        message(STATUS "CMake found crypto++ via pkg-config")
+    else()
+        find_library(CRYPTOPP_LIB NAMES cryptopp crypto++ libcrypto++)
+        if(CRYPTOPP_LIB)
+            message(STATUS "CMake found crypto++ library: \${CRYPTOPP_LIB}")
+        else()
+            message(FATAL_ERROR "CMake could not find crypto++")
+        endif()
+    endif()
+else()
+    find_library(CRYPTOPP_LIB NAMES cryptopp crypto++ libcrypto++)
+    if(CRYPTOPP_LIB)
+        message(STATUS "CMake found crypto++ library: \${CRYPTOPP_LIB}")
+    else()
+        message(FATAL_ERROR "CMake could not find crypto++")
+    endif()
+endif()
+EOF
+    
+    if cmake -P test_crypto_cmake.txt 2>&1 | grep -q "found crypto++"; then
+        success "CMake can successfully detect crypto++"
+    else
+        warning "CMake detection test failed"
+        info "CMake output:"
+        cmake -P test_crypto_cmake.txt 2>&1 | head -5
         message(STATUS "CMake can find Crypto++ via pkg-config")
     endif()
 endif()
@@ -234,6 +308,23 @@ EOF
 else
     warning "CMake not available for testing"
 fi
+echo ""
+
+echo "🔧 ADDITIONAL DEBUG INFO"
+echo "========================="
+info "All available pkg-config packages containing 'crypto':"
+pkg-config --list-all 2>/dev/null | grep -i crypto | head -5 || echo "None found"
+echo ""
+info "Crypto-related files in /usr/lib:"
+find /usr/lib -name "*crypto*" -type f 2>/dev/null | head -5 || echo "None found"
+echo ""
+info "Environment variables:"
+echo "   PKG_CONFIG_PATH: ${PKG_CONFIG_PATH:-not set}"
+echo "   LD_LIBRARY_PATH: ${LD_LIBRARY_PATH:-not set}"
+echo "   CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH:-not set}"
+
+echo ""
+echo "Verification completed!"
 
 echo ""
 echo "🔗 Useful Links:"

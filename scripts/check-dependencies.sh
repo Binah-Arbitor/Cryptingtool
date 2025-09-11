@@ -121,6 +121,9 @@ if [ "$CRYPTOPP_FOUND" = false ]; then
                 
                 if [ "$CRYPTO_INSTALLED" = false ]; then
                     echo "📥 No packages available, building from source..."
+                    # Get latest version dynamically or use known stable
+                    CRYPTO_VERSION="CRYPTOPP_8_9_0"
+                    CRYPTO_ZIP_VERSION="890"
                     # Get latest version dynamically
                     CRYPTO_VERSION=$(curl -s https://github.com/weidai11/cryptopp/releases 2>/dev/null | grep -o 'CRYPTOPP_[0-9_]*' | head -1 || echo "CRYPTOPP_8_9_0")
                     CRYPTO_ZIP_VERSION=$(echo $CRYPTO_VERSION | sed 's/CRYPTOPP_//g' | sed 's/_//g')
@@ -146,6 +149,8 @@ if [ "$CRYPTOPP_FOUND" = false ]; then
                 else
                     echo "📥 Homebrew installation failed, building from source..."
                     # Get latest version and build from source
+                    CRYPTO_VERSION="CRYPTOPP_8_9_0"
+                    CRYPTO_ZIP_VERSION="890"
                     CRYPTO_VERSION=$(curl -s https://github.com/weidai11/cryptopp/releases 2>/dev/null | grep -o 'CRYPTOPP_[0-9_]*' | head -1 || echo "CRYPTOPP_8_9_0")
                     CRYPTO_ZIP_VERSION=$(echo $CRYPTO_VERSION | sed 's/CRYPTOPP_//g' | sed 's/_//g')
                     echo "🔄 Building Crypto++ $CRYPTO_VERSION from source..."
