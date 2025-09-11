@@ -69,22 +69,47 @@ if [ -f "CMakeLists.txt" ]; then
     if ! cmake ../.. -G Ninja -DCMAKE_BUILD_TYPE=Release; then
         echo "❌ CMake configuration failed. Checking for missing dependencies..."
         
-        # Try to help with common issues
-        if [ "${{ runner.os }}" = "Linux" ]; then
+        # Try to help with common issues based on the platform
+        if [ "${{ runner.os }}" = "Linux" ] || [[ "$OSTYPE" == "linux-gnu"* ]]; then
             echo "🔍 Checking for crypto++ library on Linux..."
+            
+            # Check if any crypto++ package is installed
             if ! dpkg -l | grep -q libcrypto++; then
                 echo "📦 Installing crypto++ library..."
                 sudo apt-get update && sudo apt-get install -y libcrypto++-dev
             fi
             
-            # Update library cache
+            # Update library cache and check again
             sudo ldconfig
+            
+            # Show available crypto++ packages and libraries for debugging
+            echo "📋 Available crypto++ related packages:"
+            dpkg -l | grep crypto++ || echo "No crypto++ packages found"
+            echo "📋 Available crypto++ libraries:"
+            find /usr /usr/local -name "*crypto*" 2>/dev/null | grep -E "\.(so|a)$" | head -5 || echo "No crypto++ libraries found"
             
             # Try CMake again
             echo "🔄 Retrying CMake configuration..."
             cmake ../.. -G Ninja -DCMAKE_BUILD_TYPE=Release
+            
+        elif [ "${{ runner.os }}" = "macOS" ] || [[ "$OSTYPE" == "darwin"* ]]; then
+            echo "🔍 Checking for crypto++ library on macOS..."
+            
+            # Try installing via homebrew if not available
+            if ! brew list cryptopp >/dev/null 2>&1; then
+                echo "📦 Installing crypto++ via Homebrew..."
+                brew install cryptopp
+            fi
+            
+            echo "🔄 Retrying CMake configuration..."
+            cmake ../.. -G Ninja -DCMAKE_BUILD_TYPE=Release
+            
         else
             echo "❌ CMake failed on ${{ runner.os }}. Please check crypto++ installation."
+            echo "📋 Debug info:"
+            echo "  OS Type: $OSTYPE"
+            echo "  Available libraries:"
+            find /usr /usr/local -name "*crypto*" 2>/dev/null | head -5 || echo "  None found"
             exit 1
         fi
     fi
