@@ -7,15 +7,15 @@
       <stop offset="100%" style="stop-color:#0A0A0A;stop-opacity:1" />
     </radialGradient>
     
-    <radialGradient id="keyholeGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" style="stop-color:#00FFD4;stop-opacity:0.8" />
-      <stop offset="40%" style="stop-color:#00E5FF;stop-opacity:0.6" />
-      <stop offset="80%" style="stop-color:#00FFD4;stop-opacity:0.3" />
-      <stop offset="100%" style="stop-color:#00FFD4;stop-opacity:0" />
+    <radialGradient id="blueNeonGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#40E0FF;stop-opacity:0.9" />
+      <stop offset="30%" style="stop-color:#00C0FF;stop-opacity:0.7" />
+      <stop offset="60%" style="stop-color:#0080FF;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#0080FF;stop-opacity:0" />
     </radialGradient>
     
     <filter id="glow">
-      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
       <feMerge> 
         <feMergeNode in="coloredBlur"/>
         <feMergeNode in="SourceGraphic"/>
@@ -26,38 +26,42 @@
   <!-- Dark background -->
   <rect width="128" height="128" fill="#0A0A0A"/>
   
-  <!-- Asymmetrical PCB circuit board traces -->
-  <g opacity="0.5">
-    <!-- Complex asymmetrical traces -->
-    <path d="M15,24 L45,24 L45,28 L80,28 L80,24 L113,24" stroke="#00FFD4" stroke-width="0.8" fill="none" opacity="0.6"/>
-    <path d="M0,46 L30,46 L30,50 L50,50 L50,55 L128,55" stroke="#00FFD4" stroke-width="0.6" fill="none" opacity="0.5"/>
-    <path d="M20,72 L40,72 L40,76 L60,76 L60,72 L95,72 L95,78 L128,78" stroke="#00FFD4" stroke-width="0.5" fill="none" opacity="0.6"/>
-    <path d="M0,97 L35,97 L35,101 L65,101 L65,96 L100,96" stroke="#00FFD4" stroke-width="0.8" fill="none" opacity="0.5"/>
+  <!-- Enhanced asymmetrical PCB circuit board traces with blue theme -->
+  <g opacity="0.7">
+    <!-- Complex asymmetrical traces with blue glow -->
+    <path d="M15,24 L45,24 L45,28 L80,28 L80,24 L113,24" stroke="#0080FF" stroke-width="1.2" fill="none" opacity="0.8" filter="url(#glow)"/>
+    <path d="M0,46 L30,46 L30,50 L50,50 L50,55 L128,55" stroke="#00C0FF" stroke-width="0.9" fill="none" opacity="0.7" filter="url(#glow)"/>
+    <path d="M20,72 L40,72 L40,76 L60,76 L60,72 L95,72 L95,78 L128,78" stroke="#40E0FF" stroke-width="0.8" fill="none" opacity="0.9" filter="url(#glow)"/>
+    <path d="M0,97 L35,97 L35,101 L65,101 L65,96 L100,96" stroke="#0080FF" stroke-width="1.1" fill="none" opacity="0.6" filter="url(#glow)"/>
     
-    <path d="M28,0 L28,20 L31,20 L31,38 L28,38 L28,70 L31,70 L31,105 L28,105 L28,128" stroke="#00FFD4" stroke-width="0.6" fill="none" opacity="0.6"/>
-    <path d="M55,13 L55,30 L59,30 L59,45 L55,45 L55,62 L59,62 L59,87 L55,87 L55,128" stroke="#00FFD4" stroke-width="0.5" fill="none" opacity="0.5"/>
-    <path d="M87,0 L87,18 L91,18 L91,35 L87,35 L87,50 L91,50 L91,75 L87,75 L87,113" stroke="#00FFD4" stroke-width="0.7" fill="none" opacity="0.6"/>
-    <path d="M105,20 L105,40 L109,40 L109,60 L105,60 L105,80 L109,80 L109,95 L105,95 L105,128" stroke="#00FFD4" stroke-width="0.4" fill="none" opacity="0.5"/>
+    <!-- Flowing organic traces -->
+    <path d="M10,15 Q30,10 50,15 T90,20 L113,22" stroke="#40E0FF" stroke-width="0.6" fill="none" opacity="0.8" filter="url(#glow)"/>
+    <path d="M0,62 Q20,58 40,62 T80,67 Q100,63 128,65" stroke="#00C0FF" stroke-width="0.7" fill="none" opacity="0.7" filter="url(#glow)"/>
     
-    <!-- PCB connection pads -->
-    <circle cx="31" cy="28" r="1.8" fill="#00FFD4" opacity="0.8"/>
-    <circle cx="59" cy="50" r="1.5" fill="#00FFD4" opacity="0.7"/>
-    <circle cx="91" cy="35" r="2" fill="#00FFD4" opacity="0.9"/>
-    <circle cx="45" cy="76" r="1.3" fill="#00FFD4" opacity="0.6"/>
-    <circle cx="80" cy="55" r="1.6" fill="#00FFD4" opacity="0.8"/>
-    <circle cx="109" cy="80" r="1.7" fill="#00FFD4" opacity="0.7"/>
-    <circle cx="35" cy="97" r="1.4" fill="#00FFD4" opacity="0.9"/>
-    <circle cx="65" cy="101" r="1.9" fill="#00FFD4" opacity="0.6"/>
+    <path d="M28,0 L28,20 L31,20 L31,38 L28,38 L28,70 L31,70 L31,105 L28,105 L28,128" stroke="#0080FF" stroke-width="0.9" fill="none" opacity="0.8" filter="url(#glow)"/>
+    <path d="M55,13 L55,30 L59,30 L59,45 L55,45 L55,62 L59,62 L59,87 L55,87 L55,128" stroke="#40E0FF" stroke-width="0.7" fill="none" opacity="0.9" filter="url(#glow)"/>
+    <path d="M87,0 L87,18 L91,18 L91,35 L87,35 L87,50 L91,50 L91,75 L87,75 L87,113" stroke="#00C0FF" stroke-width="1.0" fill="none" opacity="0.8" filter="url(#glow)"/>
+    <path d="M105,20 L105,40 L109,40 L109,60 L105,60 L105,80 L109,80 L109,95 L105,95 L105,128" stroke="#0080FF" stroke-width="0.6" fill="none" opacity="0.6" filter="url(#glow)"/>
     
-    <!-- Small PCB traces -->
-    <path d="M45,24 L45,31 L50,31" stroke="#00FFD4" stroke-width="0.3" fill="none" opacity="0.4"/>
-    <path d="M80,24 L80,20 L85,20" stroke="#00FFD4" stroke-width="0.3" fill="none" opacity="0.4"/>
-    <path d="M60,72 L60,68 L65,68 L65,70" stroke="#00FFD4" stroke-width="0.3" fill="none" opacity="0.4"/>
+    <!-- Enhanced PCB connection pads with blue glow -->
+    <circle cx="31" cy="28" r="2.2" fill="#0080FF" opacity="1.0" filter="url(#glow)"/>
+    <circle cx="59" cy="50" r="1.8" fill="#40E0FF" opacity="0.9" filter="url(#glow)"/>
+    <circle cx="91" cy="35" r="2.5" fill="#00C0FF" opacity="1.0" filter="url(#glow)"/>
+    <circle cx="45" cy="76" r="1.6" fill="#40E0FF" opacity="0.8" filter="url(#glow)"/>
+    <circle cx="80" cy="55" r="2.0" fill="#0080FF" opacity="1.0" filter="url(#glow)"/>
+    <circle cx="109" cy="80" r="2.1" fill="#00C0FF" opacity="0.9" filter="url(#glow)"/>
+    <circle cx="35" cy="97" r="1.7" fill="#40E0FF" opacity="1.0" filter="url(#glow)"/>
+    <circle cx="65" cy="101" r="2.3" fill="#0080FF" opacity="0.8" filter="url(#glow)"/>
     
-    <!-- Tiny component footprints -->
-    <rect x="48" y="30" width="4" height="2.5" fill="none" stroke="#00FFD4" stroke-width="0.2" opacity="0.4"/>
-    <rect x="83" y="19" width="3" height="4" fill="none" stroke="#00FFD4" stroke-width="0.2" opacity="0.4"/>
-    <rect x="63" y="66" width="5" height="3" fill="none" stroke="#00FFD4" stroke-width="0.2" opacity="0.4"/>
+    <!-- Small PCB traces with blue theme -->
+    <path d="M45,24 L45,31 L50,31" stroke="#40E0FF" stroke-width="0.5" fill="none" opacity="0.6"/>
+    <path d="M80,24 L80,20 L85,20" stroke="#00C0FF" stroke-width="0.5" fill="none" opacity="0.6"/>
+    <path d="M60,72 L60,68 L65,68 L65,70" stroke="#0080FF" stroke-width="0.4" fill="none" opacity="0.6"/>
+    
+    <!-- Enhanced component footprints -->
+    <rect x="48" y="30" width="5" height="3.5" fill="none" stroke="#00C0FF" stroke-width="0.4" opacity="0.6"/>
+    <rect x="83" y="19" width="4" height="5" fill="none" stroke="#0080FF" stroke-width="0.4" opacity="0.6"/>
+    <rect x="63" y="66" width="6" height="4" fill="none" stroke="#40E0FF" stroke-width="0.4" opacity="0.6"/>
   </g>
   
   <!-- CPU chip -->
@@ -100,29 +104,35 @@
       <rect x="20" y="10" width="5" height="2" fill="#4A4A4A"/>
     </g>
     
-    <!-- CPU body -->
+    <!-- CPU body with enhanced blue outline -->
     <rect x="-20" y="-20" width="40" height="40" fill="url(#cpuGradient)" rx="3" 
-          stroke="#00FFD4" stroke-width="1.5" filter="url(#glow)"/>
+          stroke="#0080FF" stroke-width="2" filter="url(#glow)"/>
     
     <!-- CPU surface detail -->
     <rect x="-15" y="-15" width="30" height="30" fill="none" stroke="#4A4A4A" stroke-width="0.5" rx="2"/>
     
-    <!-- CPU center detail (replacing keyhole) -->
-    <g opacity="0.8">
+    <!-- Enhanced CPU center detail with blue internal processing unit -->
+    <g opacity="0.9">
       <!-- Central processing core detail -->
-      <rect x="-6" y="-6" width="12" height="12" fill="none" stroke="#4A4A4A" stroke-width="0.4" rx="1" opacity="0.7"/>
-      <rect x="-5" y="-5" width="10" height="10" fill="none" stroke="#4A4A4A" stroke-width="0.3" rx="1" opacity="0.6"/>
-      <rect x="-4" y="-4" width="8" height="8" fill="none" stroke="#4A4A4A" stroke-width="0.2" rx="0.5" opacity="0.5"/>
+      <rect x="-6" y="-6" width="12" height="12" fill="none" stroke="#4A4A4A" stroke-width="0.4" rx="1" opacity="0.8"/>
+      <rect x="-5" y="-5" width="10" height="10" fill="none" stroke="#4A4A4A" stroke-width="0.3" rx="1" opacity="0.7"/>
+      <rect x="-4" y="-4" width="8" height="8" fill="none" stroke="#4A4A4A" stroke-width="0.2" rx="0.5" opacity="0.6"/>
       
-      <!-- Internal PCB traces -->
+      <!-- Enhanced internal PCB traces with blue glow -->
       <path d="M-4,-2.5 L4,-2.5 M-2.5,-4 L-2.5,4 M2.5,-4 L2.5,4 M-4,2.5 L4,2.5" 
-            stroke="#00FFD4" stroke-width="0.2" opacity="0.4"/>
+            stroke="#40E0FF" stroke-width="0.3" opacity="0.8"/>
+      <path d="M-3,-1.5 L3,-1.5 M-1.5,-3 L-1.5,3 M1.5,-3 L1.5,3 M-3,1.5 L3,1.5" 
+            stroke="#00C0FF" stroke-width="0.2" opacity="0.6"/>
       
-      <!-- Micro components -->
+      <!-- Enhanced micro components -->
       <rect x="-2.5" y="-2.5" width="1.5" height="1.5" fill="#4A4A4A" rx="0.2" opacity="0.9"/>
       <rect x="1" y="-2.5" width="1.5" height="1.5" fill="#4A4A4A" rx="0.2" opacity="0.9"/>
       <rect x="-2.5" y="1" width="1.5" height="1.5" fill="#4A4A4A" rx="0.2" opacity="0.9"/>
       <rect x="1" y="1" width="1.5" height="1.5" fill="#4A4A4A" rx="0.2" opacity="0.9"/>
+      
+      <!-- Micro connecting traces -->
+      <path d="M-2,-2 L2,-2 M-2,2 L2,2" stroke="#0080FF" stroke-width="0.15" opacity="0.7"/>
+      <path d="M-2,-2 L-2,2 M2,-2 L2,2" stroke="#40E0FF" stroke-width="0.15" opacity="0.7"/>
     </g>
   </g>
 </svg>
