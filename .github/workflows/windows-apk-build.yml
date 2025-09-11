@@ -1,5 +1,5 @@
 ---
-name: Windows APK Build
+name: Windows APK Build - Android 16+
 
 on:
   workflow_dispatch:
@@ -18,7 +18,7 @@ on:
 jobs:
   build-debug-apk:
     runs-on: windows-latest
-    name: Build Debug APK on Windows
+    name: Build Debug APK on Windows (Android 16+)
 
     steps:
       - name: 📥 Checkout Repository
@@ -107,6 +107,44 @@ jobs:
             Write-Host "✅ Android platform initialized" -ForegroundColor Green
           } else {
             Write-Host "✅ Android platform already exists" -ForegroundColor Green
+          }
+
+          # Configure Android API levels to support Android 16+ (API level 16)
+          Write-Host "Configuring Android API levels for Android 16+ support..." -ForegroundColor Yellow
+          
+          $buildGradlePath = "android/app/build.gradle"
+          if (Test-Path $buildGradlePath) {
+            Write-Host "Updating Android configuration to target Android 16+ (API level 16)..." -ForegroundColor Yellow
+            
+            # Read the build.gradle file
+            $content = Get-Content $buildGradlePath -Raw
+            
+            # Update minSdkVersion to 16 (Android 4.1+) to support Android 16+
+            $content = $content -replace 'minSdkVersion\s+\d+', 'minSdkVersion 16'
+            $content = $content -replace 'minSdkVersion\s*=\s*\d+', 'minSdkVersion = 16'
+            $content = $content -replace 'minSdk\s+\d+', 'minSdk 16'
+            $content = $content -replace 'minSdk\s*=\s*\d+', 'minSdk = 16'
+            
+            # Keep modern targetSdkVersion and compileSdkVersion for latest features and security
+            $content = $content -replace 'targetSdkVersion\s+\d+', 'targetSdkVersion 34'
+            $content = $content -replace 'targetSdkVersion\s*=\s*\d+', 'targetSdkVersion = 34'
+            $content = $content -replace 'targetSdk\s+\d+', 'targetSdk 34'
+            $content = $content -replace 'targetSdk\s*=\s*\d+', 'targetSdk = 34'
+            
+            $content = $content -replace 'compileSdkVersion\s+\d+', 'compileSdkVersion 34'
+            $content = $content -replace 'compileSdkVersion\s*=\s*\d+', 'compileSdkVersion = 34'
+            $content = $content -replace 'compileSdk\s+\d+', 'compileSdk 34'
+            $content = $content -replace 'compileSdk\s*=\s*\d+', 'compileSdk = 34'
+            
+            # Write back the updated content
+            $content | Out-File $buildGradlePath -Encoding UTF8
+            
+            Write-Host "✅ Android configuration updated for Android 16+ support" -ForegroundColor Green
+            Write-Host "   - minSdkVersion: 16 (Android 4.1+)" -ForegroundColor Cyan
+            Write-Host "   - targetSdkVersion: 34 (Android 14)" -ForegroundColor Cyan
+            Write-Host "   - compileSdkVersion: 34 (Android 14)" -ForegroundColor Cyan
+          } else {
+            Write-Host "⚠️ build.gradle not found, will be configured during build" -ForegroundColor Yellow
           }
 
           # List directory structure

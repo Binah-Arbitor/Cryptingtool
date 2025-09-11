@@ -1,8 +1,8 @@
 ---
-name: 'Flutter C++ Packager'
+name: 'Flutter C++ Packager - Android 16+'
 description: >-
   A GitHub Action to build and package Flutter applications
-  with C++ components
+  with C++ components, targeting Android 16+ on Windows VM
 author: 'Binah-Arbitor'
 branding:
   icon: 'package'
@@ -281,6 +281,41 @@ runs:
       shell: bash
       run: |
         echo "Building Flutter application for ${{ inputs.target-platform }}..."
+        
+        # Configure Android API levels for Android 16+ support if targeting Android
+        if [ "${{ inputs.target-platform }}" = "android" ]; then
+          echo "Configuring Android API levels for Android 16+ support..."
+          
+          # Check if android/app/build.gradle exists
+          if [ -f "android/app/build.gradle" ]; then
+            echo "Updating Android configuration to target Android 16+ (API level 16)..."
+            
+            # Update minSdkVersion to 16 (Android 4.1+) to support Android 16+
+            sed -i.bak -E 's/minSdkVersion [0-9]+/minSdkVersion 16/g' android/app/build.gradle
+            sed -i.bak -E 's/minSdkVersion = [0-9]+/minSdkVersion = 16/g' android/app/build.gradle
+            sed -i.bak -E 's/minSdk [0-9]+/minSdk 16/g' android/app/build.gradle
+            sed -i.bak -E 's/minSdk = [0-9]+/minSdk = 16/g' android/app/build.gradle
+            
+            # Keep modern targetSdkVersion and compileSdkVersion for latest features
+            sed -i.bak -E 's/targetSdkVersion [0-9]+/targetSdkVersion 34/g' android/app/build.gradle
+            sed -i.bak -E 's/targetSdkVersion = [0-9]+/targetSdkVersion = 34/g' android/app/build.gradle
+            sed -i.bak -E 's/targetSdk [0-9]+/targetSdk 34/g' android/app/build.gradle
+            sed -i.bak -E 's/targetSdk = [0-9]+/targetSdk = 34/g' android/app/build.gradle
+            
+            sed -i.bak -E 's/compileSdkVersion [0-9]+/compileSdkVersion 34/g' android/app/build.gradle
+            sed -i.bak -E 's/compileSdkVersion = [0-9]+/compileSdkVersion = 34/g' android/app/build.gradle
+            sed -i.bak -E 's/compileSdk [0-9]+/compileSdk 34/g' android/app/build.gradle  
+            sed -i.bak -E 's/compileSdk = [0-9]+/compileSdk = 34/g' android/app/build.gradle
+            
+            echo "✅ Android configuration updated for Android 16+ support"
+            echo "   - minSdkVersion: 16 (Android 4.1+)"
+            echo "   - targetSdkVersion: 34 (Android 14)"
+            echo "   - compileSdkVersion: 34 (Android 14)"
+          else
+            echo "⚠️ build.gradle not found, will use Flutter defaults"
+          fi
+        fi
+        
         ${{ github.action_path }}/scripts/build-flutter.sh "${{ inputs.target-platform }}" "${{ inputs.build-mode }}"
 
     - name: Package Application

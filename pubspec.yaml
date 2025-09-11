@@ -1,6 +1,6 @@
 ---
 name: cryptingtool
-description: A Flutter application with C++ cryptographic components
+description: A Flutter application with C++ cryptographic components targeting Android 16+
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
