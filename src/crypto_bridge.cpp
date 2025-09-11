@@ -33,21 +33,8 @@
  * -9: Unknown error
  */
 
-#include <crypto++/cryptlib.h>
-#include <crypto++/aes.h>
-#include <crypto++/serpent.h>
-#include <crypto++/twofish.h>
-#include <crypto++/rc6.h>
-#include <crypto++/blowfish.h>
-#include <crypto++/cast.h>
-#include <crypto++/modes.h>
-#include <crypto++/gcm.h>
-#include <crypto++/filters.h>
-#include <crypto++/hex.h>
-#include <crypto++/pwdbased.h>
-#include <crypto++/sha.h>
-#include <crypto++/secblock.h>
-#include <crypto++/osrng.h>
+// Use compatibility header that handles different Crypto++ installation paths
+#include "crypto_compat.h"
 #include <cstring>
 #include <memory>
 

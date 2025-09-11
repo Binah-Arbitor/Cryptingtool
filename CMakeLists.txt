@@ -136,9 +136,10 @@ if(NOT CRYPTOPP_LIB_FOUND)
     message(FATAL_ERROR 
         "❌ Crypto++ library not found!\n"
         "\n"
-        "Please install Crypto++ using one of these methods:\n"
+        "QUICK FIX: Run the troubleshooting script for automated diagnosis:\n"
+        "  ./crypto_troubleshoot.sh --fix\n"
         "\n"
-        "📦 PACKAGE MANAGERS:\n"
+        "📦 MANUAL INSTALLATION:\n"
         "  Ubuntu/Debian:  sudo apt-get install libcrypto++-dev\n"
         "  CentOS/RHEL:    sudo yum install cryptopp-devel\n"
         "  Fedora:         sudo dnf install cryptopp-devel\n"
@@ -153,13 +154,16 @@ if(NOT CRYPTOPP_LIB_FOUND)
         "  sudo ldconfig  # Linux only\n"
         "\n"
         "📋 TROUBLESHOOTING:\n"
+        "  Run diagnosis:    ./crypto_troubleshoot.sh\n"
         "  Check pkg-config: pkg-config --exists libcrypto++\n"
         "  Check library:    find /usr -name '*crypto*' -type f 2>/dev/null\n"
         "  Check headers:    find /usr -name 'cryptlib.h' 2>/dev/null\n"
         "\n"
         "🔗 More info: https://cryptopp.com/wiki/Linux\n"
+        "🆘 Stack Overflow: Search for 'crypto++ cryptlib.h not found'\n"
         "\n"
-        "After installation, re-run cmake to detect the library."
+        "After installation, re-run cmake to detect the library.\n"
+        "Our compatibility header (include/crypto_compat.h) handles most path variations automatically."
     )
 endif()
 
