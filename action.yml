@@ -48,11 +48,17 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Setup Flutter
+    - name: Setup Flutter (Channel-based)
       uses: subosito/flutter-action@v2
+      if: ${{ inputs.flutter-version == 'stable' || inputs.flutter-version == 'beta' || inputs.flutter-version == 'dev' || inputs.flutter-version == 'master' }}
+      with:
+        channel: ${{ inputs.flutter-version }}
+
+    - name: Setup Flutter (Version-based)
+      uses: subosito/flutter-action@v2
+      if: ${{ inputs.flutter-version != 'stable' && inputs.flutter-version != 'beta' && inputs.flutter-version != 'dev' && inputs.flutter-version != 'master' }}
       with:
         flutter-version: ${{ inputs.flutter-version }}
-        channel: ${{ inputs.flutter-channel }}
 
     - name: Setup C++ Environment
       shell: bash

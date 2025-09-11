@@ -93,8 +93,8 @@ jobs:
 
 | Input | Description | Required | Default |
 |-------|-------------|----------|---------|
-| `flutter-version` | Flutter SDK version to use | No | `stable` |
-| `flutter-channel` | Flutter channel (stable, beta, dev, master) | No | `stable` |
+| `flutter-version` | Flutter SDK version to use (e.g., 'stable', 'beta', '3.16.5') | No | `stable` |
+| `flutter-channel` | Flutter channel (deprecated - use flutter-version instead) | No | `stable` |
 | `target-platform` | Target platform (android, ios, linux, windows, macos, web) | Yes | - |
 | `build-mode` | Build mode (debug, profile, release) | No | `release` |
 | `cpp-compiler` | C++ compiler to use (gcc, clang, msvc) | No | `gcc` |
@@ -162,6 +162,13 @@ The action handles Flutter projects automatically:
 2. Adds FFI dependencies for C++ integration
 3. Builds for the specified target platform
 4. Packages the built application
+
+### Flutter Version Handling
+
+The action intelligently handles Flutter SDK setup:
+- **Channel names** (`stable`, `beta`, `dev`, `master`): Uses Flutter channel
+- **Specific versions** (`3.16.5`, `3.19.0`, etc.): Uses exact Flutter version
+- **Default**: Uses `stable` channel
 
 ## Project Structure
 
