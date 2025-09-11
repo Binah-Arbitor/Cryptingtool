@@ -108,20 +108,61 @@ if [ "$CRYPTOPP_FOUND" = false ]; then
             if command_exists apt-get; then
                 echo "🔄 Attempting automatic installation..."
                 sudo apt-get update
-                sudo apt-get install -y libcrypto++-dev
-                echo "✅ Crypto++ installed"
+                
+                # Try multiple package names in order of preference
+                CRYPTO_INSTALLED=false
+                for pkg in libcrypto++-dev libcrypto++8-dev libcryptoppdev libcryptopp-dev; do
+                    if sudo apt-get install -y $pkg 2>/dev/null; then
+                        echo "✅ Installed $pkg"
+                        CRYPTO_INSTALLED=true
+                        break
+                    fi
+                done
+                
+                if [ "$CRYPTO_INSTALLED" = false ]; then
+                    echo "📥 No packages available, building from source..."
+                    # Get latest version dynamically or use known stable
+                    CRYPTO_VERSION="CRYPTOPP_8_9_0"
+                    CRYPTO_ZIP_VERSION="890"
+                    echo "🔄 Building Crypto++ $CRYPTO_VERSION from source..."
+                    
+                    cd /tmp
+                    wget https://github.com/weidai11/cryptopp/releases/download/${CRYPTO_VERSION}/cryptopp${CRYPTO_ZIP_VERSION}.zip
+                    unzip cryptopp${CRYPTO_ZIP_VERSION}.zip -d cryptopp
+                    cd cryptopp
+                    make -j$(nproc)
+                    sudo make install PREFIX=/usr/local
+                    sudo ldconfig
+                    echo "✅ Built and installed Crypto++ $CRYPTO_VERSION from source"
+                fi
             fi
             ;;
         "macos")
             echo "📦 Install with: brew install cryptopp"
             if command_exists brew; then
                 echo "🔄 Attempting automatic installation..."
-                brew install cryptopp
-                echo "✅ Crypto++ installed"
+                if brew install cryptopp; then
+                    echo "✅ Crypto++ installed via Homebrew"
+                else
+                    echo "📥 Homebrew installation failed, building from source..."
+                    # Get latest version and build from source
+                    CRYPTO_VERSION="CRYPTOPP_8_9_0"
+                    CRYPTO_ZIP_VERSION="890"
+                    echo "🔄 Building Crypto++ $CRYPTO_VERSION from source..."
+                    
+                    cd /tmp
+                    wget https://github.com/weidai11/cryptopp/releases/download/${CRYPTO_VERSION}/cryptopp${CRYPTO_ZIP_VERSION}.zip
+                    unzip cryptopp${CRYPTO_ZIP_VERSION}.zip -d cryptopp
+                    cd cryptopp
+                    make -j$(sysctl -n hw.ncpu)
+                    sudo make install PREFIX=/usr/local
+                    echo "✅ Built and installed Crypto++ $CRYPTO_VERSION from source"
+                fi
             fi
             ;;
         "windows")
             echo "📦 Install with: vcpkg install cryptopp"
+            echo "   Or download from: https://github.com/weidai11/cryptopp/releases"
             ;;
     esac
 fi

@@ -84,8 +84,10 @@ runs:
               echo "✅ Installed libcrypto++8-dev"
             elif sudo apt-get install -y libcryptoppdev 2>/dev/null; then
               echo "✅ Installed libcryptoppdev"
+            elif sudo apt-get install -y libcryptopp-dev 2>/dev/null; then
+              echo "✅ Installed libcryptopp-dev"
             else
-              echo "📥 Installing crypto++ from source..."
+              echo "📥 Installing crypto++ from source (latest stable v8.9.0)..."
               cd /tmp
               wget https://github.com/weidai11/cryptopp/releases/download/CRYPTOPP_8_9_0/cryptopp890.zip
               unzip cryptopp890.zip -d cryptopp
@@ -93,17 +95,46 @@ runs:
               make -j$(nproc)
               sudo make install PREFIX=/usr/local
               sudo ldconfig
-              echo "✅ Built and installed crypto++ from source"
+              echo "✅ Built and installed crypto++ v8.9.0 from source"
             fi
           else
             echo "✅ Installed libcrypto++-dev package"
           fi
           
           # Verify installation
-          if pkg-config --exists cryptopp || pkg-config --exists libcrypto++ || [ -f "/usr/include/cryptopp/cryptlib.h" ] || [ -f "/usr/local/include/cryptopp/cryptlib.h" ]; then
+          echo "🔍 Verifying crypto++ installation..."
+          CRYPTO_VERIFIED=false
+          
+          # Method 1: Check pkg-config
+          if pkg-config --exists libcrypto++; then
+            echo "✅ pkg-config found libcrypto++ v$(pkg-config --modversion libcrypto++)"
+            CRYPTO_VERIFIED=true
+          elif pkg-config --exists cryptopp; then
+            echo "✅ pkg-config found cryptopp v$(pkg-config --modversion cryptopp)"
+            CRYPTO_VERIFIED=true
+          fi
+          
+          # Method 2: Check headers
+          if [ -f "/usr/include/cryptopp/cryptlib.h" ] || [ -f "/usr/local/include/cryptopp/cryptlib.h" ]; then
+            echo "✅ Crypto++ headers found"
+            CRYPTO_VERIFIED=true
+          fi
+          
+          # Method 3: Check libraries
+          if find /usr /usr/local -name "*crypto*" -type f 2>/dev/null | grep -E "\.(so|a|dylib)$" | grep -v openssl | head -1; then
+            echo "✅ Crypto++ library files found"
+            CRYPTO_VERIFIED=true
+          fi
+          
+          if [ "$CRYPTO_VERIFIED" = "true" ]; then
             echo "✅ Crypto++ library verification successful"
           else
             echo "❌ Crypto++ library verification failed"
+            echo "📋 Debugging information:"
+            echo "Available packages:" 
+            pkg-config --list-all | grep -i crypto || echo "No crypto packages found"
+            echo "Library files:"
+            find /usr -name "*crypto*" -type f 2>/dev/null | head -5 || echo "No crypto files found"
             exit 1
           fi
           
@@ -113,13 +144,15 @@ runs:
           
           if ! brew install cryptopp; then
             echo "⚠️  Homebrew cryptopp not available, trying alternatives..."
-            # Try building from source as fallback
+            # Try building from source as fallback using latest stable version
             cd /tmp
-            git clone https://github.com/weidai11/cryptopp.git
+            echo "📥 Installing crypto++ from source (latest stable v8.9.0)..."
+            wget https://github.com/weidai11/cryptopp/releases/download/CRYPTOPP_8_9_0/cryptopp890.zip
+            unzip cryptopp890.zip -d cryptopp
             cd cryptopp
             make -j$(sysctl -n hw.ncpu)
             sudo make install PREFIX=/usr/local
-            echo "✅ Built and installed crypto++ from source"
+            echo "✅ Built and installed crypto++ v8.9.0 from source"
           else
             echo "✅ Installed cryptopp via Homebrew"
           fi
@@ -141,6 +174,7 @@ runs:
             ./bootstrap-vcpkg.bat
             ./vcpkg install cryptopp:x64-windows
             echo "VCPKG_ROOT=/tmp/vcpkg" >> $GITHUB_ENV
+            echo "CMAKE_TOOLCHAIN_FILE=/tmp/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
             echo "✅ Installed crypto++ via vcpkg"
           fi
         fi
