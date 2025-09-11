@@ -179,7 +179,7 @@ runs:
             echo "Library files:"
             find /usr -name "*crypto*" -type f 2>/dev/null | head -5 || echo "No crypto files found"
             exit 1
-for pkg in libcrypto++8-dev libcryptoppdev libcryptopp-dev; do
+            for pkg in libcrypto++8-dev libcryptoppdev libcryptopp-dev; do
               if sudo apt-get install -y $pkg 2>/dev/null; then
                 echo "✅ Installed $pkg"
                 CRYPTO_INSTALLED=true
