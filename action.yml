@@ -66,11 +66,14 @@ runs:
         echo "Setting up C++ build environment..."
         if [ "${{ runner.os }}" = "Linux" ]; then
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake ninja-build
+          sudo apt-get install -y build-essential cmake ninja-build libcrypto++-dev
+          echo "✅ Installed libcrypto++-dev for cryptopp library support"
         elif [ "${{ runner.os }}" = "macOS" ]; then
-          brew install cmake ninja
+          brew install cmake ninja cryptopp
+          echo "✅ Installed cryptopp via Homebrew"
         elif [ "${{ runner.os }}" = "Windows" ]; then
           choco install cmake ninja
+          echo "⚠️  Windows: cryptopp may require manual installation or vcpkg"
         fi
 
     - name: Install Flutter Dependencies
