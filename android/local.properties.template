@@ -1,0 +1,14 @@
+# This file is used by the Android Gradle Plugin to configure local paths
+# and should not be committed to version control.
+
+# SDK location
+sdk.dir=%LOCALAPPDATA%\\Android\\Sdk
+
+# NDK location (optional)
+ndk.dir=%LOCALAPPDATA%\\Android\\Sdk\\ndk\\25.1.8937393
+
+# Flutter SDK path (will be set dynamically by the workflow)
+flutter.sdk=
+
+# Java version compatibility
+java.home=

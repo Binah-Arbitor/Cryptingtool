@@ -11,6 +11,14 @@ test-output/
 .packages
 pubspec.lock
 
+# Android
+android/local.properties
+android/app/.cxx/
+android/.gradle/
+android/gradle/
+android/gradlew*
+android/key.properties
+
 # C++
 *.o
 *.so

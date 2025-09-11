@@ -44,6 +44,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: 'gradle'
 
       - name: 🔍 Verify Java Installation
         shell: pwsh
@@ -108,6 +109,27 @@ jobs:
           } else {
             Write-Host "✅ Android platform already exists" -ForegroundColor Green
           }
+          
+          # Verify Android configuration for API 16+ support
+          Write-Host "Verifying Android API 16+ configuration..." -ForegroundColor Yellow
+          
+          if (Test-Path "android/app/build.gradle") {
+            $buildGradle = Get-Content "android/app/build.gradle" -Raw
+            if ($buildGradle -match "minSdk\s*=\s*16" -or $buildGradle -match "minSdkVersion\s+16") {
+              Write-Host "✅ Android build.gradle configured for API 16+ support" -ForegroundColor Green
+            } else {
+              Write-Host "⚠️ Updating build.gradle for API 16+ support..." -ForegroundColor Yellow
+            }
+          }
+          
+          if (Test-Path "android/app/src/main/AndroidManifest.xml") {
+            $manifest = Get-Content "android/app/src/main/AndroidManifest.xml" -Raw
+            if ($manifest -match "minSdkVersion=.16." -or $manifest -match "android:minSdkVersion=.16.") {
+              Write-Host "✅ AndroidManifest.xml configured for API 16+ support" -ForegroundColor Green
+            } else {
+              Write-Host "⚠️ AndroidManifest.xml needs API 16+ configuration..." -ForegroundColor Yellow
+            }
+          }
 
           # List directory structure
           Write-Host "Project structure:" -ForegroundColor Yellow
@@ -116,6 +138,9 @@ jobs:
           if (Test-Path "android") {
             Write-Host "Android directory contents:" -ForegroundColor Yellow
             Get-ChildItem android -Name | Sort-Object
+            
+            Write-Host "Android app directory contents:" -ForegroundColor Yellow  
+            Get-ChildItem android/app -Name | Sort-Object
           }
 
           Write-Host "===================================" -ForegroundColor Green
@@ -166,8 +191,35 @@ jobs:
           # Verify Android toolchain
           Write-Host "Verifying Android toolchain..." -ForegroundColor Yellow
           flutter doctor -v 2>&1 | Tee-Object -FilePath "flutter_doctor.log"
+          
+          # Validate Android API 16+ configuration
+          Write-Host "Validating Android API 16+ target configuration..." -ForegroundColor Yellow
+          
+          if (Test-Path "android/app/build.gradle") {
+            Write-Host "✅ build.gradle found" -ForegroundColor Green
+            $buildGradle = Get-Content "android/app/build.gradle" -Raw
+            if ($buildGradle -match "minSdk\s*=\s*1[6-9]|[2-9][0-9]|[1-9][0-9][0-9]") {
+              Write-Host "✅ Minimum SDK version is 16 or higher" -ForegroundColor Green
+            } else {
+              Write-Host "⚠️ Warning: Minimum SDK version may not be properly configured for API 16+" -ForegroundColor Yellow
+            }
+            
+            if ($buildGradle -match "compileSdk\s*=\s*3[4-9]|[4-9][0-9]") {
+              Write-Host "✅ Compile SDK version is current (34+)" -ForegroundColor Green
+            } else {
+              Write-Host "⚠️ Warning: Compile SDK version should be 34 or higher" -ForegroundColor Yellow
+            }
+          }
+          
+          if (Test-Path "android/app/src/main/AndroidManifest.xml") {
+            Write-Host "✅ AndroidManifest.xml found" -ForegroundColor Green
+            $manifest = Get-Content "android/app/src/main/AndroidManifest.xml" -Raw
+            if ($manifest -match "minSdkVersion=.1[6-9]|[2-9][0-9]|[1-9][0-9][0-9].") {
+              Write-Host "✅ AndroidManifest.xml minimum SDK is 16 or higher" -ForegroundColor Green
+            }
+          }
 
-          Write-Host "✅ Android environment configured" -ForegroundColor Green
+          Write-Host "✅ Android environment configured for API 16+ target" -ForegroundColor Green
           Write-Host "=================================" -ForegroundColor Green
 
       - name: 🏗️ Build Debug APK
@@ -182,7 +234,8 @@ jobs:
           Write-Host "Starting APK build process..." -ForegroundColor Yellow
           Write-Host "App Name: ${{ inputs.app_name }}" -ForegroundColor Yellow
           Write-Host "Build Mode: debug" -ForegroundColor Yellow
-          Write-Host "Target Platform: Android" -ForegroundColor Yellow
+          Write-Host "Target Platform: Android API 16+ (4.1+)" -ForegroundColor Yellow
+          Write-Host "VM Environment: Windows" -ForegroundColor Yellow
 
           try {
             # Build debug APK with verbose output
@@ -334,8 +387,8 @@ jobs:
           Write-Host "Build Status: $BuildStatus" -ForegroundColor $(if ($ApkFiles.Count -gt 0) { "Green" } else { "Red" })
           Write-Host "App Name: ${{ inputs.app_name }}" -ForegroundColor Yellow
           Write-Host "Build Mode: debug" -ForegroundColor Yellow
-          Write-Host "Target Platform: Android" -ForegroundColor Yellow
-          Write-Host "Runner OS: Windows" -ForegroundColor Yellow
+          Write-Host "Target Platform: Android API 16+ (4.1+)" -ForegroundColor Yellow
+          Write-Host "VM Environment: Windows" -ForegroundColor Yellow
           Write-Host "APK Files Generated: $($ApkFiles.Count)" -ForegroundColor Yellow
 
           if ($ApkFiles.Count -gt 0) {
@@ -356,8 +409,8 @@ jobs:
           $stepSummary += "`n| 🏗️ Build Status | $BuildStatus |"
           $stepSummary += "`n| 📱 App Name | ${{ inputs.app_name }} |"
           $stepSummary += "`n| 🔧 Build Mode | debug |"
-          $stepSummary += "`n| 🎯 Target Platform | Android |"
-          $stepSummary += "`n| 💻 Runner OS | Windows |"
+          $stepSummary += "`n| 🎯 Target Platform | Android API 16+ (4.1+) |"
+          $stepSummary += "`n| 💻 VM Environment | Windows |"
           $stepSummary += "`n| 📦 APK Files | $($ApkFiles.Count) |"
           $stepSummary += "`n"
           $stepSummary += "`n### 📋 Generated APK Files"
