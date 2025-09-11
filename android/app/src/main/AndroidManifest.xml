@@ -13,7 +13,7 @@
     
     <!-- Specify minimum SDK version for Android 4.1+ (API 16) -->
     <uses-sdk android:minSdkVersion="16" 
-              android:targetSdkVersion="34" />
+              android:targetSdkVersion="35" />
 
     <application
         android:label="CryptingTool"
@@ -23,7 +23,11 @@
         android:exported="true"
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31">
+        android:allowBackup="false"
+        android:supportsRtl="true"
+        android:extractNativeLibs="false"
+        android:hardwareAccelerated="true"
+        tools:targetApi="35">
         
         <activity
             android:name=".MainActivity"

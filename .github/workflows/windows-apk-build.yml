@@ -110,8 +110,8 @@ jobs:
             Write-Host "✅ Android platform already exists" -ForegroundColor Green
           }
           
-          # Verify Android configuration for API 16+ support
-          Write-Host "Verifying Android API 16+ configuration..." -ForegroundColor Yellow
+          # Verify Android configuration for API 35+ support
+          Write-Host "Verifying Android API 35+ configuration..." -ForegroundColor Yellow
           
           if (Test-Path "android/app/build.gradle") {
             $buildGradle = Get-Content "android/app/build.gradle" -Raw
@@ -119,6 +119,11 @@ jobs:
               Write-Host "✅ Android build.gradle configured for API 16+ support" -ForegroundColor Green
             } else {
               Write-Host "⚠️ Updating build.gradle for API 16+ support..." -ForegroundColor Yellow
+            }
+            if ($buildGradle -match "targetSdk\s*=\s*35" -or $buildGradle -match "targetSdkVersion\s+35") {
+              Write-Host "✅ Android build.gradle configured for API 35 target" -ForegroundColor Green
+            } else {
+              Write-Host "⚠️ build.gradle should target API 35..." -ForegroundColor Yellow
             }
           }
           
@@ -217,9 +222,12 @@ jobs:
             if ($manifest -match "minSdkVersion=.1[6-9]|[2-9][0-9]|[1-9][0-9][0-9].") {
               Write-Host "✅ AndroidManifest.xml minimum SDK is 16 or higher" -ForegroundColor Green
             }
+            if ($manifest -match "targetSdkVersion=.3[5-9]|[4-9][0-9].") {
+              Write-Host "✅ AndroidManifest.xml target SDK is 35 or higher" -ForegroundColor Green
+            }
           }
 
-          Write-Host "✅ Android environment configured for API 16+ target" -ForegroundColor Green
+          Write-Host "✅ Android environment configured for API 35 target" -ForegroundColor Green
           Write-Host "=================================" -ForegroundColor Green
 
       - name: 🏗️ Build Debug APK
@@ -234,7 +242,7 @@ jobs:
           Write-Host "Starting APK build process..." -ForegroundColor Yellow
           Write-Host "App Name: ${{ inputs.app_name }}" -ForegroundColor Yellow
           Write-Host "Build Mode: debug" -ForegroundColor Yellow
-          Write-Host "Target Platform: Android API 16+ (4.1+)" -ForegroundColor Yellow
+          Write-Host "Target Platform: Android API 35 (4.1+ compatible)" -ForegroundColor Yellow
           Write-Host "VM Environment: Windows" -ForegroundColor Yellow
 
           try {

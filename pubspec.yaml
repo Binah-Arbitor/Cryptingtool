@@ -9,31 +9,31 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.19.0 <4.0.0'
-  flutter: ">=3.3.0"
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.16.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
   # C++ Integration
-  ffi: ^2.1.0
-  path: ^1.8.3
+  ffi: ^2.1.2
+  path: ^1.9.0
 
   # UI Components
-  cupertino_icons: ^1.0.6
+  cupertino_icons: ^1.0.8
   file_picker: ^8.0.0+1
 
   # State Management
-  provider: ^6.1.1
+  provider: ^6.1.2
 
   # Fonts and Styling
-  google_fonts: ^6.1.0
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.1
+  flutter_lints: ^4.0.0
 
 flutter:
   uses-material-design: true
