@@ -137,9 +137,12 @@ if [ $found_libs -eq 0 ] || [ $found_headers -eq 0 ]; then
         echo "  Windows:       vcpkg install cryptopp"
     fi
     echo ""
-    echo "Alternative - build from source:"
-    echo "  wget https://github.com/weidai11/cryptopp/releases/download/CRYPTOPP_8_9_0/cryptopp890.zip"
-    echo "  unzip cryptopp890.zip && cd cryptopp"
+    echo "Alternative - build from source (latest stable):"
+    LATEST_VERSION=$(curl -s https://github.com/weidai11/cryptopp/releases 2>/dev/null | grep -o 'CRYPTOPP_[0-9_]*' | head -1 || echo "CRYPTOPP_8_9_0")
+    VERSION_NUM=$(echo $LATEST_VERSION | sed 's/CRYPTOPP_//g' | sed 's/_//g')
+    echo "  Latest version: $LATEST_VERSION"
+    echo "  wget https://github.com/weidai11/cryptopp/releases/download/${LATEST_VERSION}/cryptopp${VERSION_NUM}.zip"
+    echo "  unzip cryptopp${VERSION_NUM}.zip && cd cryptopp"
     echo "  make && sudo make install"
 fi
 

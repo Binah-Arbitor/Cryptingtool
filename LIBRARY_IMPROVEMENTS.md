@@ -24,6 +24,15 @@ This update addresses the issue where GitHub Actions fail to find the crypto++ l
 - **build-flutter.sh**: Better error reporting and automatic cleanup on failure
 - **check-dependencies.sh**: New script for comprehensive dependency checking and automatic installation
 - **test-libraries.sh**: New script to verify built libraries work correctly
+- **verify-crypto.sh**: NEW comprehensive crypto++ installation verification script
+
+### 4. New Verification Tool
+- **scripts/verify-crypto.sh**: Comprehensive diagnostic tool that:
+  - Tests all 4 detection methods (pkg-config, direct library, headers, package manager)
+  - Provides detailed installation recommendations for each platform
+  - Includes CMake compatibility testing
+  - Color-coded output for easy reading
+  - Useful for troubleshooting installation issues
 
 ## Platform Support
 
@@ -69,3 +78,25 @@ The action now works more reliably out-of-the-box:
 ```
 
 If issues occur, the action provides clear error messages with platform-specific installation instructions.
+
+### Troubleshooting Tools
+
+If you encounter crypto++ library issues, use the comprehensive verification script:
+
+```bash
+./scripts/verify-crypto.sh
+```
+
+This script will:
+- Test all crypto++ detection methods
+- Show detailed installation status
+- Provide platform-specific installation recommendations
+- Test CMake compatibility
+- Display useful debugging information
+
+For additional diagnostics, you can also run:
+
+```bash
+./scripts/troubleshoot.sh        # General system troubleshooting
+./scripts/check-dependencies.sh  # Dependency checking and auto-installation
+```
