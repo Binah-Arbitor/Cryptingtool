@@ -130,15 +130,8 @@ runs:
             elif sudo apt-get install -y libcryptopp-dev 2>/dev/null; then
               echo "✅ Installed libcryptopp-dev"
             else
-              echo "📥 Installing crypto++ from source (latest stable v8.9.0)..."
-              cd /tmp
-              wget https://github.com/weidai11/cryptopp/releases/download/CRYPTOPP_8_9_0/cryptopp890.zip
-              unzip cryptopp890.zip -d cryptopp
-              cd cryptopp
-              make -j$(nproc)
-              sudo make install PREFIX=/usr/local
-              sudo ldconfig
-              echo "✅ Built and installed crypto++ v8.9.0 from source"
+              echo "📥 Installing crypto++ from source (using latest version)..."
+              build_cryptopp_from_source
             fi
           fi
           
