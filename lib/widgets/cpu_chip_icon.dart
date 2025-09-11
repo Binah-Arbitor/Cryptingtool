@@ -23,7 +23,7 @@ class CpuChipIcon extends StatelessWidget {
     return CustomPaint(
       size: Size(size, size),
       painter: CpuChipPainter(
-        glowColor: glowColor ?? AppTheme.tealAccent,
+        glowColor: glowColor ?? AppTheme.electricBlue, // Use new blue color
         showGlow: showGlow,
       ),
     );
@@ -67,28 +67,43 @@ class CpuChipPainter extends CustomPainter {
   }
   
   void _drawCircuitTraces(Canvas canvas, Size size) {
-    final tracePaint = Paint()
-      ..color = glowColor.withOpacity(0.4)
-      ..strokeWidth = 0.8
+    // Enhanced blue-themed trace paints with multiple tones
+    final primaryTracePaint = Paint()
+      ..color = AppTheme.electricBlue.withOpacity(0.6)
+      ..strokeWidth = 1.2
+      ..style = PaintingStyle.stroke;
+    
+    final secondaryTracePaint = Paint()
+      ..color = AppTheme.neonBlue.withOpacity(0.5)
+      ..strokeWidth = 0.9
       ..style = PaintingStyle.stroke;
     
     final thinTracePaint = Paint()
-      ..color = glowColor.withOpacity(0.3)
-      ..strokeWidth = 0.5
+      ..color = AppTheme.cyanBlue.withOpacity(0.4)
+      ..strokeWidth = 0.6
       ..style = PaintingStyle.stroke;
     
-    // Asymmetrical circuit traces
+    // Asymmetrical circuit traces with enhanced complexity
     final quarter = size.width / 4;
     final third = size.width / 3;
     
-    // Complex horizontal traces
+    // Primary complex horizontal traces with flowing patterns
     canvas.drawPath(
       Path()
         ..moveTo(quarter * 0.6, third * 0.8)
         ..lineTo(quarter * 1.8, third * 0.8)
         ..lineTo(quarter * 1.8, third * 0.9)
         ..lineTo(quarter * 3.2, third * 0.9),
-      tracePaint,
+      primaryTracePaint,
+    );
+    
+    // Add flowing curves for more organic appearance
+    canvas.drawPath(
+      Path()
+        ..moveTo(quarter * 0.5, third * 0.6)
+        ..quadraticBezierTo(quarter * 1.2, third * 0.4, quarter * 2.0, third * 0.6)
+        ..quadraticBezierTo(quarter * 2.8, third * 0.8, quarter * 3.5, third * 0.7),
+      secondaryTracePaint,
     );
     
     canvas.drawPath(
@@ -110,7 +125,16 @@ class CpuChipPainter extends CustomPainter {
         ..lineTo(quarter * 2.4, third * 2.4)
         ..lineTo(quarter * 2.4, third * 2.3)
         ..lineTo(quarter * 3.8, third * 2.3),
-      tracePaint,
+      primaryTracePaint,
+    );
+    
+    // Enhanced flowing horizontal trace
+    canvas.drawPath(
+      Path()
+        ..moveTo(0, third * 2.6)
+        ..quadraticBezierTo(quarter * 1.0, third * 2.4, quarter * 2.0, third * 2.6)
+        ..quadraticBezierTo(quarter * 3.0, third * 2.8, size.width, third * 2.7),
+      secondaryTracePaint,
     );
     
     // Complex vertical traces
@@ -125,6 +149,28 @@ class CpuChipPainter extends CustomPainter {
         ..lineTo(third * 1.0, quarter * 2.8)
         ..lineTo(third * 1.0, size.height),
       tracePaint,
+    
+    // Enhanced complex vertical traces with flowing patterns
+    canvas.drawPath(
+      Path()
+        ..moveTo(third * 0.9, 0)
+        ..lineTo(third * 0.9, quarter * 0.8)
+        ..lineTo(third * 1.0, quarter * 0.8)
+        ..lineTo(third * 1.0, quarter * 1.5)
+        ..lineTo(third * 0.9, quarter * 1.5)
+        ..lineTo(third * 0.9, quarter * 2.8)
+        ..lineTo(third * 1.0, quarter * 2.8)
+        ..lineTo(third * 1.0, size.height),
+      primaryTracePaint,
+    );
+    
+    // Flowing vertical trace with curves
+    canvas.drawPath(
+      Path()
+        ..moveTo(third * 0.4, 0)
+        ..quadraticBezierTo(third * 0.3, quarter * 1.0, third * 0.4, quarter * 2.0)
+        ..quadraticBezierTo(third * 0.5, quarter * 3.0, third * 0.4, size.height),
+      secondaryTracePaint,
     );
     
     canvas.drawPath(
@@ -140,32 +186,52 @@ class CpuChipPainter extends CustomPainter {
       thinTracePaint,
     );
     
-    // PCB connection pads and vias
-    final nodePaint = Paint()
-      ..color = glowColor.withOpacity(0.7)
+    // Another flowing vertical trace
+    canvas.drawPath(
+      Path()
+        ..moveTo(third * 2.3, 0)
+        ..quadraticBezierTo(third * 2.4, quarter * 1.2, third * 2.3, quarter * 2.4)
+        ..quadraticBezierTo(third * 2.2, quarter * 3.2, third * 2.3, size.height),
+      primaryTracePaint,
+    );
+    
+    // Enhanced PCB connection pads and vias with multi-colored blue theme
+    final primaryNodePaint = Paint()
+      ..color = AppTheme.electricBlue.withOpacity(0.9)
+      ..style = PaintingStyle.fill;
+      
+    final secondaryNodePaint = Paint()
+      ..color = AppTheme.neonBlue.withOpacity(0.8)
+      ..style = PaintingStyle.fill;
+      
+    final accentNodePaint = Paint()
+      ..color = AppTheme.cyanBlue.withOpacity(0.7)
       ..style = PaintingStyle.fill;
     
-    canvas.drawCircle(Offset(third * 1.0, quarter * 1.1), 1.2, nodePaint);
-    canvas.drawCircle(Offset(third * 1.8, quarter * 2.0), 1.0, nodePaint);
-    canvas.drawCircle(Offset(third * 1.8, quarter * 1.4), 1.4, nodePaint);
-    canvas.drawCircle(Offset(quarter * 1.8, third * 2.4), 0.8, nodePaint);
-    canvas.drawCircle(Offset(quarter * 3.2, third * 1.8), 1.1, nodePaint);
-    canvas.drawCircle(Offset(quarter * 1.2, third * 1.5), 0.9, nodePaint);
+    // Varied node sizes and colors for visual interest
+    canvas.drawCircle(Offset(third * 1.0, quarter * 1.1), 1.5, primaryNodePaint);
+    canvas.drawCircle(Offset(third * 1.8, quarter * 2.0), 1.2, secondaryNodePaint);
+    canvas.drawCircle(Offset(third * 1.8, quarter * 1.4), 1.7, accentNodePaint);
+    canvas.drawCircle(Offset(quarter * 1.8, third * 2.4), 1.0, primaryNodePaint);
+    canvas.drawCircle(Offset(quarter * 3.2, third * 1.8), 1.4, secondaryNodePaint);
+    canvas.drawCircle(Offset(quarter * 1.2, third * 1.5), 1.1, accentNodePaint);
+    canvas.drawCircle(Offset(third * 0.4, quarter * 2.0), 1.3, primaryNodePaint);
+    canvas.drawCircle(Offset(third * 2.3, quarter * 1.8), 1.6, secondaryNodePaint);
     
-    // Small PCB component footprints
+    // Enhanced PCB component footprints with blue outlines
     final componentPaint = Paint()
-      ..color = glowColor.withOpacity(0.3)
-      ..strokeWidth = 0.3
+      ..color = AppTheme.cyanBlue.withOpacity(0.5)
+      ..strokeWidth = 0.4
       ..style = PaintingStyle.stroke;
     
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromCenter(
           center: Offset(third * 1.0, quarter * 1.2),
-          width: 3,
-          height: 2,
+          width: 4,
+          height: 2.5,
         ),
-        const Radius.circular(0.3),
+        const Radius.circular(0.4),
       ),
       componentPaint,
     );
@@ -174,10 +240,10 @@ class CpuChipPainter extends CustomPainter {
       RRect.fromRectAndRadius(
         Rect.fromCenter(
           center: Offset(third * 1.7, quarter * 1.0),
-          width: 2.5,
-          height: 3.5,
+          width: 3.5,
+          height: 4,
         ),
-        const Radius.circular(0.3),
+        const Radius.circular(0.4),
       ),
       componentPaint,
     );
@@ -268,18 +334,38 @@ class CpuChipPainter extends CustomPainter {
       )
       ..style = PaintingStyle.fill;
     
+    // Enhanced blue outline with stronger glow
     final chipOutlinePaint = Paint()
-      ..color = glowColor
-      ..strokeWidth = 1.5
+      ..color = AppTheme.electricBlue
+      ..strokeWidth = 2.0
       ..style = PaintingStyle.stroke;
     
-    // CPU body with glow effect
+    // CPU body with enhanced blue glow effect
     if (showGlow) {
-      final glowPaint = Paint()
-        ..color = glowColor.withOpacity(0.3)
-        ..strokeWidth = 3
+      final strongGlowPaint = Paint()
+        ..color = AppTheme.neonBlue.withOpacity(0.4)
+        ..strokeWidth = 4
         ..style = PaintingStyle.stroke
-        ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 2);
+        ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 3);
+      
+      final mediumGlowPaint = Paint()
+        ..color = AppTheme.electricBlue.withOpacity(0.3)
+        ..strokeWidth = 6
+        ..style = PaintingStyle.stroke
+        ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 4);
+      
+      // Multi-layer glow for enhanced neon effect
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromCenter(
+            center: Offset(centerX, centerY),
+            width: chipSize,
+            height: chipSize,
+          ),
+          const Radius.circular(4),
+        ),
+        mediumGlowPaint,
+      );
       
       canvas.drawRRect(
         RRect.fromRectAndRadius(
@@ -290,7 +376,7 @@ class CpuChipPainter extends CustomPainter {
           ),
           const Radius.circular(4),
         ),
-        glowPaint,
+        strongGlowPaint,
       );
     }
     
@@ -384,34 +470,51 @@ class CpuChipPainter extends CustomPainter {
       detailPaint..color = AppTheme.mediumGray.withOpacity(0.5),
     );
     
-    // Internal PCB traces
-    final tracePaint = Paint()
-      ..color = glowColor.withOpacity(0.4)
-      ..strokeWidth = 0.4
+    // Enhanced internal PCB traces with multi-toned blue theme
+    final primaryTracePaint = Paint()
+      ..color = AppTheme.neonBlue.withOpacity(0.6)
+      ..strokeWidth = 0.5
+      ..style = PaintingStyle.stroke;
+      
+    final secondaryTracePaint = Paint()
+      ..color = AppTheme.cyanBlue.withOpacity(0.5)
+      ..strokeWidth = 0.3
       ..style = PaintingStyle.stroke;
     
     final halfCenter = centerSize * 0.25;
     
-    // Cross pattern traces
+    // Enhanced cross pattern traces with blue variations
     canvas.drawLine(
       Offset(centerX - halfCenter, centerY - halfCenter * 0.3),
       Offset(centerX + halfCenter, centerY - halfCenter * 0.3),
-      tracePaint,
+      primaryTracePaint,
     );
     canvas.drawLine(
       Offset(centerX - halfCenter * 0.3, centerY - halfCenter),
       Offset(centerX - halfCenter * 0.3, centerY + halfCenter),
-      tracePaint,
+      secondaryTracePaint,
     );
     canvas.drawLine(
       Offset(centerX + halfCenter * 0.3, centerY - halfCenter),
       Offset(centerX + halfCenter * 0.3, centerY + halfCenter),
-      tracePaint,
+      primaryTracePaint,
     );
     canvas.drawLine(
       Offset(centerX - halfCenter, centerY + halfCenter * 0.3),
       Offset(centerX + halfCenter, centerY + halfCenter * 0.3),
-      tracePaint,
+      secondaryTracePaint,
+    );
+    
+    // Additional inner traces for complexity
+    canvas.drawLine(
+      Offset(centerX - halfCenter * 0.6, centerY - halfCenter * 0.6),
+      Offset(centerX + halfCenter * 0.6, centerY + halfCenter * 0.6),
+      Paint()..color = AppTheme.electricBlue.withOpacity(0.4)..strokeWidth = 0.25..style = PaintingStyle.stroke,
+    );
+    canvas.drawLine(
+      Offset(centerX + halfCenter * 0.6, centerY - halfCenter * 0.6),
+      Offset(centerX - halfCenter * 0.6, centerY + halfCenter * 0.6),
+      Paint()..color = AppTheme.electricBlue.withOpacity(0.4)..strokeWidth = 0.25..style = PaintingStyle.stroke,
     );
     
     // Internal micro components

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // PCB/Cyber Color Palette
+  // PCB/Cyber Color Palette - Enhanced Blue Theme
   static const Color deepOffBlack = Color(0xFF0A0A0A);
-  static const Color tealAccent = Color(0xFF00FFD4);
+  static const Color tealAccent = Color(0xFF00FFD4); // Keep for compatibility
+  static const Color electricBlue = Color(0xFF0080FF); // Primary blue for neon effects
+  static const Color cyanBlue = Color(0xFF00C0FF); // Secondary blue
+  static const Color neonBlue = Color(0xFF40E0FF); // Bright neon blue for glow
   static const Color cyanAccent = Color(0xFF00E5FF);
   static const Color limeGreen = Color(0xFF76FF03);
   static const Color lightGray = Color(0xFFE0E0E0);
