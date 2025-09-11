@@ -3,6 +3,7 @@ build/
 dist/
 packages/
 test-output/
+test_build/
 
 # Flutter
 .dart_tool/
