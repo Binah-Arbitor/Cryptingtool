@@ -16,13 +16,18 @@ The project has been configured to:
 
 #### `android/app/build.gradle`
 - **minSdk**: Set to 16 (Android 4.1+)
-- **compileSdk**: Set to 34 (latest)
-- **targetSdk**: Set to 34
+- **compileSdk**: Set to 35 (Android 15)
+- **targetSdk**: Set to 35 (Android 15)
+- **NDK Version**: Updated to 26.1.10909125
+- **Java Version**: Updated to 11 for better performance
 - **Multidex**: Enabled for legacy Android support
 - **Vector Drawables**: Support enabled for API < 21
+- **Build Optimizations**: R8 shrinking, ProGuard rules, lint optimizations
+- **Release Build**: MinifyEnabled and ShrinkResources enabled
 
 #### `android/app/src/main/AndroidManifest.xml`
 - Minimum SDK version specified as 16
+- Target SDK version updated to 35 (Android 15)
 - Required permissions configured for crypto operations
 - Network access permissions for crypto functionality
 - File access permissions with proper scoping
@@ -86,8 +91,8 @@ flutter build apk --debug
 
 ### Android Versions Supported
 - **Minimum**: Android 4.1 (API 16) - Jelly Bean
-- **Target**: Android 14 (API 34) - Latest
-- **Compile**: Android 14 (API 34) - Latest
+- **Target**: Android 15 (API 35) - Latest
+- **Compile**: Android 15 (API 35) - Latest
 
 ### Device Support
 - Devices running Android 4.1 and above
@@ -148,8 +153,11 @@ Build logs are automatically generated:
 To target newer Android versions:
 1. Update `compileSdk` and `targetSdk` in `build.gradle`
 2. Update `targetSdkVersion` in `AndroidManifest.xml`
-3. Test compatibility with existing features
-4. Update documentation
+3. Update Android Gradle Plugin version in `settings.gradle`
+4. Update Kotlin version for compatibility
+5. Update NDK version if needed
+6. Test compatibility with existing features
+7. Update documentation
 
 ### Updating Flutter Version
 1. Update version in workflow YAML
@@ -166,6 +174,11 @@ To target newer Android versions:
 ## Performance Optimizations
 
 - Gradle build caching enabled
-- Parallel builds configured
+- Parallel builds configured with increased memory
 - R8 code shrinking enabled
+- ProGuard rules for release builds
 - Multidex optimization for legacy devices
+- Dependency resolution strategy optimizations
+- Build feature flags for unused features disabled
+- G1 garbage collector enabled for Gradle daemon
+- Lint optimizations to skip unnecessary checks

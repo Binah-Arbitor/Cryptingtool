@@ -3,11 +3,28 @@ allprojects {
         google()
         mavenCentral()
     }
+    
+    // Optimization: Configure dependency resolution strategy
+    configurations.all {
+        resolutionStrategy {
+            cacheDynamicVersionsFor 10, 'minutes'
+            cacheChangingModulesFor 4, 'hours'
+        }
+    }
 }
 
 rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
+    
+    // Apply common optimizations to all subprojects
+    afterEvaluate { project ->
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion 35
+            }
+        }
+    }
 }
 subprojects {
     project.evaluationDependsOn(":app")

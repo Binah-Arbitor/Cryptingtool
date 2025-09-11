@@ -110,8 +110,8 @@ jobs:
             Write-Host "✅ Android platform already exists" -ForegroundColor Green
           }
           
-          # Verify Android configuration for API 16+ support
-          Write-Host "Verifying Android API 16+ configuration..." -ForegroundColor Yellow
+          # Verify Android configuration for API 16+ support with target API 35
+          Write-Host "Verifying Android API 35 configuration..." -ForegroundColor Yellow
           
           if (Test-Path "android/app/build.gradle") {
             $buildGradle = Get-Content "android/app/build.gradle" -Raw
@@ -192,8 +192,8 @@ jobs:
           Write-Host "Verifying Android toolchain..." -ForegroundColor Yellow
           flutter doctor -v 2>&1 | Tee-Object -FilePath "flutter_doctor.log"
           
-          # Validate Android API 16+ configuration
-          Write-Host "Validating Android API 16+ target configuration..." -ForegroundColor Yellow
+          # Validate Android API 35 target configuration
+          Write-Host "Validating Android API 35 target configuration..." -ForegroundColor Yellow
           
           if (Test-Path "android/app/build.gradle") {
             Write-Host "✅ build.gradle found" -ForegroundColor Green
@@ -204,10 +204,10 @@ jobs:
               Write-Host "⚠️ Warning: Minimum SDK version may not be properly configured for API 16+" -ForegroundColor Yellow
             }
             
-            if ($buildGradle -match "compileSdk\s*=\s*3[4-9]|[4-9][0-9]") {
-              Write-Host "✅ Compile SDK version is current (34+)" -ForegroundColor Green
+            if ($buildGradle -match "compileSdk\s*=\s*3[5-9]|[4-9][0-9]") {
+              Write-Host "✅ Compile SDK version is current (35+)" -ForegroundColor Green
             } else {
-              Write-Host "⚠️ Warning: Compile SDK version should be 34 or higher" -ForegroundColor Yellow
+              Write-Host "⚠️ Warning: Compile SDK version should be 35 or higher" -ForegroundColor Yellow
             }
           }
           
@@ -219,7 +219,7 @@ jobs:
             }
           }
 
-          Write-Host "✅ Android environment configured for API 16+ target" -ForegroundColor Green
+          Write-Host "✅ Android environment configured for API 35 target" -ForegroundColor Green
           Write-Host "=================================" -ForegroundColor Green
 
       - name: 🏗️ Build Debug APK
@@ -234,7 +234,7 @@ jobs:
           Write-Host "Starting APK build process..." -ForegroundColor Yellow
           Write-Host "App Name: ${{ inputs.app_name }}" -ForegroundColor Yellow
           Write-Host "Build Mode: debug" -ForegroundColor Yellow
-          Write-Host "Target Platform: Android API 16+ (4.1+)" -ForegroundColor Yellow
+          Write-Host "Target Platform: Android API 35 (Min API 16)" -ForegroundColor Yellow
           Write-Host "VM Environment: Windows" -ForegroundColor Yellow
 
           try {
@@ -387,7 +387,7 @@ jobs:
           Write-Host "Build Status: $BuildStatus" -ForegroundColor $(if ($ApkFiles.Count -gt 0) { "Green" } else { "Red" })
           Write-Host "App Name: ${{ inputs.app_name }}" -ForegroundColor Yellow
           Write-Host "Build Mode: debug" -ForegroundColor Yellow
-          Write-Host "Target Platform: Android API 16+ (4.1+)" -ForegroundColor Yellow
+          Write-Host "Target Platform: Android API 35 (Min API 16)" -ForegroundColor Yellow
           Write-Host "VM Environment: Windows" -ForegroundColor Yellow
           Write-Host "APK Files Generated: $($ApkFiles.Count)" -ForegroundColor Yellow
 
@@ -409,7 +409,7 @@ jobs:
           $stepSummary += "`n| 🏗️ Build Status | $BuildStatus |"
           $stepSummary += "`n| 📱 App Name | ${{ inputs.app_name }} |"
           $stepSummary += "`n| 🔧 Build Mode | debug |"
-          $stepSummary += "`n| 🎯 Target Platform | Android API 16+ (4.1+) |"
+          $stepSummary += "`n| 🎯 Target Platform | Android API 35 (Min API 16) |"
           $stepSummary += "`n| 💻 VM Environment | Windows |"
           $stepSummary += "`n| 📦 APK Files | $($ApkFiles.Count) |"
           $stepSummary += "`n"
