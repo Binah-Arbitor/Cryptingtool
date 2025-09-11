@@ -222,6 +222,75 @@ your-repo/
 - For C++ integration, source files should be in standard locations
 - Platform-specific runners required for iOS (macOS) and Windows builds
 
+## Troubleshooting
+
+The action includes robust error handling and automatic dependency resolution. If you encounter issues:
+
+### Quick Diagnosis
+```bash
+# Run the troubleshooting script
+./scripts/troubleshoot.sh
+```
+
+### Common Issues
+
+#### 1. Crypto++ Library Not Found
+**Symptoms**: CMake configuration fails with "Crypto++ library not found"
+
+**Solutions**:
+- **Automatic**: The action automatically installs dependencies
+- **Manual**: 
+  - Ubuntu/Debian: `sudo apt-get install libcrypto++-dev`
+  - macOS: `brew install cryptopp`  
+  - Windows: `vcpkg install cryptopp`
+
+#### 2. Build Tools Missing
+**Symptoms**: "cmake: command not found" or "ninja: command not found"
+
+**Solutions**:
+- Ubuntu/Debian: `sudo apt-get install build-essential cmake ninja-build`
+- macOS: `brew install cmake ninja`
+- Windows: `choco install cmake ninja`
+
+#### 3. Flutter Issues
+**Symptoms**: Flutter commands fail or SDK not found
+
+**Solutions**:
+- The action automatically installs Flutter SDK
+- For local development: [Install Flutter](https://flutter.dev/docs/get-started/install)
+
+### Dependency Check
+Run a comprehensive dependency check:
+```bash
+./scripts/check-dependencies.sh
+```
+
+### Library Testing
+Verify that C++ libraries are built correctly:
+```bash
+./scripts/test-libraries.sh
+```
+
+### Manual Installation Steps
+If automatic installation fails:
+
+1. **Install crypto++ from source**:
+```bash
+wget https://github.com/weidai11/cryptopp/releases/download/CRYPTOPP_8_9_0/cryptopp890.zip
+unzip cryptopp890.zip && cd cryptopp
+make && sudo make install
+```
+
+2. **Update library paths**:
+```bash
+sudo ldconfig  # Linux
+```
+
+### Getting Help
+- Check the [troubleshooting script output](./scripts/troubleshoot.sh)
+- Review [dependency requirements](./LIBRARY_IMPROVEMENTS.md)
+- Open an issue with the output of `./scripts/troubleshoot.sh`
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details.
