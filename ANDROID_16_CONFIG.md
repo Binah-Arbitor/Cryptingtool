@@ -1,31 +1,45 @@
-# Android 16+ Configuration for Windows VM
+# Android API 35+ Configuration for Windows VM
 
-This document describes the updated configuration for building Android APKs targeting API 16+ (Android 4.1 Jelly Bean and above) on Windows VM environment.
+This document describes the updated configuration for building Android APKs targeting API 35+ (Android 15) while maintaining compatibility with API 16+ (Android 4.1 Jelly Bean) on Windows VM environment.
 
 ## Overview
 
-The project has been configured to:
-- Target Android API 16+ (Android 4.1 Jelly Bean and above)
+The project has been optimized to:
+- Target Android API 35+ (Android 15) with modern optimizations
+- Maintain backward compatibility with Android 4.1+ (API 16 minimum)
 - Build on Windows VM environment using GitHub Actions
-- Maintain all existing C++ cryptographic functionality
-- Ensure backward compatibility with older Android devices
+- Include comprehensive build optimizations (R8, ProGuard, resource shrinking)
+- Optimize performance and reduce APK size
 
 ## Configuration Changes
 
 ### Android Platform Structure
 
 #### `android/app/build.gradle`
-- **minSdk**: Set to 16 (Android 4.1+)
-- **compileSdk**: Set to 34 (latest)
-- **targetSdk**: Set to 34
+- **minSdk**: Set to 16 (Android 4.1+) for backward compatibility
+- **compileSdk**: Set to 35 (Android 15)
+- **targetSdk**: Set to 35 (Android 15)
+- **Java**: Updated to version 11 for better performance
+- **Kotlin**: Updated to latest version (1.9+)
+- **NDK**: Updated to latest version (26.1+)
 - **Multidex**: Enabled for legacy Android support
 - **Vector Drawables**: Support enabled for API < 21
+- **R8 Optimization**: Full mode enabled for release builds
+- **Code Minification**: Enabled for release builds
+- **Resource Shrinking**: Enabled for release builds
+- **ABI Filters**: Configured for optimal performance
+- **ProGuard Rules**: Comprehensive rules for Flutter and crypto libraries
 
 #### `android/app/src/main/AndroidManifest.xml`
 - Minimum SDK version specified as 16
+- Target SDK version updated to 35 (Android 15)
 - Required permissions configured for crypto operations
 - Network access permissions for crypto functionality
 - File access permissions with proper scoping
+- Performance optimizations enabled:
+  - Hardware acceleration enabled
+  - Native library extraction optimization
+  - RTL support enabled
 
 #### `android/app/src/main/kotlin/com/binah/cryptingtool/MainActivity.kt`
 - Flutter embedding setup
@@ -86,8 +100,8 @@ flutter build apk --debug
 
 ### Android Versions Supported
 - **Minimum**: Android 4.1 (API 16) - Jelly Bean
-- **Target**: Android 14 (API 34) - Latest
-- **Compile**: Android 14 (API 34) - Latest
+- **Target**: Android 15 (API 35) - Latest with optimizations
+- **Compile**: Android 15 (API 35) - Latest development features
 
 ### Device Support
 - Devices running Android 4.1 and above
@@ -100,14 +114,19 @@ flutter build apk --debug
 - **Vector Drawables**: Backward compatibility for API < 21
 - **Legacy External Storage**: Support for older file access patterns
 - **Network Security**: Clear text traffic allowed for development
+- **Java 11**: Better performance while maintaining compatibility
+- **R8 Optimization**: Full mode for maximum code optimization
+- **Resource Shrinking**: Automatic removal of unused resources
+- **ABI Filtering**: Support for modern architectures with fallbacks
 
 ## Build Process
 
 ### Windows VM Environment
-1. **Java 17** with Temurin distribution
-2. **Flutter SDK** stable channel
-3. **Android SDK** with build tools
-4. **Gradle** with caching enabled
+1. **Java 17** with Temurin distribution (supports Java 11 bytecode)
+2. **Flutter SDK** stable channel (3.16+)
+3. **Android SDK** with build tools (API 35)
+4. **Gradle** with caching and parallel builds enabled
+5. **Kotlin** 1.9+ for better performance
 
 ### Build Steps
 1. System information gathering
