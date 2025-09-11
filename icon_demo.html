@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Icon Comparison</title>
+    <style>
+        body { background: #0A0A0A; color: #E0E0E0; font-family: monospace; padding: 20px; }
+        .comparison { display: flex; gap: 40px; justify-content: center; margin: 40px 0; }
+        .icon-box { text-align: center; padding: 20px; background: #1A1A1A; border-radius: 10px; }
+        h1 { color: #00FFD4; text-align: center; }
+        h2 { color: #FF9800; }
+        .after h2 { color: #76FF03; }
+    </style>
+</head>
+<body>
+    <h1>CryptingTool App Icon Modification</h1>
+    
+    <div class="comparison">
+        <div class="icon-box">
+            <h2>BEFORE (Original)</h2>
+            <div style="width: 200px; height: 200px; background: #0A0A0A; border: 1px solid #333; display: flex; align-items: center; justify-content: center;">
+                <p style="color: #888;">Original icon with keyhole + text</p>
+            </div>
+        </div>
+        
+        <div class="icon-box after">
+            <h2>AFTER (Modified)</h2>
+            <div style="width: 200px; height: 200px; background: #0A0A0A; border: 1px solid #333;">
+                <!-- Embed the new SVG directly -->
+                <svg width="200" height="200" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="512" height="512" fill="#0A0A0A"/>
+                  
+                  <!-- Asymmetrical PCB traces -->
+                  <g opacity="0.4">
+                    <path d="M50,95 L180,95 L180,110 L320,110 L320,95 L450,95" stroke="#00FFD4" stroke-width="1.2" fill="none" opacity="0.5"/>
+                    <path d="M0,185 L120,185 L120,200 L200,200 L200,220 L512,220" stroke="#00FFD4" stroke-width="1" fill="none" opacity="0.4"/>
+                    <circle cx="125" cy="110" r="4" fill="#00FFD4" opacity="0.7"/>
+                    <circle cx="235" cy="200" r="3.5" fill="#00FFD4" opacity="0.6"/>
+                    <circle cx="365" cy="140" r="4.5" fill="#00FFD4" opacity="0.8"/>
+                  </g>
+                  
+                  <!-- CPU chip -->
+                  <g transform="translate(256,256)">
+                    <!-- CPU body -->
+                    <rect x="-80" y="-80" width="160" height="160" fill="url(#cpuGradient)" rx="8" 
+                          stroke="#00FFD4" stroke-width="2" opacity="0.9"/>
+                    
+                    <!-- CPU center (no keyhole) -->
+                    <rect x="-25" y="-25" width="50" height="50" fill="none" stroke="#4A4A4A" stroke-width="0.8" rx="3" opacity="0.6"/>
+                    <rect x="-8" y="-8" width="4" height="4" fill="#4A4A4A" rx="0.5" opacity="0.8"/>
+                    <rect x="4" y="-8" width="4" height="4" fill="#4A4A4A" rx="0.5" opacity="0.8"/>
+                    <rect x="-8" y="4" width="4" height="4" fill="#4A4A4A" rx="0.5" opacity="0.8"/>
+                    <rect x="4" y="4" width="4" height="4" fill="#4A4A4A" rx="0.5" opacity="0.8"/>
+                  </g>
+                  
+                  <defs>
+                    <radialGradient id="cpuGradient" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" style="stop-color:#2E2E2E;stop-opacity:1" />
+                      <stop offset="70%" style="stop-color:#1A1A1A;stop-opacity:1" />
+                      <stop offset="100%" style="stop-color:#0A0A0A;stop-opacity:1" />
+                    </radialGradient>
+                  </defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+    
+    <div style="background: #1A1A1A; border-radius: 10px; padding: 20px; margin: 20px 0;">
+        <h3 style="color: #00FFD4;">Changes Made:</h3>
+        <ul style="color: #E0E0E0;">
+            <li>✅ Removed central keyhole symbol</li>
+            <li>✅ Removed text labels</li>
+            <li>✅ Added asymmetrical PCB circuit traces</li>
+            <li>✅ Created realistic circuit board aesthetic</li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -26,19 +26,38 @@
   <!-- Dark background -->
   <rect width="128" height="128" fill="#0A0A0A"/>
   
-  <!-- Circuit board traces (simplified) -->
-  <g opacity="0.4">
-    <line x1="0" y1="32" x2="128" y2="32" stroke="#00FFD4" stroke-width="1"/>
-    <line x1="0" y1="64" x2="128" y2="64" stroke="#00FFD4" stroke-width="1"/>
-    <line x1="0" y1="96" x2="128" y2="96" stroke="#00FFD4" stroke-width="1"/>
-    <line x1="32" y1="0" x2="32" y2="128" stroke="#00FFD4" stroke-width="1"/>
-    <line x1="64" y1="0" x2="64" y2="128" stroke="#00FFD4" stroke-width="1"/>
-    <line x1="96" y1="0" x2="96" y2="128" stroke="#00FFD4" stroke-width="1"/>
+  <!-- Asymmetrical PCB circuit board traces -->
+  <g opacity="0.5">
+    <!-- Complex asymmetrical traces -->
+    <path d="M15,24 L45,24 L45,28 L80,28 L80,24 L113,24" stroke="#00FFD4" stroke-width="0.8" fill="none" opacity="0.6"/>
+    <path d="M0,46 L30,46 L30,50 L50,50 L50,55 L128,55" stroke="#00FFD4" stroke-width="0.6" fill="none" opacity="0.5"/>
+    <path d="M20,72 L40,72 L40,76 L60,76 L60,72 L95,72 L95,78 L128,78" stroke="#00FFD4" stroke-width="0.5" fill="none" opacity="0.6"/>
+    <path d="M0,97 L35,97 L35,101 L65,101 L65,96 L100,96" stroke="#00FFD4" stroke-width="0.8" fill="none" opacity="0.5"/>
     
-    <circle cx="32" cy="32" r="1.5" fill="#00FFD4"/>
-    <circle cx="96" cy="32" r="1.5" fill="#00FFD4"/>
-    <circle cx="32" cy="96" r="1.5" fill="#00FFD4"/>
-    <circle cx="96" cy="96" r="1.5" fill="#00FFD4"/>
+    <path d="M28,0 L28,20 L31,20 L31,38 L28,38 L28,70 L31,70 L31,105 L28,105 L28,128" stroke="#00FFD4" stroke-width="0.6" fill="none" opacity="0.6"/>
+    <path d="M55,13 L55,30 L59,30 L59,45 L55,45 L55,62 L59,62 L59,87 L55,87 L55,128" stroke="#00FFD4" stroke-width="0.5" fill="none" opacity="0.5"/>
+    <path d="M87,0 L87,18 L91,18 L91,35 L87,35 L87,50 L91,50 L91,75 L87,75 L87,113" stroke="#00FFD4" stroke-width="0.7" fill="none" opacity="0.6"/>
+    <path d="M105,20 L105,40 L109,40 L109,60 L105,60 L105,80 L109,80 L109,95 L105,95 L105,128" stroke="#00FFD4" stroke-width="0.4" fill="none" opacity="0.5"/>
+    
+    <!-- PCB connection pads -->
+    <circle cx="31" cy="28" r="1.8" fill="#00FFD4" opacity="0.8"/>
+    <circle cx="59" cy="50" r="1.5" fill="#00FFD4" opacity="0.7"/>
+    <circle cx="91" cy="35" r="2" fill="#00FFD4" opacity="0.9"/>
+    <circle cx="45" cy="76" r="1.3" fill="#00FFD4" opacity="0.6"/>
+    <circle cx="80" cy="55" r="1.6" fill="#00FFD4" opacity="0.8"/>
+    <circle cx="109" cy="80" r="1.7" fill="#00FFD4" opacity="0.7"/>
+    <circle cx="35" cy="97" r="1.4" fill="#00FFD4" opacity="0.9"/>
+    <circle cx="65" cy="101" r="1.9" fill="#00FFD4" opacity="0.6"/>
+    
+    <!-- Small PCB traces -->
+    <path d="M45,24 L45,31 L50,31" stroke="#00FFD4" stroke-width="0.3" fill="none" opacity="0.4"/>
+    <path d="M80,24 L80,20 L85,20" stroke="#00FFD4" stroke-width="0.3" fill="none" opacity="0.4"/>
+    <path d="M60,72 L60,68 L65,68 L65,70" stroke="#00FFD4" stroke-width="0.3" fill="none" opacity="0.4"/>
+    
+    <!-- Tiny component footprints -->
+    <rect x="48" y="30" width="4" height="2.5" fill="none" stroke="#00FFD4" stroke-width="0.2" opacity="0.4"/>
+    <rect x="83" y="19" width="3" height="4" fill="none" stroke="#00FFD4" stroke-width="0.2" opacity="0.4"/>
+    <rect x="63" y="66" width="5" height="3" fill="none" stroke="#00FFD4" stroke-width="0.2" opacity="0.4"/>
   </g>
   
   <!-- CPU chip -->
@@ -88,21 +107,22 @@
     <!-- CPU surface detail -->
     <rect x="-15" y="-15" width="30" height="30" fill="none" stroke="#4A4A4A" stroke-width="0.5" rx="2"/>
     
-    <!-- Central keyhole symbol -->
-    <g>
-      <!-- Glow background -->
-      <circle cx="0" cy="-2" r="8" fill="url(#keyholeGlow)" opacity="0.5"/>
+    <!-- CPU center detail (replacing keyhole) -->
+    <g opacity="0.8">
+      <!-- Central processing core detail -->
+      <rect x="-6" y="-6" width="12" height="12" fill="none" stroke="#4A4A4A" stroke-width="0.4" rx="1" opacity="0.7"/>
+      <rect x="-5" y="-5" width="10" height="10" fill="none" stroke="#4A4A4A" stroke-width="0.3" rx="1" opacity="0.6"/>
+      <rect x="-4" y="-4" width="8" height="8" fill="none" stroke="#4A4A4A" stroke-width="0.2" rx="0.5" opacity="0.5"/>
       
-      <!-- Keyhole circle -->
-      <circle cx="0" cy="-2" r="4" fill="#00FFD4" opacity="1"/>
-      <circle cx="0" cy="-2" r="2.5" fill="#0A0A0A"/>
+      <!-- Internal PCB traces -->
+      <path d="M-4,-2.5 L4,-2.5 M-2.5,-4 L-2.5,4 M2.5,-4 L2.5,4 M-4,2.5 L4,2.5" 
+            stroke="#00FFD4" stroke-width="0.2" opacity="0.4"/>
       
-      <!-- Keyhole slot -->
-      <rect x="-1" y="2" width="2" height="5" fill="#00FFD4" rx="0.5"/>
-      <rect x="-0.5" y="2.5" width="1" height="4" fill="#0A0A0A"/>
-      
-      <!-- Glow ring -->
-      <circle cx="0" cy="-2" r="6" fill="none" stroke="#00FFD4" stroke-width="0.5" opacity="0.4"/>
+      <!-- Micro components -->
+      <rect x="-2.5" y="-2.5" width="1.5" height="1.5" fill="#4A4A4A" rx="0.2" opacity="0.9"/>
+      <rect x="1" y="-2.5" width="1.5" height="1.5" fill="#4A4A4A" rx="0.2" opacity="0.9"/>
+      <rect x="-2.5" y="1" width="1.5" height="1.5" fill="#4A4A4A" rx="0.2" opacity="0.9"/>
+      <rect x="1" y="1" width="1.5" height="1.5" fill="#4A4A4A" rx="0.2" opacity="0.9"/>
     </g>
   </g>
 </svg>

@@ -62,52 +62,125 @@ class CpuChipPainter extends CustomPainter {
     // CPU main body
     _drawCpuBody(canvas, centerX, centerY, chipSize);
     
-    // Central keyhole symbol
-    _drawKeyhole(canvas, centerX, centerY, chipSize);
+    // CPU center detail (replacing keyhole)
+    _drawCpuCenter(canvas, centerX, centerY, chipSize);
   }
   
   void _drawCircuitTraces(Canvas canvas, Size size) {
     final tracePaint = Paint()
+      ..color = glowColor.withOpacity(0.4)
+      ..strokeWidth = 0.8
+      ..style = PaintingStyle.stroke;
+    
+    final thinTracePaint = Paint()
       ..color = glowColor.withOpacity(0.3)
       ..strokeWidth = 0.5
       ..style = PaintingStyle.stroke;
     
-    // Simple circuit traces
+    // Asymmetrical circuit traces
+    final quarter = size.width / 4;
     final third = size.width / 3;
     
-    // Horizontal lines
-    canvas.drawLine(
-      Offset(0, third),
-      Offset(size.width, third),
-      tracePaint,
-    );
-    canvas.drawLine(
-      Offset(0, third * 2),
-      Offset(size.width, third * 2),
-      tracePaint,
-    );
-    
-    // Vertical lines
-    canvas.drawLine(
-      Offset(third, 0),
-      Offset(third, size.height),
-      tracePaint,
-    );
-    canvas.drawLine(
-      Offset(third * 2, 0),
-      Offset(third * 2, size.height),
+    // Complex horizontal traces
+    canvas.drawPath(
+      Path()
+        ..moveTo(quarter * 0.6, third * 0.8)
+        ..lineTo(quarter * 1.8, third * 0.8)
+        ..lineTo(quarter * 1.8, third * 0.9)
+        ..lineTo(quarter * 3.2, third * 0.9),
       tracePaint,
     );
     
-    // Circuit nodes
+    canvas.drawPath(
+      Path()
+        ..moveTo(0, third * 1.5)
+        ..lineTo(quarter * 1.2, third * 1.5)
+        ..lineTo(quarter * 1.2, third * 1.6)
+        ..lineTo(quarter * 2.0, third * 1.6)
+        ..lineTo(quarter * 2.0, third * 1.8)
+        ..lineTo(size.width, third * 1.8),
+      thinTracePaint,
+    );
+    
+    canvas.drawPath(
+      Path()
+        ..moveTo(quarter * 0.8, third * 2.3)
+        ..lineTo(quarter * 1.6, third * 2.3)
+        ..lineTo(quarter * 1.6, third * 2.4)
+        ..lineTo(quarter * 2.4, third * 2.4)
+        ..lineTo(quarter * 2.4, third * 2.3)
+        ..lineTo(quarter * 3.8, third * 2.3),
+      tracePaint,
+    );
+    
+    // Complex vertical traces
+    canvas.drawPath(
+      Path()
+        ..moveTo(third * 0.9, 0)
+        ..lineTo(third * 0.9, quarter * 0.8)
+        ..lineTo(third * 1.0, quarter * 0.8)
+        ..lineTo(third * 1.0, quarter * 1.5)
+        ..lineTo(third * 0.9, quarter * 1.5)
+        ..lineTo(third * 0.9, quarter * 2.8)
+        ..lineTo(third * 1.0, quarter * 2.8)
+        ..lineTo(third * 1.0, size.height),
+      tracePaint,
+    );
+    
+    canvas.drawPath(
+      Path()
+        ..moveTo(third * 1.7, quarter * 0.5)
+        ..lineTo(third * 1.7, quarter * 1.2)
+        ..lineTo(third * 1.8, quarter * 1.2)
+        ..lineTo(third * 1.8, quarter * 1.8)
+        ..lineTo(third * 1.7, quarter * 1.8)
+        ..lineTo(third * 1.7, quarter * 2.5)
+        ..lineTo(third * 1.8, quarter * 2.5)
+        ..lineTo(third * 1.8, quarter * 3.5),
+      thinTracePaint,
+    );
+    
+    // PCB connection pads and vias
     final nodePaint = Paint()
-      ..color = glowColor.withOpacity(0.5)
+      ..color = glowColor.withOpacity(0.7)
       ..style = PaintingStyle.fill;
     
-    canvas.drawCircle(Offset(third, third), 1, nodePaint);
-    canvas.drawCircle(Offset(third * 2, third), 1, nodePaint);
-    canvas.drawCircle(Offset(third, third * 2), 1, nodePaint);
-    canvas.drawCircle(Offset(third * 2, third * 2), 1, nodePaint);
+    canvas.drawCircle(Offset(third * 1.0, quarter * 1.1), 1.2, nodePaint);
+    canvas.drawCircle(Offset(third * 1.8, quarter * 2.0), 1.0, nodePaint);
+    canvas.drawCircle(Offset(third * 1.8, quarter * 1.4), 1.4, nodePaint);
+    canvas.drawCircle(Offset(quarter * 1.8, third * 2.4), 0.8, nodePaint);
+    canvas.drawCircle(Offset(quarter * 3.2, third * 1.8), 1.1, nodePaint);
+    canvas.drawCircle(Offset(quarter * 1.2, third * 1.5), 0.9, nodePaint);
+    
+    // Small PCB component footprints
+    final componentPaint = Paint()
+      ..color = glowColor.withOpacity(0.3)
+      ..strokeWidth = 0.3
+      ..style = PaintingStyle.stroke;
+    
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(third * 1.0, quarter * 1.2),
+          width: 3,
+          height: 2,
+        ),
+        const Radius.circular(0.3),
+      ),
+      componentPaint,
+    );
+    
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(third * 1.7, quarter * 1.0),
+          width: 2.5,
+          height: 3.5,
+        ),
+        const Radius.circular(0.3),
+      ),
+      componentPaint,
+    );
   }
   
   void _drawCpuPins(Canvas canvas, double centerX, double centerY, double chipSize, double pinSize) {
@@ -266,84 +339,136 @@ class CpuChipPainter extends CustomPainter {
     );
   }
   
-  void _drawKeyhole(Canvas canvas, double centerX, double centerY, double chipSize) {
-    final keyholeSize = chipSize * 0.25;
-    final keyholeCenter = Offset(centerX, centerY - keyholeSize * 0.1);
+  void _drawCpuCenter(Canvas canvas, double centerX, double centerY, double chipSize) {
+    final centerSize = chipSize * 0.35;
     
-    // Keyhole glow background
-    if (showGlow) {
-      final glowPaint = Paint()
-        ..shader = ui.Gradient.radial(
-          keyholeCenter,
-          keyholeSize,
-          [
-            glowColor.withOpacity(0.6),
-            glowColor.withOpacity(0.3),
-            glowColor.withOpacity(0.1),
-            Colors.transparent,
-          ],
-          [0.0, 0.4, 0.7, 1.0],
-        )
-        ..style = PaintingStyle.fill;
-      
-      canvas.drawCircle(keyholeCenter, keyholeSize, glowPaint);
-    }
-    
-    // Keyhole circle (top part)
-    final keyholeCirclePaint = Paint()
-      ..color = glowColor
-      ..style = PaintingStyle.fill;
-    
-    final keyholeHolePaint = Paint()
-      ..color = AppTheme.deepOffBlack
-      ..style = PaintingStyle.fill;
-    
-    // Main keyhole circle
-    canvas.drawCircle(keyholeCenter, keyholeSize * 0.4, keyholeCirclePaint);
-    canvas.drawCircle(keyholeCenter, keyholeSize * 0.28, keyholeHolePaint);
-    
-    // Keyhole slot (bottom part)
-    final slotWidth = keyholeSize * 0.25;
-    final slotHeight = keyholeSize * 0.5;
-    final slotRect = Rect.fromCenter(
-      center: Offset(keyholeCenter.dx, keyholeCenter.dy + keyholeSize * 0.35),
-      width: slotWidth,
-      height: slotHeight,
-    );
+    // CPU internal detail rectangles
+    final detailPaint = Paint()
+      ..color = AppTheme.mediumGray.withOpacity(0.7)
+      ..strokeWidth = 0.6
+      ..style = PaintingStyle.stroke;
     
     canvas.drawRRect(
-      RRect.fromRectAndRadius(slotRect, const Radius.circular(1)),
-      keyholeCirclePaint,
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(centerX, centerY),
+          width: centerSize,
+          height: centerSize,
+        ),
+        const Radius.circular(2),
+      ),
+      detailPaint,
     );
     
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromCenter(
-          center: slotRect.center,
-          width: slotWidth * 0.6,
-          height: slotHeight * 0.8,
+          center: Offset(centerX, centerY),
+          width: centerSize * 0.8,
+          height: centerSize * 0.8,
+        ),
+        const Radius.circular(1.5),
+      ),
+      detailPaint..color = AppTheme.mediumGray.withOpacity(0.6),
+    );
+    
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(centerX, centerY),
+          width: centerSize * 0.6,
+          height: centerSize * 0.6,
+        ),
+        const Radius.circular(1),
+      ),
+      detailPaint..color = AppTheme.mediumGray.withOpacity(0.5),
+    );
+    
+    // Internal PCB traces
+    final tracePaint = Paint()
+      ..color = glowColor.withOpacity(0.4)
+      ..strokeWidth = 0.4
+      ..style = PaintingStyle.stroke;
+    
+    final halfCenter = centerSize * 0.25;
+    
+    // Cross pattern traces
+    canvas.drawLine(
+      Offset(centerX - halfCenter, centerY - halfCenter * 0.3),
+      Offset(centerX + halfCenter, centerY - halfCenter * 0.3),
+      tracePaint,
+    );
+    canvas.drawLine(
+      Offset(centerX - halfCenter * 0.3, centerY - halfCenter),
+      Offset(centerX - halfCenter * 0.3, centerY + halfCenter),
+      tracePaint,
+    );
+    canvas.drawLine(
+      Offset(centerX + halfCenter * 0.3, centerY - halfCenter),
+      Offset(centerX + halfCenter * 0.3, centerY + halfCenter),
+      tracePaint,
+    );
+    canvas.drawLine(
+      Offset(centerX - halfCenter, centerY + halfCenter * 0.3),
+      Offset(centerX + halfCenter, centerY + halfCenter * 0.3),
+      tracePaint,
+    );
+    
+    // Internal micro components
+    final componentPaint = Paint()
+      ..color = AppTheme.mediumGray.withOpacity(0.9)
+      ..style = PaintingStyle.fill;
+    
+    final componentSize = centerSize * 0.08;
+    final spacing = centerSize * 0.15;
+    
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(centerX - spacing, centerY - spacing),
+          width: componentSize,
+          height: componentSize,
         ),
         const Radius.circular(0.5),
       ),
-      keyholeHolePaint,
+      componentPaint,
     );
     
-    // Additional glow rings
-    if (showGlow) {
-      final glowRingPaint = Paint()
-        ..color = glowColor.withOpacity(0.4)
-        ..strokeWidth = 1
-        ..style = PaintingStyle.stroke;
-      
-      canvas.drawCircle(keyholeCenter, keyholeSize * 0.55, glowRingPaint);
-      
-      final outerGlowPaint = Paint()
-        ..color = AppTheme.cyanAccent.withOpacity(0.3)
-        ..strokeWidth = 0.5
-        ..style = PaintingStyle.stroke;
-      
-      canvas.drawCircle(keyholeCenter, keyholeSize * 0.7, outerGlowPaint);
-    }
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(centerX + spacing, centerY - spacing),
+          width: componentSize,
+          height: componentSize,
+        ),
+        const Radius.circular(0.5),
+      ),
+      componentPaint,
+    );
+    
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(centerX - spacing, centerY + spacing),
+          width: componentSize,
+          height: componentSize,
+        ),
+        const Radius.circular(0.5),
+      ),
+      componentPaint,
+    );
+    
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(centerX + spacing, centerY + spacing),
+          width: componentSize,
+          height: componentSize,
+        ),
+        const Radius.circular(0.5),
+      ),
+      componentPaint,
+    );
   }
 
   @override

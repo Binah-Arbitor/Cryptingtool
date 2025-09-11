@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Icon Before/After</title>
+    <style>
+        body { background: #0A0A0A; color: #E0E0E0; font-family: monospace; padding: 20px; }
+        .comparison { display: flex; gap: 40px; justify-content: center; align-items: center; }
+        .icon-box { text-align: center; padding: 20px; background: #1A1A1A; border-radius: 10px; }
+        .icon-box h2 { margin-top: 0; }
+        .before h2 { color: #FF9800; }
+        .after h2 { color: #76FF03; }
+        h1 { color: #00FFD4; text-align: center; margin-bottom: 40px; }
+        .arrow { font-size: 48px; color: #00FFD4; }
+    </style>
+</head>
+<body>
+    <h1>CryptingTool App Icon: Before ➜ After</h1>
+    <div class="comparison">
+        <div class="icon-box before">
+            <h2>BEFORE</h2>
+            <div style="width: 200px; height: 200px; background: #0A0A0A; border: 1px solid #333; padding: 10px;">
+                <!-- Simplified representation of original with keyhole -->
+                <svg width="180" height="180" viewBox="0 0 512 512">
+                    <rect width="512" height="512" fill="#0A0A0A"/>
+                    <!-- Grid traces -->
+                    <line x1="0" y1="128" x2="512" y2="128" stroke="#00FFD4" stroke-width="2" opacity="0.3"/>
+                    <line x1="0" y1="256" x2="512" y2="256" stroke="#00FFD4" stroke-width="2" opacity="0.3"/>
+                    <line x1="0" y1="384" x2="512" y2="384" stroke="#00FFD4" stroke-width="2" opacity="0.3"/>
+                    <line x1="128" y1="0" x2="128" y2="512" stroke="#00FFD4" stroke-width="2" opacity="0.3"/>
+                    <line x1="256" y1="0" x2="256" y2="512" stroke="#00FFD4" stroke-width="2" opacity="0.3"/>
+                    <line x1="384" y1="0" x2="384" y2="512" stroke="#00FFD4" stroke-width="2" opacity="0.3"/>
+                    <!-- CPU -->
+                    <rect x="176" y="176" width="160" height="160" fill="#2A2A2A" stroke="#00FFD4" stroke-width="3" rx="8"/>
+                    <!-- Keyhole -->
+                    <circle cx="256" cy="245" r="25" fill="#00FFD4" opacity="0.3"/>
+                    <circle cx="256" cy="245" r="15" fill="#00FFD4"/>
+                    <circle cx="256" cy="245" r="10" fill="#0A0A0A"/>
+                    <rect x="251" y="260" width="10" height="20" fill="#00FFD4" rx="2"/>
+                    <rect x="253" y="262" width="6" height="16" fill="#0A0A0A"/>
+                    <!-- Text -->
+                    <text x="256" y="305" text-anchor="middle" fill="#00FFD4" font-size="12" font-family="monospace">CRYPTO-CPU</text>
+                    <text x="256" y="320" text-anchor="middle" fill="#4A4A4A" font-size="9" font-family="monospace">SECURE-CHIP</text>
+                </svg>
+            </div>
+            <p style="color: #FF9800;">Central keyhole + text</p>
+        </div>
+        
+        <div class="arrow">➜</div>
+        
+        <div class="icon-box after">
+            <h2>AFTER</h2>
+            <div style="width: 200px; height: 200px; background: #0A0A0A; border: 1px solid #333; padding: 10px;">
+                <!-- Use actual modified SVG -->
+                <svg width="180" height="180" viewBox="0 0 512 512">
+                    <rect width="512" height="512" fill="#0A0A0A"/>
+                    <!-- Asymmetrical traces -->
+                    <path d="M50,95 L180,95 L180,110 L320,110 L320,95 L450,95" stroke="#00FFD4" stroke-width="2" fill="none" opacity="0.5"/>
+                    <path d="M0,185 L120,185 L120,200 L200,200 L200,220 L512,220" stroke="#00FFD4" stroke-width="1.5" fill="none" opacity="0.4"/>
+                    <path d="M110,0 L110,80 L125,80 L125,150 L110,150 L110,280 L125,280 L125,420" stroke="#00FFD4" stroke-width="1.5" fill="none" opacity="0.5"/>
+                    <path d="M350,0 L350,70 L365,70 L365,140 L350,140 L350,200 L365,200 L365,300" stroke="#00FFD4" stroke-width="1.8" fill="none" opacity="0.5"/>
+                    <!-- Connection pads -->
+                    <circle cx="125" cy="110" r="6" fill="#00FFD4" opacity="0.7"/>
+                    <circle cx="200" cy="200" r="5" fill="#00FFD4" opacity="0.6"/>
+                    <circle cx="365" cy="140" r="7" fill="#00FFD4" opacity="0.8"/>
+                    <circle cx="180" cy="95" r="4" fill="#00FFD4" opacity="0.6"/>
+                    <!-- CPU -->
+                    <rect x="176" y="176" width="160" height="160" fill="#2A2A2A" stroke="#00FFD4" stroke-width="3" rx="8"/>
+                    <!-- CPU internal detail (no keyhole) -->
+                    <rect x="231" y="231" width="50" height="50" fill="none" stroke="#4A4A4A" stroke-width="1.2" rx="3" opacity="0.6"/>
+                    <rect x="236" y="236" width="40" height="40" fill="none" stroke="#4A4A4A" stroke-width="1" rx="2" opacity="0.5"/>
+                    <rect x="241" y="241" width="30" height="30" fill="none" stroke="#4A4A4A" stroke-width="0.8" rx="2" opacity="0.4"/>
+                    <!-- Internal components -->
+                    <rect x="248" y="248" width="6" height="6" fill="#4A4A4A" rx="0.8" opacity="0.8"/>
+                    <rect x="258" y="248" width="6" height="6" fill="#4A4A4A" rx="0.8" opacity="0.8"/>
+                    <rect x="248" y="258" width="6" height="6" fill="#4A4A4A" rx="0.8" opacity="0.8"/>
+                    <rect x="258" y="258" width="6" height="6" fill="#4A4A4A" rx="0.8" opacity="0.8"/>
+                </svg>
+            </div>
+            <p style="color: #76FF03;">PCB traces + CPU detail</p>
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 40px; background: #1A1A1A; padding: 20px; border-radius: 10px;">
+        <h3 style="color: #00FFD4;">Korean Request Fulfilled:</h3>
+        <p>"앱 아이콘을 좀 변형해줘. 좀 더 PCB느낌을 나게 비대칭으로 회로 라인을 그려주고 중앙의 열쇠구멍과 글자는 빼줘."</p>
+        <p style="color: #76FF03;">"Please modify the app icon. Draw circuit lines asymmetrically to give it more of a PCB feel, and remove the central keyhole and text."</p>
+        <div style="margin-top: 20px;">
+            <span style="color: #FF9800;">❌ Keyhole Removed</span> • 
+            <span style="color: #FF9800;">❌ Text Removed</span> • 
+            <span style="color: #76FF03;">✅ PCB Traces Added</span> • 
+            <span style="color: #76FF03;">✅ Asymmetrical Design</span>
+        </div>
+    </div>
+</body>
+</html>
