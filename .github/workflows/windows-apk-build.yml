@@ -278,22 +278,20 @@ jobs:
           
           # Create error summary
           Write-Host "Creating error summary..." -ForegroundColor Yellow
-          @"
-Error Log Summary - $(Get-Date)
-=====================================
-
-Build Status: $(if (Test-Path "build/app/outputs/flutter-apk/*.apk") { "SUCCESS" } else { "FAILED" })
-App Name: ${{ inputs.app_name }}
-Build Mode: debug
-Platform: Android (Windows Runner)
-
-Log Files Generated:
-$($LogFiles | Where-Object { Test-Path $_ } | ForEach-Object { "- $_" } | Out-String)
-
-APK Files Generated:
-$(if (Test-Path "build/app/outputs/flutter-apk") { Get-ChildItem "build/app/outputs/flutter-apk" -Filter "*.apk" | ForEach-Object { "- $($_.Name) ($([math]::Round($_.Length/1MB, 2)) MB)" } | Out-String } else { "- None found" })
-
-"@ | Out-File -FilePath "error_summary.txt" -Encoding UTF8
+          $errorSummary = "Error Log Summary - $(Get-Date)"
+          $errorSummary += "`n====================================="
+          $errorSummary += "`n"
+          $errorSummary += "`nBuild Status: $(if (Test-Path "build/app/outputs/flutter-apk/*.apk") { "SUCCESS" } else { "FAILED" })"
+          $errorSummary += "`nApp Name: ${{ inputs.app_name }}"
+          $errorSummary += "`nBuild Mode: debug"
+          $errorSummary += "`nPlatform: Android (Windows Runner)"
+          $errorSummary += "`n"
+          $errorSummary += "`nLog Files Generated:"
+          $errorSummary += "`n$($LogFiles | Where-Object { Test-Path $_ } | ForEach-Object { "- $_" } | Out-String)"
+          $errorSummary += "`nAPK Files Generated:"
+          $errorSummary += "`n$(if (Test-Path "build/app/outputs/flutter-apk") { Get-ChildItem "build/app/outputs/flutter-apk" -Filter "*.apk" | ForEach-Object { "- $($_.Name) ($([math]::Round($_.Length/1MB, 2)) MB)" } | Out-String } else { "- None found" })"
+          $errorSummary += "`n"
+          $errorSummary | Out-File -FilePath "error_summary.txt" -Encoding UTF8
           
           Write-Host "✅ Error analysis complete" -ForegroundColor Green
           Write-Host "===========================" -ForegroundColor Green
@@ -351,30 +349,21 @@ $(if (Test-Path "build/app/outputs/flutter-apk") { Get-ChildItem "build/app/outp
           }
           
           # Add to GitHub Step Summary
-          @"
-## 📱 APK Build Summary
-
-| Property | Value |
-|----------|-------|
-| 🏗️ Build Status | $BuildStatus |
-| 📱 App Name | ${{ inputs.app_name }} |
-| 🔧 Build Mode | debug |
-| 🎯 Target Platform | Android |
-| 💻 Runner OS | Windows |
-| 📦 APK Files | $($ApkFiles.Count) |
-
-### 📋 Generated APK Files
-$(if ($ApkFiles.Count -gt 0) {
-  $ApkFiles | ForEach-Object { 
-    $size = [math]::Round($_.Length / 1MB, 2)
-    "- **$($_.Name)** - ${size} MB"
-  } | Out-String
-} else {
-  "No APK files were generated."
-})
-
-### 📊 Build Logs
-Build logs and error analysis have been uploaded as artifacts for detailed review.
-"@ | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
+          $stepSummary = "## 📱 APK Build Summary"
+          $stepSummary += "`n"
+          $stepSummary += "`n| Property | Value |"
+          $stepSummary += "`n|----------|-------|"
+          $stepSummary += "`n| 🏗️ Build Status | $BuildStatus |"
+          $stepSummary += "`n| 📱 App Name | ${{ inputs.app_name }} |"
+          $stepSummary += "`n| 🔧 Build Mode | debug |"
+          $stepSummary += "`n| 🎯 Target Platform | Android |"
+          $stepSummary += "`n| 💻 Runner OS | Windows |"
+          $stepSummary += "`n| 📦 APK Files | $($ApkFiles.Count) |"
+          $stepSummary += "`n"
+          $stepSummary += "`n### 📋 Generated APK Files"
+          $stepSummary += "`n$(if ($ApkFiles.Count -gt 0) { $ApkFiles | ForEach-Object { $size = [math]::Round($_.Length / 1MB, 2); "- **$($_.Name)** - ${size} MB" } | Out-String } else { "No APK files were generated." })"
+          $stepSummary += "`n### 📊 Build Logs"
+          $stepSummary += "`nBuild logs and error analysis have been uploaded as artifacts for detailed review."
+          $stepSummary | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
           
           Write-Host "==============================" -ForegroundColor Green
