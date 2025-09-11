@@ -179,38 +179,12 @@ runs:
             echo "Library files:"
             find /usr -name "*crypto*" -type f 2>/dev/null | head -5 || echo "No crypto files found"
             exit 1
-for pkg in libcrypto++8-dev libcryptoppdev libcryptopp-dev; do
-              if sudo apt-get install -y $pkg 2>/dev/null; then
-                echo "✅ Installed $pkg"
-                CRYPTO_INSTALLED=true
-                break
-              fi
-            done
-          fi
-          
-          # If no package worked, build from source
-          if [ "$CRYPTO_INSTALLED" = false ]; then
-            echo "📥 No package available, building from source..."
-            build_cryptopp_from_source
-            CRYPTO_INSTALLED=true
           fi
           
         elif [ "${{ runner.os }}" = "macOS" ]; then
           echo "📦 Installing macOS dependencies..."
           brew install cmake ninja pkg-config
           
-          if ! brew install cryptopp; then
-            echo "⚠️  Homebrew cryptopp not available, trying alternatives..."
-            # Try building from source as fallback using latest stable version
-            cd /tmp
-            echo "📥 Installing crypto++ from source (latest stable v8.9.0)..."
-            wget https://github.com/weidai11/cryptopp/releases/download/CRYPTOPP_8_9_0/cryptopp890.zip
-            unzip cryptopp890.zip -d cryptopp
-            cd cryptopp
-            make -j$(sysctl -n hw.ncpu)
-            sudo make install PREFIX=/usr/local
-            echo "✅ Built and installed crypto++ v8.9.0 from source"
-          else
           # Try to install crypto++ via Homebrew
           if brew install cryptopp; then
             echo "✅ Installed cryptopp via Homebrew"
