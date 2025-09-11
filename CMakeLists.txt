@@ -134,7 +134,6 @@ endif()
 # Final check - if still not found, provide comprehensive error message with instructions
 if(NOT CRYPTOPP_LIB_FOUND)
     message(FATAL_ERROR 
-"Crypto++ library not found. Please install it using one of these methods:\n"
         "❌ Crypto++ library not found!\n"
         "\n"
         "Please install Crypto++ using one of these methods:\n"
@@ -156,9 +155,7 @@ if(NOT CRYPTOPP_LIB_FOUND)
         "📋 TROUBLESHOOTING:\n"
         "  Check pkg-config: pkg-config --exists libcrypto++\n"
         "  Check library:    find /usr -name '*crypto*' -type f 2>/dev/null\n"
-        "  Check headers:    find /usr -name 'cryptlib.h' 2>/dev/null"
-        "  make -j\$(nproc) && sudo make install\n"
-        "  sudo ldconfig  # Linux only\n"
+        "  Check headers:    find /usr -name 'cryptlib.h' 2>/dev/null\n"
         "\n"
         "🔗 More info: https://cryptopp.com/wiki/Linux\n"
         "\n"

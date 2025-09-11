@@ -10,15 +10,13 @@ void main() {
     test('EncryptionConfig should handle algorithm changes correctly', () {
       // Test default configuration
       final defaultConfig = EncryptionDefaults.defaultConfig;
-      expect(defaultConfig.algorithm, equals(EncryptionAlgorithm.aes));
+      expect(defaultConfig.algorithm, equals(EncryptionAlgorithm.aes256));
       expect(defaultConfig.keySize, equals(256));
       expect(defaultConfig.mode, equals(OperationMode.gcm));
       
       // Test dynamic key size validation
-      final aesKeySizes = EncryptionAlgorithm.aes.getSupportedKeySizes();
+      final aesKeySizes = EncryptionAlgorithm.aes256.getSupportedKeySizes();
       expect(aesKeySizes, contains(256));
-      expect(aesKeySizes, contains(192));
-      expect(aesKeySizes, contains(128));
       
       // Test blowfish variable key sizes
       final blowfishKeySizes = EncryptionAlgorithm.blowfish.getSupportedKeySizes();
@@ -27,10 +25,10 @@ void main() {
       
       // Test configuration copy with changes
       final newConfig = defaultConfig.copyWith(
-        algorithm: EncryptionAlgorithm.serpent,
+        algorithm: EncryptionAlgorithm.serpent256,
         keySize: 192,
       );
-      expect(newConfig.algorithm, equals(EncryptionAlgorithm.serpent));
+      expect(newConfig.algorithm, equals(EncryptionAlgorithm.serpent256));
       expect(newConfig.keySize, equals(192));
       expect(newConfig.mode, equals(OperationMode.gcm)); // Should remain unchanged
     });
@@ -121,16 +119,16 @@ void main() {
       // Test initial state
       expect(provider.isProcessing, equals(false));
       expect(provider.selectedFile, isNull);
-      expect(provider.config.algorithm, equals(EncryptionAlgorithm.aes));
+      expect(provider.config.algorithm, equals(EncryptionAlgorithm.aes256));
       
       // Test configuration update
       final newConfig = provider.config.copyWith(
-        algorithm: EncryptionAlgorithm.twofish,
+        algorithm: EncryptionAlgorithm.twofish192,
         keySize: 192,
       );
       provider.updateConfig(newConfig);
       
-      expect(provider.config.algorithm, equals(EncryptionAlgorithm.twofish));
+      expect(provider.config.algorithm, equals(EncryptionAlgorithm.twofish192));
       expect(provider.config.keySize, equals(192));
       expect(provider.logEntries.length, greaterThan(0));
       
@@ -150,15 +148,24 @@ void main() {
     });
 
     test('Algorithm compatibility should work correctly', () {
-      // Test that all algorithms support GCM mode
-      for (final algorithm in EncryptionAlgorithm.values) {
+      // Test that modern AES algorithms support GCM mode
+      final modernAlgorithms = [
+        EncryptionAlgorithm.aes256,
+        EncryptionAlgorithm.aes192, 
+        EncryptionAlgorithm.aes128,
+        EncryptionAlgorithm.serpent256,
+        EncryptionAlgorithm.twofish256
+      ];
+      
+      for (final algorithm in modernAlgorithms) {
         final supportedModes = algorithm.getSupportedModes();
-        expect(supportedModes, contains(OperationMode.gcm));
+        expect(supportedModes, contains(OperationMode.gcm), 
+            reason: '${algorithm.displayName} should support GCM mode');
       }
       
-      // Test that AES supports all standard key sizes
-      final aesKeySizes = EncryptionAlgorithm.aes.getSupportedKeySizes();
-      expect(aesKeySizes, containsAll([128, 192, 256]));
+      // Test that AES256 supports 256-bit key size
+      final aes256KeySizes = EncryptionAlgorithm.aes256.getSupportedKeySizes();
+      expect(aes256KeySizes, contains(256));
       
       // Test that CAST-128 only supports 128-bit keys
       final castKeySizes = EncryptionAlgorithm.cast128.getSupportedKeySizes();

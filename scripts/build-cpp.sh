@@ -70,7 +70,7 @@ if [ -f "CMakeLists.txt" ]; then
         echo "❌ CMake configuration failed. Checking for missing dependencies..."
         
         # Try to help with common issues based on the platform
-        if [ "${{ runner.os }}" = "Linux" ] || [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        if [[ "$OSTYPE" == "linux-gnu"* ]] || [[ -f /etc/debian_version ]] || [[ -f /etc/ubuntu_release ]]; then
             echo "🔍 Checking for crypto++ library on Linux..."
             
             # Check if any crypto++ package is installed
@@ -92,7 +92,7 @@ if [ -f "CMakeLists.txt" ]; then
             echo "🔄 Retrying CMake configuration..."
             cmake ../.. -G Ninja -DCMAKE_BUILD_TYPE=Release
             
-        elif [ "${{ runner.os }}" = "macOS" ] || [[ "$OSTYPE" == "darwin"* ]]; then
+        elif [[ "$OSTYPE" == "darwin"* ]]; then
             echo "🔍 Checking for crypto++ library on macOS..."
             
             # Try installing via homebrew if not available
@@ -105,7 +105,7 @@ if [ -f "CMakeLists.txt" ]; then
             cmake ../.. -G Ninja -DCMAKE_BUILD_TYPE=Release
             
         else
-            echo "❌ CMake failed on ${{ runner.os }}. Please check crypto++ installation."
+            echo "❌ CMake failed on current platform. Please check crypto++ installation."
             echo "📋 Debug info:"
             echo "  OS Type: $OSTYPE"
             echo "  Available libraries:"
