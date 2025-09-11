@@ -1,0 +1,37 @@
+name: "Manual C++/Dart Build"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  manual-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+        
+      - name: Set up the stable Dart SDK
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+          
+      - name: Install libcrypto++-dev dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcrypto++-dev
+          
+      - name: Compile C++ code using g++, linking cryptopp (placeholder)
+        run: |
+          echo "Placeholder: Compiling C++ code with g++ and linking cryptopp"
+          # g++ -o crypting_app src/*.cpp -lcryptopp
+          
+      - name: Run dart pub get (placeholder)
+        run: |
+          echo "Placeholder: Running dart pub get"
+          # dart pub get
+          
+      - name: Run dart compile exe (placeholder)
+        run: |
+          echo "Placeholder: Running dart compile exe"
+          # dart compile exe bin/main.dart -o crypting_tool
