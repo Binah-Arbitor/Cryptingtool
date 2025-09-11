@@ -1,5 +1,8 @@
+---
 name: 'Flutter C++ Packager'
-description: 'A GitHub Action to build and package Flutter applications with C++ components'
+description: >-
+  A GitHub Action to build and package Flutter applications
+  with C++ components
 author: 'Binah-Arbitor'
 branding:
   icon: 'package'
@@ -50,13 +53,21 @@ runs:
   steps:
     - name: Setup Flutter (Channel-based)
       uses: subosito/flutter-action@v4
-      if: ${{ inputs.flutter-version == 'stable' || inputs.flutter-version == 'beta' || inputs.flutter-version == 'dev' || inputs.flutter-version == 'master' }}
+      if: >-
+        ${{ inputs.flutter-version == 'stable' ||
+            inputs.flutter-version == 'beta' ||
+            inputs.flutter-version == 'dev' ||
+            inputs.flutter-version == 'master' }}
       with:
         channel: ${{ inputs.flutter-version }}
 
     - name: Setup Flutter (Version-based)
       uses: subosito/flutter-action@v4
-      if: ${{ inputs.flutter-version != 'stable' && inputs.flutter-version != 'beta' && inputs.flutter-version != 'dev' && inputs.flutter-version != 'master' }}
+      if: >-
+        ${{ inputs.flutter-version != 'stable' &&
+            inputs.flutter-version != 'beta' &&
+            inputs.flutter-version != 'dev' &&
+            inputs.flutter-version != 'master' }}
       with:
         flutter-version: ${{ inputs.flutter-version }}
 
@@ -70,30 +81,32 @@ runs:
       shell: bash
       run: |
         echo "🔧 Setting up C++ build environment..."
-        
+
         # Function to get latest Crypto++ version
         get_latest_cryptopp_version() {
           # Try to get latest version from GitHub, fallback to known stable version
-          LATEST_VERSION=$(curl -s https://github.com/weidai11/cryptopp/releases 2>/dev/null | grep -o 'CRYPTOPP_[0-9_]*' | head -1 || echo "")
+          LATEST_VERSION=$(curl -s https://github.com/weidai11/cryptopp/releases \
+            2>/dev/null | grep -o 'CRYPTOPP_[0-9_]*' | head -1 || echo "")
           if [ -z "$LATEST_VERSION" ]; then
             LATEST_VERSION="CRYPTOPP_8_9_0"  # Fallback to known stable version
           fi
           echo "$LATEST_VERSION"
         }
-        
+
         # Function to build crypto++ from source with latest version
         build_cryptopp_from_source() {
           echo "📥 Building Crypto++ from source..."
           cd /tmp
           CRYPTO_VERSION=$(get_latest_cryptopp_version)
-          CRYPTO_ZIP_VERSION=$(echo $CRYPTO_VERSION | sed 's/CRYPTOPP_//g' | sed 's/_//g')
+          CRYPTO_ZIP_VERSION=$(echo $CRYPTO_VERSION | sed 's/CRYPTOPP_//g' | \
+            sed 's/_//g')
           echo "🔄 Using Crypto++ version: $CRYPTO_VERSION ($CRYPTO_ZIP_VERSION)"
-          
+
           # Download and extract
           wget https://github.com/weidai11/cryptopp/releases/download/${CRYPTO_VERSION}/cryptopp${CRYPTO_ZIP_VERSION}.zip
           unzip cryptopp${CRYPTO_ZIP_VERSION}.zip -d cryptopp
           cd cryptopp
-          
+
           # Build and install
           if [ "${{ runner.os }}" = "Linux" ]; then
             make -j$(nproc)
@@ -103,25 +116,25 @@ runs:
             make -j$(sysctl -n hw.ncpu)
             sudo make install PREFIX=/usr/local
           fi
-          
+
           echo "✅ Built and installed Crypto++ $CRYPTO_VERSION from source"
         }
-        
+
         if [ "${{ runner.os }}" = "Linux" ]; then
           echo "📦 Installing Linux dependencies..."
           sudo apt-get update
           sudo apt-get install -y build-essential cmake ninja-build pkg-config libgtk-3-dev mesa-utils
-          
+
           # Try to install crypto++ library with multiple package names
           CRYPTO_INSTALLED=false
-          
+
           # Try primary package name
           if sudo apt-get install -y libcrypto++-dev; then
             echo "✅ Installed libcrypto++-dev package"
             CRYPTO_INSTALLED=true
           else
             echo "⚠️  libcrypto++-dev package not available, trying alternatives..."
-            
+
             # Try alternative package names
             if sudo apt-get install -y libcrypto++8-dev 2>/dev/null; then
               echo "✅ Installed libcrypto++8-dev"
@@ -134,11 +147,11 @@ runs:
               build_cryptopp_from_source
             fi
           fi
-          
+
           # Verify installation
           echo "🔍 Verifying crypto++ installation..."
           CRYPTO_VERIFIED=false
-          
+
           # Method 1: Check pkg-config
           if pkg-config --exists libcrypto++; then
             echo "✅ pkg-config found libcrypto++ v$(pkg-config --modversion libcrypto++)"
@@ -147,35 +160,34 @@ runs:
             echo "✅ pkg-config found cryptopp v$(pkg-config --modversion cryptopp)"
             CRYPTO_VERIFIED=true
           fi
-          
+
           # Method 2: Check headers
           if [ -f "/usr/include/cryptopp/cryptlib.h" ] || [ -f "/usr/local/include/cryptopp/cryptlib.h" ]; then
             echo "✅ Crypto++ headers found"
             CRYPTO_VERIFIED=true
           fi
-          
+
           # Method 3: Check libraries
           if find /usr /usr/local -name "*crypto*" -type f 2>/dev/null | grep -E "\.(so|a|dylib)$" | grep -v openssl | head -1; then
             echo "✅ Crypto++ library files found"
             CRYPTO_VERIFIED=true
           fi
-          
+
           if [ "$CRYPTO_VERIFIED" = "true" ]; then
             echo "✅ Crypto++ library verification successful"
           else
             echo "❌ Crypto++ library verification failed"
             echo "📋 Debugging information:"
-            echo "Available packages:" 
+            echo "Available packages:"
             pkg-config --list-all | grep -i crypto || echo "No crypto packages found"
             echo "Library files:"
             find /usr -name "*crypto*" -type f 2>/dev/null | head -5 || echo "No crypto files found"
             exit 1
           fi
-          
         elif [ "${{ runner.os }}" = "macOS" ]; then
           echo "📦 Installing macOS dependencies..."
           brew install cmake ninja pkg-config
-          
+
           # Try to install crypto++ via Homebrew
           if brew install cryptopp; then
             echo "✅ Installed cryptopp via Homebrew"
@@ -183,11 +195,11 @@ runs:
             echo "⚠️  Homebrew cryptopp not available, building from source..."
             build_cryptopp_from_source
           fi
-          
+
         elif [ "${{ runner.os }}" = "Windows" ]; then
           echo "📦 Installing Windows dependencies..."
           choco install cmake ninja
-          
+
           # Check if vcpkg is available
           if command -v vcpkg >/dev/null 2>&1; then
             echo "📦 Installing crypto++ via vcpkg..."
@@ -205,12 +217,12 @@ runs:
             echo "✅ Installed crypto++ via vcpkg"
           fi
         fi
-        
+
         # Comprehensive verification of Crypto++ installation
         echo ""
         echo "🔍 Verifying Crypto++ installation..."
         VERIFICATION_PASSED=false
-        
+
         # Check via pkg-config
         if pkg-config --exists libcrypto++; then
           echo "✅ pkg-config libcrypto++: $(pkg-config --modversion libcrypto++)"
@@ -219,7 +231,7 @@ runs:
           echo "✅ pkg-config cryptopp: $(pkg-config --modversion cryptopp)"
           VERIFICATION_PASSED=true
         fi
-        
+
         # Check for headers
         for header_path in /usr/include/cryptopp /usr/local/include/cryptopp /usr/include/crypto++ /usr/local/include/crypto++ /opt/homebrew/include/cryptopp; do
           if [ -f "$header_path/cryptlib.h" ]; then
@@ -228,7 +240,7 @@ runs:
             break
           fi
         done
-        
+
         # Check for libraries
         for lib_path in /usr/lib /usr/local/lib /opt/homebrew/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu; do
           if [ -f "$lib_path/libcryptopp.so" ] || [ -f "$lib_path/libcrypto++.so" ] || [ -f "$lib_path/libcryptopp.a" ] || [ -f "$lib_path/libcryptopp.dylib" ]; then
@@ -237,16 +249,16 @@ runs:
             break
           fi
         done
-        
+
         if [ "$VERIFICATION_PASSED" = false ]; then
           echo "❌ Crypto++ library verification failed!"
           echo "📋 Available libraries:"
           find /usr /usr/local /opt -name "*crypto*" -type f 2>/dev/null | grep -E "\.(so|a|dylib|lib)$" | head -10 || echo "No crypto libraries found"
           exit 1
         fi
-        
+
         echo "✅ Crypto++ library verification successful!"
-        
+
         echo ""
         echo "🔍 Final verification - checking for crypto++ installation..."
         echo "📋 Library search results:"
