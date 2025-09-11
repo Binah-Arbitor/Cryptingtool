@@ -234,15 +234,22 @@ The action includes robust error handling and automatic dependency resolution. I
 
 ### Common Issues
 
-#### 1. Crypto++ Library Not Found
-**Symptoms**: CMake configuration fails with "Crypto++ library not found"
+#### 1. Crypto++ Library Not Found / `#include <crypto++/cryptlib.h>` Error
+**Symptoms**: CMake configuration fails with "Crypto++ library not found" or compilation errors like "fatal error: crypto++/cryptlib.h: No such file or directory"
+
+**Quick Fix**: Run the verification script to diagnose and get specific solutions:
+```bash
+./scripts/verify-crypto-includes.sh
+```
 
 **Solutions**:
 - **Automatic**: The action automatically installs dependencies
-- **Manual**: 
+- **Manual Installation**: 
   - Ubuntu/Debian: `sudo apt-get install libcrypto++-dev`
   - macOS: `brew install cryptopp`  
   - Windows: `vcpkg install cryptopp`
+  
+**Korean/한국어**: `#include <crypto++/cryptlib.h>` 오류는 대부분 Crypto++ 개발 라이브러리가 설치되지 않아서 발생합니다. 위의 명령어로 해결할 수 있습니다.
 
 #### 2. Build Tools Missing
 **Symptoms**: "cmake: command not found" or "ninja: command not found"
