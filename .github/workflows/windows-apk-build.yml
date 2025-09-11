@@ -189,9 +189,37 @@ jobs:
           Write-Host "Checking Android setup..." -ForegroundColor Yellow
           flutter doctor --android-licenses 2>&1 | Tee-Object -FilePath "android_setup.log"
 
-          # Accept Android licenses automatically
+          # Accept Android licenses automatically - fix for "1 of 7 SDK package license not accepted" infinite loading
           Write-Host "Accepting Android licenses..." -ForegroundColor Yellow
-          echo "y" | flutter doctor --android-licenses 2>$null
+          
+          # Use PowerShell-native method to send multiple "y" responses
+          try {
+            $yesResponses = "y`r`ny`r`ny`r`ny`r`ny`r`ny`r`ny`r`ny`r`ny`r`ny`r`n"
+            $psi = New-Object System.Diagnostics.ProcessStartInfo
+            $psi.FileName = "flutter"
+            $psi.Arguments = "doctor --android-licenses"
+            $psi.RedirectStandardInput = $true
+            $psi.RedirectStandardOutput = $true
+            $psi.RedirectStandardError = $true
+            $psi.UseShellExecute = $false
+            
+            $process = [System.Diagnostics.Process]::Start($psi)
+            $process.StandardInput.Write($yesResponses)
+            $process.StandardInput.Close()
+            
+            # Wait with timeout to prevent infinite hanging
+            if ($process.WaitForExit(120000)) {  # 2 minutes timeout
+              Write-Host "✅ Android licenses accepted successfully (Exit code: $($process.ExitCode))" -ForegroundColor Green
+            } else {
+              Write-Host "⚠️ License acceptance timed out - killing process to prevent infinite hanging" -ForegroundColor Yellow
+              $process.Kill()
+            }
+          }
+          catch {
+            Write-Host "⚠️ Fallback method for license acceptance..." -ForegroundColor Yellow
+            # Simple fallback using cmd
+            cmd /c 'echo y^|echo y^|echo y^|echo y^|echo y^|echo y^|echo y^|flutter doctor --android-licenses'
+          }
 
           # Verify Android toolchain
           Write-Host "Verifying Android toolchain..." -ForegroundColor Yellow

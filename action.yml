@@ -52,7 +52,7 @@ runs:
   using: 'composite'
   steps:
     - name: Setup Flutter (Channel-based)
-      uses: subosito/flutter-action@v4
+      uses: subosito/flutter-action@v2
       if: >-
         ${{ inputs.flutter-version == 'stable' ||
             inputs.flutter-version == 'beta' ||
@@ -62,7 +62,7 @@ runs:
         channel: ${{ inputs.flutter-version }}
 
     - name: Setup Flutter (Version-based)
-      uses: subosito/flutter-action@v4
+      uses: subosito/flutter-action@v2
       if: >-
         ${{ inputs.flutter-version != 'stable' &&
             inputs.flutter-version != 'beta' &&
