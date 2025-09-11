@@ -1,0 +1,380 @@
+name: Windows APK Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_name:
+        description: 'Application name for the APK'
+        required: false
+        default: 'CryptingTool'
+        type: string
+      enable_logging:
+        description: 'Enable detailed logging and error tracking'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  build-debug-apk:
+    runs-on: windows-latest
+    name: Build Debug APK on Windows
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+        
+      - name: 🔍 System Information
+        shell: pwsh
+        run: |
+          Write-Host "=== System Information ===" -ForegroundColor Green
+          Write-Host "OS: $env:OS" -ForegroundColor Yellow
+          Write-Host "Architecture: $env:PROCESSOR_ARCHITECTURE" -ForegroundColor Yellow
+          Write-Host "Number of Processors: $env:NUMBER_OF_PROCESSORS" -ForegroundColor Yellow
+          Write-Host "Available Memory: " -NoNewline -ForegroundColor Yellow
+          Get-WmiObject -Class Win32_ComputerSystem | Select-Object -ExpandProperty TotalPhysicalMemory | ForEach-Object { "{0:N2} GB" -f ($_ / 1GB) }
+          Write-Host "Disk Space: " -NoNewline -ForegroundColor Yellow
+          Get-WmiObject -Class Win32_LogicalDisk -Filter "DeviceID='C:'" | Select-Object -ExpandProperty FreeSpace | ForEach-Object { "{0:N2} GB free" -f ($_ / 1GB) }
+          Write-Host "==========================" -ForegroundColor Green
+        
+      - name: ☕ Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+        
+      - name: 🔍 Verify Java Installation
+        shell: pwsh
+        run: |
+          Write-Host "=== Java Information ===" -ForegroundColor Green
+          java -version
+          javac -version
+          Write-Host "JAVA_HOME: $env:JAVA_HOME" -ForegroundColor Yellow
+          Write-Host "=========================" -ForegroundColor Green
+        
+      - name: 📱 Set up Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+          channel: 'stable'
+          cache: true
+          
+      - name: 🔍 Verify Flutter Installation  
+        shell: pwsh
+        run: |
+          Write-Host "=== Flutter Information ===" -ForegroundColor Green
+          flutter --version
+          flutter doctor -v
+          Write-Host "Flutter SDK Path: " -NoNewline -ForegroundColor Yellow
+          where.exe flutter
+          Write-Host "============================" -ForegroundColor Green
+        
+      - name: 📦 Install Windows Dependencies
+        shell: pwsh
+        run: |
+          Write-Host "=== Installing Dependencies ===" -ForegroundColor Green
+          
+          # Install Chocolatey if not present
+          if (-not (Get-Command choco -ErrorAction SilentlyContinue)) {
+            Write-Host "Installing Chocolatey..." -ForegroundColor Yellow
+            Set-ExecutionPolicy Bypass -Scope Process -Force
+            [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+            iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+          }
+          
+          Write-Host "Installing build tools..." -ForegroundColor Yellow
+          try {
+            choco install cmake --confirm
+            choco install ninja --confirm
+            Write-Host "✅ Build tools installed successfully" -ForegroundColor Green
+          }
+          catch {
+            Write-Host "⚠️ Warning: Could not install some build tools: $_" -ForegroundColor Yellow
+          }
+          
+          Write-Host "===============================" -ForegroundColor Green
+        
+      - name: 🏗️ Initialize Android Project Structure
+        shell: pwsh
+        run: |
+          Write-Host "=== Initializing Android Project ===" -ForegroundColor Green
+          
+          # Check if android directory exists
+          if (-not (Test-Path "android")) {
+            Write-Host "Creating Android platform support..." -ForegroundColor Yellow
+            flutter create --platforms android .
+            Write-Host "✅ Android platform initialized" -ForegroundColor Green
+          } else {
+            Write-Host "✅ Android platform already exists" -ForegroundColor Green
+          }
+          
+          # List directory structure
+          Write-Host "Project structure:" -ForegroundColor Yellow
+          Get-ChildItem -Name | Sort-Object
+          
+          if (Test-Path "android") {
+            Write-Host "Android directory contents:" -ForegroundColor Yellow
+            Get-ChildItem android -Name | Sort-Object
+          }
+          
+          Write-Host "===================================" -ForegroundColor Green
+        
+      - name: 📋 Package Dependency Management
+        shell: pwsh
+        run: |
+          Write-Host "=== Managing Package Dependencies ===" -ForegroundColor Green
+          
+          # Clean any previous builds
+          Write-Host "Cleaning previous builds..." -ForegroundColor Yellow
+          flutter clean
+          
+          # Get Flutter dependencies
+          Write-Host "Getting Flutter dependencies..." -ForegroundColor Yellow
+          flutter pub get
+          
+          # Verify dependencies
+          Write-Host "Verifying dependencies..." -ForegroundColor Yellow
+          flutter pub deps
+          
+          # Check for any dependency conflicts
+          Write-Host "Checking for dependency issues..." -ForegroundColor Yellow
+          flutter pub deps --style=compact 2>&1 | Tee-Object -FilePath "dependency_check.log"
+          
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "❌ Dependency issues detected" -ForegroundColor Red
+            Get-Content "dependency_check.log"
+            exit 1
+          }
+          
+          Write-Host "✅ All dependencies resolved successfully" -ForegroundColor Green
+          Write-Host "====================================" -ForegroundColor Green
+        
+      - name: 🔧 Configure Android Build Environment
+        shell: pwsh
+        run: |
+          Write-Host "=== Configuring Android Build ===" -ForegroundColor Green
+          
+          # Run flutter doctor to check Android setup
+          Write-Host "Checking Android setup..." -ForegroundColor Yellow
+          flutter doctor --android-licenses 2>&1 | Tee-Object -FilePath "android_setup.log"
+          
+          # Accept Android licenses automatically
+          Write-Host "Accepting Android licenses..." -ForegroundColor Yellow
+          echo "y" | flutter doctor --android-licenses 2>$null
+          
+          # Verify Android toolchain
+          Write-Host "Verifying Android toolchain..." -ForegroundColor Yellow
+          flutter doctor -v 2>&1 | Tee-Object -FilePath "flutter_doctor.log"
+          
+          Write-Host "✅ Android environment configured" -ForegroundColor Green
+          Write-Host "=================================" -ForegroundColor Green
+        
+      - name: 🏗️ Build Debug APK
+        shell: pwsh
+        run: |
+          Write-Host "=== Building Debug APK ===" -ForegroundColor Green
+          
+          $ErrorActionPreference = "Continue"
+          $BuildLog = "apk_build.log"
+          $BuildSuccess = $true
+          
+          Write-Host "Starting APK build process..." -ForegroundColor Yellow
+          Write-Host "App Name: ${{ inputs.app_name }}" -ForegroundColor Yellow
+          Write-Host "Build Mode: debug" -ForegroundColor Yellow
+          Write-Host "Target Platform: Android" -ForegroundColor Yellow
+          
+          try {
+            # Build debug APK with verbose output
+            Write-Host "Executing flutter build apk --debug --verbose..." -ForegroundColor Yellow
+            flutter build apk --debug --verbose 2>&1 | Tee-Object -FilePath $BuildLog
+            
+            if ($LASTEXITCODE -eq 0) {
+              Write-Host "✅ APK build completed successfully!" -ForegroundColor Green
+            } else {
+              Write-Host "❌ APK build failed with exit code: $LASTEXITCODE" -ForegroundColor Red
+              $BuildSuccess = $false
+            }
+          }
+          catch {
+            Write-Host "❌ APK build failed with exception: $_" -ForegroundColor Red
+            $BuildSuccess = $false
+          }
+          
+          # Check if APK files were generated
+          Write-Host "Checking for generated APK files..." -ForegroundColor Yellow
+          $ApkFiles = @()
+          
+          if (Test-Path "build/app/outputs/flutter-apk") {
+            $ApkFiles = Get-ChildItem -Path "build/app/outputs/flutter-apk" -Filter "*.apk" -Recurse
+          }
+          
+          if ($ApkFiles.Count -gt 0) {
+            Write-Host "✅ Found $($ApkFiles.Count) APK file(s):" -ForegroundColor Green
+            foreach ($apk in $ApkFiles) {
+              $size = [math]::Round($apk.Length / 1MB, 2)
+              Write-Host "  📱 $($apk.Name) - ${size} MB" -ForegroundColor Yellow
+            }
+          } else {
+            Write-Host "❌ No APK files found in expected location" -ForegroundColor Red
+            $BuildSuccess = $false
+          }
+          
+          # Display build directory contents for debugging
+          Write-Host "Build directory contents:" -ForegroundColor Yellow
+          if (Test-Path "build") {
+            Get-ChildItem -Path "build" -Recurse | Select-Object FullName, Length | Format-Table -AutoSize
+          }
+          
+          if (-not $BuildSuccess) {
+            Write-Host "❌ Build process failed - check logs for details" -ForegroundColor Red
+            exit 1
+          }
+          
+          Write-Host "==========================" -ForegroundColor Green
+        
+      - name: 📊 Error Log Tracking and Analysis
+        shell: pwsh
+        if: always()
+        run: |
+          Write-Host "=== Error Log Analysis ===" -ForegroundColor Green
+          
+          # Collect all log files
+          $LogFiles = @(
+            "dependency_check.log",
+            "android_setup.log", 
+            "flutter_doctor.log",
+            "apk_build.log"
+          )
+          
+          Write-Host "Analyzing log files for errors and warnings..." -ForegroundColor Yellow
+          
+          foreach ($logFile in $LogFiles) {
+            if (Test-Path $logFile) {
+              Write-Host "--- Analyzing $logFile ---" -ForegroundColor Cyan
+              $content = Get-Content $logFile -Raw
+              
+              # Search for common error patterns
+              $errors = Select-String -InputObject $content -Pattern "ERROR|FAILURE|Failed|Exception|Error:" -AllMatches
+              $warnings = Select-String -InputObject $content -Pattern "WARNING|Warning|WARN:" -AllMatches
+              
+              if ($errors) {
+                Write-Host "🔴 Errors found in $logFile :" -ForegroundColor Red
+                $errors.Matches | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
+              }
+              
+              if ($warnings) {
+                Write-Host "🟡 Warnings found in $logFile :" -ForegroundColor Yellow  
+                $warnings.Matches | ForEach-Object { Write-Host "  $_" -ForegroundColor Yellow }
+              }
+              
+              if (-not $errors -and -not $warnings) {
+                Write-Host "✅ No errors or warnings in $logFile" -ForegroundColor Green
+              }
+            } else {
+              Write-Host "⚠️ Log file $logFile not found" -ForegroundColor Yellow
+            }
+          }
+          
+          # Create error summary
+          Write-Host "Creating error summary..." -ForegroundColor Yellow
+          @"
+Error Log Summary - $(Get-Date)
+=====================================
+
+Build Status: $(if (Test-Path "build/app/outputs/flutter-apk/*.apk") { "SUCCESS" } else { "FAILED" })
+App Name: ${{ inputs.app_name }}
+Build Mode: debug
+Platform: Android (Windows Runner)
+
+Log Files Generated:
+$($LogFiles | Where-Object { Test-Path $_ } | ForEach-Object { "- $_" } | Out-String)
+
+APK Files Generated:
+$(if (Test-Path "build/app/outputs/flutter-apk") { Get-ChildItem "build/app/outputs/flutter-apk" -Filter "*.apk" | ForEach-Object { "- $($_.Name) ($([math]::Round($_.Length/1MB, 2)) MB)" } | Out-String } else { "- None found" })
+
+"@ | Out-File -FilePath "error_summary.txt" -Encoding UTF8
+          
+          Write-Host "✅ Error analysis complete" -ForegroundColor Green
+          Write-Host "===========================" -ForegroundColor Green
+        
+      - name: 📦 Package and Upload APK
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: ${{ inputs.app_name }}-debug-apk
+          path: |
+            build/app/outputs/flutter-apk/*.apk
+            error_summary.txt
+          retention-days: 30
+          if-no-files-found: warn
+          
+      - name: 📋 Upload Build Logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-logs
+          path: |
+            *.log
+            error_summary.txt
+          retention-days: 7
+          if-no-files-found: warn
+        
+      - name: 📱 Build Summary Report
+        shell: pwsh
+        if: always()
+        run: |
+          Write-Host "=== Final Build Summary ===" -ForegroundColor Green
+          
+          $ApkFiles = @()
+          if (Test-Path "build/app/outputs/flutter-apk") {
+            $ApkFiles = Get-ChildItem -Path "build/app/outputs/flutter-apk" -Filter "*.apk" -Recurse
+          }
+          
+          $BuildStatus = if ($ApkFiles.Count -gt 0) { "✅ SUCCESS" } else { "❌ FAILED" }
+          
+          Write-Host "Build Status: $BuildStatus" -ForegroundColor $(if ($ApkFiles.Count -gt 0) { "Green" } else { "Red" })
+          Write-Host "App Name: ${{ inputs.app_name }}" -ForegroundColor Yellow
+          Write-Host "Build Mode: debug" -ForegroundColor Yellow
+          Write-Host "Target Platform: Android" -ForegroundColor Yellow
+          Write-Host "Runner OS: Windows" -ForegroundColor Yellow
+          Write-Host "APK Files Generated: $($ApkFiles.Count)" -ForegroundColor Yellow
+          
+          if ($ApkFiles.Count -gt 0) {
+            Write-Host "APK Details:" -ForegroundColor Cyan
+            foreach ($apk in $ApkFiles) {
+              $size = [math]::Round($apk.Length / 1MB, 2)
+              Write-Host "  📱 $($apk.Name)" -ForegroundColor White
+              Write-Host "     Size: ${size} MB" -ForegroundColor White
+              Write-Host "     Path: $($apk.FullName)" -ForegroundColor Gray
+            }
+          }
+          
+          # Add to GitHub Step Summary
+          @"
+## 📱 APK Build Summary
+
+| Property | Value |
+|----------|-------|
+| 🏗️ Build Status | $BuildStatus |
+| 📱 App Name | ${{ inputs.app_name }} |
+| 🔧 Build Mode | debug |
+| 🎯 Target Platform | Android |
+| 💻 Runner OS | Windows |
+| 📦 APK Files | $($ApkFiles.Count) |
+
+### 📋 Generated APK Files
+$(if ($ApkFiles.Count -gt 0) {
+  $ApkFiles | ForEach-Object { 
+    $size = [math]::Round($_.Length / 1MB, 2)
+    "- **$($_.Name)** - ${size} MB"
+  } | Out-String
+} else {
+  "No APK files were generated."
+})
+
+### 📊 Build Logs
+Build logs and error analysis have been uploaded as artifacts for detailed review.
+"@ | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding UTF8
+          
+          Write-Host "==============================" -ForegroundColor Green
