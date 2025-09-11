@@ -111,25 +111,33 @@ if(NOT CRYPTOPP_LIB_FOUND)
                 target_link_libraries(crypting_static ${CRYPTOPP_LIB})
                 set(CRYPTOPP_LIB_FOUND TRUE)
             endif()
+            message(STATUS "⚠️  Found headers but no matching library, trying system library")
+            # Try linking with standard name
+            target_link_libraries(crypting cryptopp)
+            target_link_libraries(crypting_static cryptopp)
+            set(CRYPTOPP_LIB_FOUND TRUE)
         endif()
     endif()
 endif()
 
-# Method 4: Check for vcpkg installation
+# Method 4: Check for vcpkg installation (Windows/cross-platform package manager)
 if(NOT CRYPTOPP_LIB_FOUND AND DEFINED ENV{VCPKG_ROOT})
     find_package(cryptopp CONFIG QUIET)
     if(cryptopp_FOUND)
-        message(STATUS "Found Crypto++ via vcpkg")
+        message(STATUS "✅ Found Crypto++ via vcpkg")
         target_link_libraries(crypting cryptopp::cryptopp)
         target_link_libraries(crypting_static cryptopp::cryptopp)
         set(CRYPTOPP_LIB_FOUND TRUE)
     endif()
 endif()
 
-# Final check - if still not found, provide helpful error message
+# Final check - if still not found, provide comprehensive error message with instructions
 if(NOT CRYPTOPP_LIB_FOUND)
     message(FATAL_ERROR 
-        "Crypto++ library not found. Please install it using one of these methods:\n"
+"Crypto++ library not found. Please install it using one of these methods:\n"
+        "❌ Crypto++ library not found!\n"
+        "\n"
+        "Please install Crypto++ using one of these methods:\n"
         "\n"
         "📦 PACKAGE MANAGERS:\n"
         "  Ubuntu/Debian:  sudo apt-get install libcrypto++-dev\n"
@@ -149,6 +157,12 @@ if(NOT CRYPTOPP_LIB_FOUND)
         "  Check pkg-config: pkg-config --exists libcrypto++\n"
         "  Check library:    find /usr -name '*crypto*' -type f 2>/dev/null\n"
         "  Check headers:    find /usr -name 'cryptlib.h' 2>/dev/null"
+        "  make -j\$(nproc) && sudo make install\n"
+        "  sudo ldconfig  # Linux only\n"
+        "\n"
+        "🔗 More info: https://cryptopp.com/wiki/Linux\n"
+        "\n"
+        "After installation, re-run cmake to detect the library."
     )
 endif()
 

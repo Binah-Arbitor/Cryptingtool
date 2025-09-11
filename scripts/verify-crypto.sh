@@ -11,6 +11,23 @@ echo ""
 success() { echo "✅ $1"; }
 warning() { echo "⚠️  $1"; }
 error() { echo "❌ $1"; }
+# Crypto++ Library Verification Script
+# Checks if Crypto++ is properly installed and provides detailed diagnostics
+
+set -e
+
+echo "🔐 Crypto++ Library Verification Script"
+echo "========================================"
+
+# Colors for output
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+success() { echo -e "${GREEN}✅ $1${NC}"; }
+warning() { echo -e "${YELLOW}⚠️  $1${NC}"; }
+error() { echo -e "${RED}❌ $1${NC}"; }
 info() { echo "ℹ️  $1"; }
 
 # Function to check if a command exists
@@ -83,6 +100,15 @@ for lib_path in /usr/lib /usr/local/lib /opt/homebrew/lib /usr/lib/x86_64-linux-
         if [ "$LIBRARY_FOUND" = true ]; then
             break
         fi
+        for lib_name in libcryptopp.so libcrypto++.so libcryptopp.a libcrypto++.a libcryptopp.dylib libcrypto++.dylib; do
+            if [ -f "$lib_path/$lib_name" ]; then
+                success "Found library: $lib_path/$lib_name"
+                LIBRARY_FOUND=true
+                CRYPTO_FOUND=true
+                CRYPTO_METHODS_FOUND+=("direct library")
+                break 2
+            fi
+        done
     fi
 done
 
@@ -107,6 +133,19 @@ for include_path in /usr/include /usr/local/include /opt/homebrew/include; do
         CRYPTO_FOUND=true
         CRYPTO_METHODS_FOUND+=("header detection")
         break
+echo "🔍 Method 3: Header file detection"
+HEADERS_FOUND=false
+for header_path in /usr/include /usr/local/include /opt/homebrew/include; do
+    if [ -d "$header_path" ]; then
+        for header_dir in cryptopp crypto++; do
+            if [ -f "$header_path/$header_dir/cryptlib.h" ]; then
+                success "Found headers: $header_path/$header_dir/cryptlib.h"
+                HEADERS_FOUND=true
+                CRYPTO_FOUND=true
+                CRYPTO_METHODS_FOUND+=("headers")
+                break 2
+            fi
+        done
     fi
 done
 
@@ -123,6 +162,17 @@ case $OS in
             if dpkg -l | grep -q libcrypto++; then
                 success "Found crypto++ packages via dpkg"
                 dpkg -l | grep libcrypto++ | head -3
+# Check 4: Package manager detection
+echo "🔍 Method 4: Package manager verification"
+case $OS in
+    "linux")
+        if command_exists dpkg; then
+            PACKAGES=$(dpkg -l | grep crypto++ | wc -l)
+            if [ "$PACKAGES" -gt 0 ]; then
+                success "Found $PACKAGES crypto++ package(s) via dpkg:"
+                dpkg -l | grep crypto++ | while read line; do
+                    info "   $line"
+                done
                 CRYPTO_FOUND=true
                 CRYPTO_METHODS_FOUND+=("dpkg packages")
             else
@@ -195,6 +245,7 @@ else
     echo "   wget https://github.com/weidai11/cryptopp/releases/download/CRYPTOPP_8_9_0/cryptopp890.zip"
     echo "   unzip cryptopp890.zip && cd cryptopp"
     echo "   make -j\\$(nproc) && sudo make install"
+    echo "   make -j\$(nproc) && sudo make install"
     echo ""
 fi
 
@@ -239,6 +290,19 @@ EOF
         warning "CMake detection test failed"
         info "CMake output:"
         cmake -P test_crypto_cmake.txt 2>&1 | head -5
+        message(STATUS "CMake can find Crypto++ via pkg-config")
+    endif()
+endif()
+find_library(CRYPTOPP_LIB NAMES cryptopp crypto++ libcrypto++)
+if(CRYPTOPP_LIB)
+    message(STATUS "CMake can find Crypto++ library: \${CRYPTOPP_LIB}")
+endif()
+EOF
+    
+    if cmake -P test_crypto_cmake.txt 2>/dev/null | grep -q "CMake can find"; then
+        success "CMake can detect Crypto++ successfully"
+    else
+        warning "CMake may have issues detecting Crypto++"
     fi
     rm -f test_crypto_cmake.txt
 else
@@ -261,3 +325,11 @@ echo "   CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH:-not set}"
 
 echo ""
 echo "Verification completed!"
+
+echo ""
+echo "🔗 Useful Links:"
+echo "   - Crypto++ website: https://cryptopp.com/"
+echo "   - Installation guide: https://cryptopp.com/wiki/Linux"
+echo "   - GitHub releases: https://github.com/weidai11/cryptopp/releases"
+
+exit 0

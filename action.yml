@@ -69,14 +69,57 @@ runs:
     - name: Setup C++ Environment
       shell: bash
       run: |
-        echo "Setting up C++ build environment..."
+        echo "🔧 Setting up C++ build environment..."
+        
+        # Function to get latest Crypto++ version
+        get_latest_cryptopp_version() {
+          # Try to get latest version from GitHub, fallback to known stable version
+          LATEST_VERSION=$(curl -s https://github.com/weidai11/cryptopp/releases 2>/dev/null | grep -o 'CRYPTOPP_[0-9_]*' | head -1 || echo "")
+          if [ -z "$LATEST_VERSION" ]; then
+            LATEST_VERSION="CRYPTOPP_8_9_0"  # Fallback to known stable version
+          fi
+          echo "$LATEST_VERSION"
+        }
+        
+        # Function to build crypto++ from source with latest version
+        build_cryptopp_from_source() {
+          echo "📥 Building Crypto++ from source..."
+          cd /tmp
+          CRYPTO_VERSION=$(get_latest_cryptopp_version)
+          CRYPTO_ZIP_VERSION=$(echo $CRYPTO_VERSION | sed 's/CRYPTOPP_//g' | sed 's/_//g')
+          echo "🔄 Using Crypto++ version: $CRYPTO_VERSION ($CRYPTO_ZIP_VERSION)"
+          
+          # Download and extract
+          wget https://github.com/weidai11/cryptopp/releases/download/${CRYPTO_VERSION}/cryptopp${CRYPTO_ZIP_VERSION}.zip
+          unzip cryptopp${CRYPTO_ZIP_VERSION}.zip -d cryptopp
+          cd cryptopp
+          
+          # Build and install
+          if [ "${{ runner.os }}" = "Linux" ]; then
+            make -j$(nproc)
+            sudo make install PREFIX=/usr/local
+            sudo ldconfig
+          elif [ "${{ runner.os }}" = "macOS" ]; then
+            make -j$(sysctl -n hw.ncpu)
+            sudo make install PREFIX=/usr/local
+          fi
+          
+          echo "✅ Built and installed Crypto++ $CRYPTO_VERSION from source"
+        }
+        
         if [ "${{ runner.os }}" = "Linux" ]; then
           echo "📦 Installing Linux dependencies..."
           sudo apt-get update
           sudo apt-get install -y build-essential cmake ninja-build pkg-config
           
-          # Try to install crypto++ library with multiple attempts
-          if ! sudo apt-get install -y libcrypto++-dev; then
+          # Try to install crypto++ library with multiple package names
+          CRYPTO_INSTALLED=false
+          
+          # Try primary package name
+          if sudo apt-get install -y libcrypto++-dev; then
+            echo "✅ Installed libcrypto++-dev package"
+            CRYPTO_INSTALLED=true
+          else
             echo "⚠️  libcrypto++-dev package not available, trying alternatives..."
             
             # Try alternative package names
@@ -136,6 +179,20 @@ runs:
             echo "Library files:"
             find /usr -name "*crypto*" -type f 2>/dev/null | head -5 || echo "No crypto files found"
             exit 1
+for pkg in libcrypto++8-dev libcryptoppdev libcryptopp-dev; do
+              if sudo apt-get install -y $pkg 2>/dev/null; then
+                echo "✅ Installed $pkg"
+                CRYPTO_INSTALLED=true
+                break
+              fi
+            done
+          fi
+          
+          # If no package worked, build from source
+          if [ "$CRYPTO_INSTALLED" = false ]; then
+            echo "📥 No package available, building from source..."
+            build_cryptopp_from_source
+            CRYPTO_INSTALLED=true
           fi
           
         elif [ "${{ runner.os }}" = "macOS" ]; then
@@ -154,7 +211,12 @@ runs:
             sudo make install PREFIX=/usr/local
             echo "✅ Built and installed crypto++ v8.9.0 from source"
           else
+          # Try to install crypto++ via Homebrew
+          if brew install cryptopp; then
             echo "✅ Installed cryptopp via Homebrew"
+          else
+            echo "⚠️  Homebrew cryptopp not available, building from source..."
+            build_cryptopp_from_source
           fi
           
         elif [ "${{ runner.os }}" = "Windows" ]; then
@@ -179,9 +241,51 @@ runs:
           fi
         fi
         
-        echo "🔍 Checking for crypto++ installation..."
-        echo "Library search paths:"
-        find /usr /usr/local /opt -name "*crypto*" -type f 2>/dev/null | grep -E "\.(so|a|dylib|lib)$" | head -10 || echo "No crypto libraries found in standard paths"
+        # Comprehensive verification of Crypto++ installation
+        echo ""
+        echo "🔍 Verifying Crypto++ installation..."
+        VERIFICATION_PASSED=false
+        
+        # Check via pkg-config
+        if pkg-config --exists libcrypto++; then
+          echo "✅ pkg-config libcrypto++: $(pkg-config --modversion libcrypto++)"
+          VERIFICATION_PASSED=true
+        elif pkg-config --exists cryptopp; then
+          echo "✅ pkg-config cryptopp: $(pkg-config --modversion cryptopp)"
+          VERIFICATION_PASSED=true
+        fi
+        
+        # Check for headers
+        for header_path in /usr/include/cryptopp /usr/local/include/cryptopp /usr/include/crypto++ /usr/local/include/crypto++ /opt/homebrew/include/cryptopp; do
+          if [ -f "$header_path/cryptlib.h" ]; then
+            echo "✅ Found Crypto++ headers: $header_path/cryptlib.h"
+            VERIFICATION_PASSED=true
+            break
+          fi
+        done
+        
+        # Check for libraries
+        for lib_path in /usr/lib /usr/local/lib /opt/homebrew/lib /usr/lib/x86_64-linux-gnu /usr/lib/aarch64-linux-gnu; do
+          if [ -f "$lib_path/libcryptopp.so" ] || [ -f "$lib_path/libcrypto++.so" ] || [ -f "$lib_path/libcryptopp.a" ] || [ -f "$lib_path/libcryptopp.dylib" ]; then
+            echo "✅ Found Crypto++ library in: $lib_path"
+            VERIFICATION_PASSED=true
+            break
+          fi
+        done
+        
+        if [ "$VERIFICATION_PASSED" = false ]; then
+          echo "❌ Crypto++ library verification failed!"
+          echo "📋 Available libraries:"
+          find /usr /usr/local /opt -name "*crypto*" -type f 2>/dev/null | grep -E "\.(so|a|dylib|lib)$" | head -10 || echo "No crypto libraries found"
+          exit 1
+        fi
+        
+        echo "✅ Crypto++ library verification successful!"
+        
+        echo ""
+        echo "🔍 Final verification - checking for crypto++ installation..."
+        echo "📋 Library search results:"
+        find /usr /usr/local /opt -name "*crypto*" -type f 2>/dev/null | grep -E "\.(so|a|dylib|lib)$" | head -5 || echo "No crypto libraries found in standard paths"
 
     - name: Install Flutter Dependencies
       shell: bash
