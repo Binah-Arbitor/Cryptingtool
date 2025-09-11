@@ -252,7 +252,14 @@ The action includes robust error handling and automatic dependency resolution. I
 - macOS: `brew install cmake ninja`
 - Windows: `choco install cmake ninja`
 
-#### 3. Flutter Issues
+#### 3. Flutter Linux Desktop Issues
+**Symptoms**: "GTK 3.0 development libraries are required for Linux development" or "Unable to access driver information using 'eglinfo'"
+
+**Solutions**:
+- **Automatic**: The action automatically installs `libgtk-3-dev` and `mesa-utils`
+- **Manual**: `sudo apt-get install libgtk-3-dev mesa-utils`
+
+#### 4. Flutter Issues
 **Symptoms**: Flutter commands fail or SDK not found
 
 **Solutions**:
