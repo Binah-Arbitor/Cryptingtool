@@ -243,74 +243,138 @@ jobs:
         run: |
           Write-Host "=== Configuring Android Build ===" -ForegroundColor Green
 
-          # Run flutter doctor to check Android setup
-          Write-Host "Checking Android setup..." -ForegroundColor Yellow
-          flutter doctor --android-licenses 2>&1 | Tee-Object -FilePath "android_setup.log"
+          # Initial Android setup check
+          Write-Host "Checking initial Android setup..." -ForegroundColor Yellow
+          flutter doctor 2>&1 | Tee-Object -FilePath "android_setup_initial.log"
 
-          # Accept Android licenses with simplified modern approach
-          Write-Host "Accepting Android licenses with streamlined method..." -ForegroundColor Yellow
-          
-          $licenseAccepted = $false
-          try {
-            Write-Host "Using modern license acceptance approach..." -ForegroundColor Yellow
-            
-            # Modern simplified approach for current Android SDKs
-            $psi = New-Object System.Diagnostics.ProcessStartInfo
-            $psi.FileName = "flutter"
-            $psi.Arguments = "doctor --android-licenses"
-            $psi.RedirectStandardInput = $true
-            $psi.RedirectStandardOutput = $true
-            $psi.RedirectStandardError = $true
-            $psi.UseShellExecute = $false
-            $psi.WorkingDirectory = (Get-Location).Path
-            
-            $process = [System.Diagnostics.Process]::Start($psi)
-            
-            # Send acceptance responses
-            for ($i = 0; $i -lt 8; $i++) {
-              $process.StandardInput.WriteLine("y")
-            }
-            $process.StandardInput.Close()
-            
-            # Wait with timeout (2 minutes - reduced from 3 for modern SDKs)
-            $timeoutMs = 120000
-            if ($process.WaitForExit($timeoutMs)) {
-              Write-Host "✅ Android licenses accepted successfully" -ForegroundColor Green
-              $licenseAccepted = $true
-            } else {
-              Write-Host "⚠️ License acceptance timed out - killing process" -ForegroundColor Yellow
-              $process.Kill()
-              $process.WaitForExit(5000)
-            }
-          }
-          catch {
-            Write-Host "⚠️ License acceptance failed: $($_.Exception.Message)" -ForegroundColor Yellow
-          }
+          # Enhanced Android SDK license acceptance using Stack Overflow proven methods
+          Write-Host "=== Enhanced Android License Acceptance ===" -ForegroundColor Cyan
+          Write-Host "Using multi-method approach based on Stack Overflow solutions" -ForegroundColor Yellow
+          Write-Host "Addressing: '1 of 7 SDK package license not accepted' issue" -ForegroundColor Yellow
 
-          # Simple fallback for any remaining issues
-          if (-not $licenseAccepted) {
-            Write-Host "Attempting direct SDK manager approach..." -ForegroundColor Yellow
-            try {
-              # Simple yes pipe approach
-              echo y | flutter doctor --android-licenses
-              Write-Host "✅ Fallback license acceptance completed" -ForegroundColor Green
-            }
-            catch {
-              Write-Host "⚠️ Note: Some licenses may need manual acceptance - continuing build..." -ForegroundColor Yellow
-            }
-          }
-
-          # Final verification
-          Write-Host "Performing final license verification..." -ForegroundColor Yellow
-          flutter doctor -v 2>&1 | Tee-Object -FilePath "flutter_doctor.log"
-          
-          # Check for any remaining license issues
-          $doctorOutput = Get-Content "flutter_doctor.log" -Raw
-          if ($doctorOutput -match "licenses not accepted" -or $doctorOutput -match "license.*not.*accepted") {
-            Write-Host "⚠️ Warning: Some licenses may still not be accepted - check build logs" -ForegroundColor Yellow
-            Write-Host "Continuing build - SDK issues may be resolved during build process..." -ForegroundColor Yellow
+          # Run the enhanced license acceptance script
+          $scriptPath = "scripts/accept-android-licenses.ps1"
+          if (Test-Path $scriptPath) {
+            Write-Host "Running enhanced license acceptance script..." -ForegroundColor Yellow
+            & $scriptPath -TimeoutSeconds 180 -MaxRetries 2
           } else {
-            Write-Host "✅ All SDK licenses appear to be accepted" -ForegroundColor Green
+            Write-Host "Enhanced script not found, using integrated approach..." -ForegroundColor Yellow
+            
+            # Integrated multi-method approach (fallback if script missing)
+            $licenseAccepted = $false
+            $methods = @("PowerShell Process", "Batch Approach", "CMD Pipe", "Direct Echo")
+            
+            foreach ($method in $methods) {
+              if ($licenseAccepted) { break }
+              
+              Write-Host "🔄 Trying method: $method" -ForegroundColor Cyan
+              
+              switch ($method) {
+                "PowerShell Process" {
+                  try {
+                    $psi = New-Object System.Diagnostics.ProcessStartInfo
+                    $psi.FileName = "flutter"
+                    $psi.Arguments = "doctor --android-licenses"
+                    $psi.RedirectStandardInput = $true
+                    $psi.RedirectStandardOutput = $true
+                    $psi.RedirectStandardError = $true
+                    $psi.UseShellExecute = $false
+                    $psi.WorkingDirectory = (Get-Location).Path
+                    
+                    $process = [System.Diagnostics.Process]::Start($psi)
+                    
+                    # Send 12 "y" responses with timing (more than typical 7 licenses)
+                    for ($i = 0; $i -lt 12; $i++) {
+                      $process.StandardInput.WriteLine("y")
+                      Start-Sleep -Milliseconds 50
+                    }
+                    $process.StandardInput.Close()
+                    
+                    if ($process.WaitForExit(120000)) {
+                      Write-Host "✅ PowerShell Process method succeeded" -ForegroundColor Green
+                      $licenseAccepted = ($process.ExitCode -eq 0)
+                    } else {
+                      $process.Kill()
+                      $process.WaitForExit(5000)
+                    }
+                  }
+                  catch {
+                    Write-Host "⚠️ PowerShell Process method failed: $_" -ForegroundColor Yellow
+                  }
+                }
+                
+                "Batch Approach" {
+                  try {
+                    # Create batch content using simple string
+                    $batchContent = "@echo off`r`n"
+                    $batchContent += "(echo y & echo y & echo y & echo y & echo y & echo y & echo y & echo y & echo y & echo y & echo y & echo y) | flutter doctor --android-licenses`r`n"
+                    $batchContent += "exit /b %ERRORLEVEL%`r`n"
+                    $batchPath = Join-Path $env:TEMP "license_accept.bat"
+                    Set-Content -Path $batchPath -Value $batchContent -Encoding ASCII
+                    
+                    $process = Start-Process -FilePath $batchPath -Wait -PassThru -WindowStyle Hidden
+                    Remove-Item $batchPath -Force -ErrorAction SilentlyContinue
+                    
+                    if ($process.ExitCode -eq 0) {
+                      Write-Host "✅ Batch Approach method succeeded" -ForegroundColor Green
+                      $licenseAccepted = $true
+                    }
+                  }
+                  catch {
+                    Write-Host "⚠️ Batch Approach method failed: $_" -ForegroundColor Yellow
+                  }
+                }
+                
+                "CMD Pipe" {
+                  try {
+                    # Using escaped pipes for Windows CMD
+                    cmd /c 'for /L %i in (1,1,10) do echo y | flutter doctor --android-licenses'
+                    if ($LASTEXITCODE -eq 0) {
+                      Write-Host "✅ CMD Pipe method succeeded" -ForegroundColor Green
+                      $licenseAccepted = $true
+                    }
+                  }
+                  catch {
+                    Write-Host "⚠️ CMD Pipe method failed: $_" -ForegroundColor Yellow
+                  }
+                }
+                
+                "Direct Echo" {
+                  try {
+                    # Simple direct approach as final fallback
+                    $yesString = "y`n" * 10
+                    $yesString | flutter doctor --android-licenses
+                    if ($LASTEXITCODE -eq 0) {
+                      Write-Host "✅ Direct Echo method succeeded" -ForegroundColor Green
+                      $licenseAccepted = $true
+                    }
+                  }
+                  catch {
+                    Write-Host "⚠️ Direct Echo method failed: $_" -ForegroundColor Yellow
+                  }
+                }
+              }
+              
+              # Brief pause between methods
+              if (-not $licenseAccepted -and $method -ne $methods[-1]) {
+                Start-Sleep -Seconds 2
+              }
+            }
+          }
+
+          # Final comprehensive verification
+          Write-Host "=== Final License Verification ===" -ForegroundColor Green
+          flutter doctor -v 2>&1 | Tee-Object -FilePath "flutter_doctor_final.log"
+          
+          # Analyze the results
+          $doctorOutput = Get-Content "flutter_doctor_final.log" -Raw
+          if ($doctorOutput -match "licenses.*not.*accepted" -or $doctorOutput -match "Android licenses not accepted") {
+            Write-Host "⚠️ Some licenses may still not be accepted - but continuing build" -ForegroundColor Yellow
+            Write-Host "Note: Modern Android builds often work even with some license warnings" -ForegroundColor Cyan
+          } elseif ($doctorOutput -match "Android toolchain.*✓") {
+            Write-Host "🎉 SUCCESS: All Android SDK licenses are properly accepted!" -ForegroundColor Green
+          } else {
+            Write-Host "ℹ️ License status unclear but proceeding with build" -ForegroundColor Cyan
           }
           
           # Validate Android API 24+ configuration

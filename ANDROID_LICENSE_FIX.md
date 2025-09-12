@@ -97,3 +97,9 @@ With these changes, the Android SDK license acceptance should:
 4. Provide clear logging about the license acceptance status
 
 This resolves the "1 of 7 SDK package license not accepted" infinite loading issue found in Stack Overflow cases for Windows GitHub Actions environments.
+
+## References
+
+- **Stack Overflow Solution**: [Automatically accept all SDK licences](https://stackoverflow.com/questions/38096225/automatically-accept-all-sdk-licences)
+- **GitHub Issue**: Android SDK license acceptance in Windows CI/CD
+- **Flutter Doctor**: Enhanced license acceptance methods
