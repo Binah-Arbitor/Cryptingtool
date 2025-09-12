@@ -95,6 +95,14 @@ if command -v flutter >/dev/null 2>&1; then
         LICENSES_LINE=$(echo "$DOCTOR_OUTPUT" | grep "licenses.*not.*accepted" | head -1)
         print_status "info" "$LICENSES_LINE"
         echo "💡 Fix with: flutter doctor --android-licenses"
+        echo "💡 Or run: ./scripts/accept-android-licenses.ps1 (Windows)"
+        echo "💡 Or run: ./scripts/accept-android-licenses.bat (Windows CMD)"
+        echo ""
+        print_status "info" "Available license acceptance methods:"
+        echo "   1. PowerShell script: ./scripts/accept-android-licenses.ps1"
+        echo "   2. Batch file: ./scripts/accept-android-licenses.bat" 
+        echo "   3. Manual: flutter doctor --android-licenses"
+        echo "   4. Stack Overflow method: (echo y;echo y;echo y;echo y;echo y;echo y;echo y) | flutter doctor --android-licenses"
     else
         print_status "success" "Android SDK licenses appear to be accepted"
     fi
@@ -334,12 +342,33 @@ fi
 
 if [ $CRITICAL_ISSUES -eq 0 ]; then
     print_status "success" "No critical issues found! SDK environment looks good."
+    echo ""
+    print_status "info" "For Android license issues, use enhanced scripts:"
+    echo "   • Windows PowerShell: ./scripts/accept-android-licenses.ps1"
+    echo "   • Windows CMD: ./scripts/accept-android-licenses.bat"
+    echo "   • Manual: flutter doctor --android-licenses"
+    echo "   • Stack Overflow method: (echo y;echo y;echo y;echo y;echo y;echo y;echo y) | flutter doctor --android-licenses"
 else
     print_status "error" "Found $CRITICAL_ISSUES critical issue(s) that need to be fixed."
+    echo ""
+    print_status "info" "Common fixes for SDK issues:"
+    echo "   1. Install missing SDKs (Flutter, Android SDK, Java)"
+    echo "   2. Set environment variables (ANDROID_HOME, JAVA_HOME)"
+    echo "   3. Accept Android licenses using enhanced scripts:"
+    echo "      • ./scripts/accept-android-licenses.ps1 (Windows)"
+    echo "      • ./scripts/accept-android-licenses.bat (Windows CMD)"
+    echo "   4. Run: flutter doctor --android-licenses"
 fi
 
 echo ""
 print_status "info" "Verification completed. Check the output above for specific issues and solutions."
+echo ""
+print_status "info" "📚 Additional Resources for License Issues:"
+echo "   • Enhanced license acceptance scripts in ./scripts/ directory"
+echo "   • Stack Overflow Android License Solutions"
+echo "   • Flutter doctor troubleshooting guide"
+echo "   • GitHub Actions Windows environment best practices"
+echo ""
 
 # Save results to a file
 REPORT_FILE="sdk_verification_report.txt"

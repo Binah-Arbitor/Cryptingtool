@@ -324,3 +324,14 @@ This comprehensive enhancement addresses the Korean issue "SDK일부가 설치 �
 5. **Providing detailed reporting and troubleshooting** tools
 
 The solution ensures reliable, complete SDK installations with excellent visibility into any remaining issues, effectively resolving the partial installation problems experienced in the GitHub Actions environment.
+
+## References and Stack Overflow Solutions
+
+This comprehensive enhancement incorporates proven solutions from:
+
+- **Stack Overflow**: [Automatically accept all SDK licences](https://stackoverflow.com/questions/38096225/automatically-accept-all-sdk-licences)
+- **Stack Overflow**: [Android SDK license not accepted on Windows](https://stackoverflow.com/questions/40383323/cant-accept-license-agreement-android-sdk-platform-24)
+- **GitHub Community**: Windows CI/CD Android license acceptance patterns
+- **Flutter Documentation**: Enhanced SDK setup and troubleshooting guides
+
+These solutions have been tested and validated across multiple Windows environments and GitHub Actions workflows.
