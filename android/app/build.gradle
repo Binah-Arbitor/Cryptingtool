@@ -1,8 +1,53 @@
 plugins {
     id "com.android.application"
     id "org.jetbrains.kotlin.android"
-    id "dev.flutter.flutter-gradle-plugin"
 }
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterRoot = localProperties.getProperty('flutter.sdk')
+if (flutterRoot == null) {
+    // Try to get Flutter root from environment variable
+    flutterRoot = System.getenv('FLUTTER_ROOT') ?: System.getenv('FLUTTER_SDK')
+    if (flutterRoot == null) {
+        // Try common Flutter installation paths
+        def possiblePaths = [
+            System.getProperty("user.home") + "/flutter",
+            "/usr/local/flutter",
+            "/opt/flutter"
+        ]
+        for (path in possiblePaths) {
+            if (new File(path).exists()) {
+                flutterRoot = path
+                break
+            }
+        }
+    }
+}
+
+if (flutterRoot == null) {
+    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file or set FLUTTER_ROOT environment variable.")
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     namespace = "com.binah.cryptingtool"
@@ -23,8 +68,8 @@ android {
         // Minimum SDK version set to 24 for Android 7.0+ (improved stability and security)
         minSdk = 24
         targetSdk = 35
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        versionCode = flutterVersionCode.toInteger()
+        versionName = flutterVersionName
         
         // Optimize for performance
         ndk {
