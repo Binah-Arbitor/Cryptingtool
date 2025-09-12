@@ -52,7 +52,7 @@ runs:
   using: 'composite'
   steps:
     - name: Setup Flutter (Channel-based)
-      uses: subosito/flutter-action@v2
+      uses: subosito/flutter-action@v2.21.0
       if: >-
         ${{ inputs.flutter-version == 'stable' ||
             inputs.flutter-version == 'beta' ||
@@ -60,9 +60,12 @@ runs:
             inputs.flutter-version == 'master' }}
       with:
         channel: ${{ inputs.flutter-version }}
+        cache: true
+        cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
+        cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
 
     - name: Setup Flutter (Version-based)
-      uses: subosito/flutter-action@v2
+      uses: subosito/flutter-action@v2.21.0
       if: >-
         ${{ inputs.flutter-version != 'stable' &&
             inputs.flutter-version != 'beta' &&
@@ -70,12 +73,20 @@ runs:
             inputs.flutter-version != 'master' }}
       with:
         flutter-version: ${{ inputs.flutter-version }}
+        cache: true
+        cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
+        cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
 
     - name: Check and Install Dependencies
       shell: bash
       run: |
-        echo "🔍 Running dependency check..."
+        echo "🔍 Running comprehensive dependency check..."
         ${{ github.action_path }}/scripts/check-dependencies.sh
+        
+        echo "🔍 Running SDK verification..."
+        ${{ github.action_path }}/scripts/verify-sdk.sh || true
+        
+        echo "📋 Dependency check completed"
 
     - name: Setup C++ Environment
       shell: bash

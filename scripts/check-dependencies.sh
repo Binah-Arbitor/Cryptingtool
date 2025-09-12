@@ -176,9 +176,71 @@ fi
 echo "🐦 Checking Flutter..."
 if command_exists flutter; then
     echo "✅ Flutter is available"
-    flutter --version
+    FLUTTER_VERSION=$(flutter --version 2>&1 | head -1 | cut -d' ' -f2 || echo "unknown")
+    echo "   Version: $FLUTTER_VERSION"
+    
+    # Check Flutter doctor status
+    echo "🔍 Running Flutter doctor..."
+    flutter doctor --version > /dev/null 2>&1
+    
+    # Check Android toolchain status
+    echo "📱 Checking Android toolchain..."
+    FLUTTER_DOCTOR_OUTPUT=$(flutter doctor 2>&1)
+    
+    if echo "$FLUTTER_DOCTOR_OUTPUT" | grep -q "Android toolchain.*✓"; then
+        echo "✅ Android toolchain is properly configured"
+    elif echo "$FLUTTER_DOCTOR_OUTPUT" | grep -q "Android toolchain.*✗"; then
+        echo "❌ Android toolchain has issues"
+        echo "$FLUTTER_DOCTOR_OUTPUT" | grep -A 2 "Android toolchain"
+    elif echo "$FLUTTER_DOCTOR_OUTPUT" | grep -q "Android toolchain.*!"; then
+        echo "⚠️  Android toolchain has warnings"
+        echo "$FLUTTER_DOCTOR_OUTPUT" | grep -A 2 "Android toolchain"
+    else
+        echo "⚠️  Android toolchain status unclear"
+    fi
+    
+    # Check for license issues specifically
+    if echo "$FLUTTER_DOCTOR_OUTPUT" | grep -q "licenses.*not.*accepted\|cmdline-tools.*not.*available"; then
+        echo "⚠️  Android SDK licenses may need to be accepted"
+        echo "💡 Run 'flutter doctor --android-licenses' to fix this"
+    fi
+    
+    # Comprehensive SDK verification
+    echo "🔍 Verifying SDK components..."
+    
+    # Check for Android SDK path
+    if [ -n "$ANDROID_HOME" ] || [ -n "$ANDROID_SDK_ROOT" ]; then
+        SDK_PATH="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+        echo "✅ Android SDK path found: $SDK_PATH"
+        
+        # Check for essential SDK components
+        if [ -d "$SDK_PATH/platforms" ]; then
+            PLATFORM_COUNT=$(ls -1 "$SDK_PATH/platforms" 2>/dev/null | wc -l)
+            echo "✅ Android platforms: $PLATFORM_COUNT installed"
+        else
+            echo "❌ No Android platforms found"
+        fi
+        
+        if [ -d "$SDK_PATH/build-tools" ]; then
+            BUILD_TOOLS_COUNT=$(ls -1 "$SDK_PATH/build-tools" 2>/dev/null | wc -l)
+            echo "✅ Build tools: $BUILD_TOOLS_COUNT versions installed"
+        else
+            echo "❌ No build tools found"
+        fi
+        
+        if [ -d "$SDK_PATH/cmdline-tools" ] || [ -d "$SDK_PATH/tools" ]; then
+            echo "✅ Command line tools found"
+        else
+            echo "⚠️  Command line tools not found - may cause license issues"
+        fi
+        
+    else
+        echo "⚠️  Android SDK path not set (ANDROID_HOME/ANDROID_SDK_ROOT)"
+    fi
+    
 else
-    echo "⚠️  Flutter not found. This is optional for C++ only builds."
+    echo "⚠️  Flutter not found. Installing or configuring Flutter SDK is recommended."
+    echo "💡 Install from: https://docs.flutter.dev/get-started/install"
 fi
 
 echo "🎉 Dependency check completed!"
