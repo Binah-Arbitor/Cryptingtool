@@ -1,41 +1,40 @@
-# Android API 35+ Configuration for Windows VM
+# Android API 24+ Configuration for Windows VM
 
-This document describes the updated configuration for building Android APKs targeting API 35+ (Android 15) while maintaining compatibility with API 16+ (Android 4.1 Jelly Bean) on Windows VM environment.
+This document describes the updated configuration for building Android APKs targeting API 35+ (Android 15) with a modern minimum API 24+ (Android 7.0) on Windows VM environment.
 
 ## Overview
 
-The project has been optimized to:
+The project has been modernized to:
 - Target Android API 35+ (Android 15) with modern optimizations
-- Maintain backward compatibility with Android 4.1+ (API 16 minimum)
+- Require minimum Android 7.0+ (API 24) for improved stability and security
 - Build on Windows VM environment using GitHub Actions
 - Include comprehensive build optimizations (R8, ProGuard, resource shrinking)
-- Optimize performance and reduce APK size
+- Optimize performance and reduce APK size by removing legacy compatibility code
 
 ## Configuration Changes
 
 ### Android Platform Structure
 
 #### `android/app/build.gradle`
-- **minSdk**: Set to 16 (Android 4.1+) for backward compatibility
+- **minSdk**: Set to 24 (Android 7.0+) for improved stability and security
 - **compileSdk**: Set to 35 (Android 15)
 - **targetSdk**: Set to 35 (Android 15)
 - **Java**: Updated to version 11 for better performance
 - **Kotlin**: Updated to latest version (1.9+)
 - **NDK**: Updated to latest version (26.1+)
-- **Multidex**: Enabled for legacy Android support
-- **Vector Drawables**: Support enabled for API < 21
+- **Multidex**: Removed (not needed for API 24+)
+- **Vector Drawables**: Legacy support removed (native support in API 24+)
 - **R8 Optimization**: Full mode enabled for release builds
 - **Code Minification**: Enabled for release builds
 - **Resource Shrinking**: Enabled for release builds
 - **ABI Filters**: Configured for optimal performance
-- **ProGuard Rules**: Comprehensive rules for Flutter and crypto libraries
 
 #### `android/app/src/main/AndroidManifest.xml`
-- Minimum SDK version specified as 16
+- Minimum SDK version specified as 24 (Android 7.0)
 - Target SDK version updated to 35 (Android 15)
 - Required permissions configured for crypto operations
 - Network access permissions for crypto functionality
-- File access permissions with proper scoping
+- Legacy external storage permissions removed (modern scoped storage)
 - Performance optimizations enabled:
   - Hardware acceleration enabled
   - Native library extraction optimization
@@ -99,25 +98,23 @@ flutter build apk --debug
 ## Compatibility
 
 ### Android Versions Supported
-- **Minimum**: Android 4.1 (API 16) - Jelly Bean
+- **Minimum**: Android 7.0 (API 24) - Nougat (2016)
 - **Target**: Android 15 (API 35) - Latest with optimizations
 - **Compile**: Android 15 (API 35) - Latest development features
 
 ### Device Support
-- Devices running Android 4.1 and above
+- Devices running Android 7.0 and above (~94% of active devices)
 - Both ARM and x86 architectures
 - Phones and tablets
-- Legacy device support with multidex
+- Modern security and performance features
 
-### Features for Legacy Support
-- **Multidex**: Enabled for apps exceeding method count limits
-- **Vector Drawables**: Backward compatibility for API < 21
-- **Legacy External Storage**: Support for older file access patterns
-- **Network Security**: Clear text traffic allowed for development
-- **Java 11**: Better performance while maintaining compatibility
-- **R8 Optimization**: Full mode for maximum code optimization
-- **Resource Shrinking**: Automatic removal of unused resources
-- **ABI Filtering**: Support for modern architectures with fallbacks
+### Benefits of API 24+ Minimum
+- **Enhanced Security**: Modern TLS, improved crypto APIs, and security sandbox
+- **Better Performance**: Native multidex handling, improved memory management
+- **Simplified Code**: No need for legacy compatibility workarounds
+- **Smaller APK Size**: Removal of compatibility libraries and legacy support
+- **Modern Features**: Access to notification channels, adaptive icons, etc.
+- **Better Development**: Cleaner build process with fewer edge cases
 
 ## Build Process
 

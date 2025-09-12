@@ -20,17 +20,11 @@ android {
 
     defaultConfig {
         applicationId = "com.binah.cryptingtool"
-        // Minimum SDK version set to 16 for Android 4.1+ support
-        minSdk = 16
+        // Minimum SDK version set to 24 for Android 7.0+ (improved stability and security)
+        minSdk = 24
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        
-        // Enable multidex support for older Android versions
-        multiDexEnabled = true
-        
-        // Vector drawables support for API < 21
-        vectorDrawables.useSupportLibrary = true
         
         // Optimize for performance
         ndk {
@@ -63,7 +57,7 @@ android {
         }
     }
     
-    // Support for older Android versions and optimization
+    // Support for modern Android versions and optimization
     packagingOptions {
         pickFirst '**/libc++_shared.so'
         pickFirst '**/libjsc.so'
@@ -103,9 +97,6 @@ android {
 }
 
 dependencies {
-    // Support library for older Android versions
-    implementation "androidx.multidex:multidex:2.0.1"
-    
     // Core Android libraries (updated to latest versions)
     implementation "androidx.core:core-ktx:1.12.0"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.7.0"
