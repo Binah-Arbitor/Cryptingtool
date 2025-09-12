@@ -13,7 +13,7 @@ class MainActivity: FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Ensure compatibility with older Android versions (API 16+)
-        // Handle any specific configuration for legacy support here
+        // Optimized for Android 7.0+ (API 24) - improved performance and security
+        // Modern Android features available for enhanced stability
     }
 }

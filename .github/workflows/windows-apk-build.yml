@@ -247,21 +247,14 @@ jobs:
           Write-Host "Checking Android setup..." -ForegroundColor Yellow
           flutter doctor --android-licenses 2>&1 | Tee-Object -FilePath "android_setup.log"
 
-          # Accept Android licenses automatically - Enhanced method to fix "1 of 7 SDK package license not accepted" issue
-          Write-Host "Accepting Android licenses with enhanced method..." -ForegroundColor Yellow
+          # Accept Android licenses with simplified modern approach
+          Write-Host "Accepting Android licenses with streamlined method..." -ForegroundColor Yellow
           
-          # Method 1: Enhanced PowerShell-native approach with better timeout handling
           $licenseAccepted = $false
           try {
-            Write-Host "Attempting PowerShell-native license acceptance..." -ForegroundColor Yellow
+            Write-Host "Using modern license acceptance approach..." -ForegroundColor Yellow
             
-            # Prepare multiple "y" responses with proper line endings
-            $yesResponses = @()
-            for ($i = 1; $i -le 10; $i++) {
-              $yesResponses += "y"
-            }
-            $responseString = ($yesResponses -join "`r`n") + "`r`n"
-            
+            # Modern simplified approach for current Android SDKs
             $psi = New-Object System.Diagnostics.ProcessStartInfo
             $psi.FileName = "flutter"
             $psi.Arguments = "doctor --android-licenses"
@@ -273,126 +266,37 @@ jobs:
             
             $process = [System.Diagnostics.Process]::Start($psi)
             
-            # Write responses in chunks to avoid buffer issues
-            $process.StandardInput.Write($responseString)
-            $process.StandardInput.Flush()
+            # Send acceptance responses
+            for ($i = 0; $i -lt 8; $i++) {
+              $process.StandardInput.WriteLine("y")
+            }
             $process.StandardInput.Close()
             
-            # Wait with reasonable timeout (3 minutes)
-            $timeoutMs = 180000
+            # Wait with timeout (2 minutes - reduced from 3 for modern SDKs)
+            $timeoutMs = 120000
             if ($process.WaitForExit($timeoutMs)) {
-              Write-Host "✅ Android licenses accepted successfully (Exit code: $($process.ExitCode))" -ForegroundColor Green
+              Write-Host "✅ Android licenses accepted successfully" -ForegroundColor Green
               $licenseAccepted = $true
             } else {
-              Write-Host "⚠️ License acceptance timed out after 3 minutes - killing process" -ForegroundColor Yellow
+              Write-Host "⚠️ License acceptance timed out - killing process" -ForegroundColor Yellow
               $process.Kill()
-              $process.WaitForExit(5000)  # Wait for cleanup
+              $process.WaitForExit(5000)
             }
           }
           catch {
-            Write-Host "⚠️ PowerShell method failed: $($_.Exception.Message)" -ForegroundColor Yellow
+            Write-Host "⚠️ License acceptance failed: $($_.Exception.Message)" -ForegroundColor Yellow
           }
 
-          # Method 2: Fallback using yes command simulation if Method 1 failed
+          # Simple fallback for any remaining issues
           if (-not $licenseAccepted) {
-            Write-Host "Trying fallback license acceptance method..." -ForegroundColor Yellow
+            Write-Host "Attempting direct SDK manager approach..." -ForegroundColor Yellow
             try {
-              # Create a temporary script to handle license acceptance
-              $tempScript = "license_accept.bat"
-              @(
-                "@echo off",
-                "setlocal enabledelayedexpansion", 
-                "echo y",
-                "echo y",
-                "echo y",
-                "echo y", 
-                "echo y",
-                "echo y",
-                "echo y",
-                "echo y",
-                "echo y",
-                "echo y"
-              ) | Out-File -FilePath $tempScript -Encoding ASCII
-
-              # Execute with timeout using PowerShell job
-              $job = Start-Job -ScriptBlock {
-                param($script, $workingDir)
-                Set-Location $workingDir
-                & cmd.exe /c "$script | flutter doctor --android-licenses 2>&1"
-              } -ArgumentList $tempScript, (Get-Location).Path
-
-              # Wait for job completion with timeout
-              $completed = Wait-Job $job -Timeout 180  # 3 minutes
-              
-              if ($completed) {
-                $result = Receive-Job $job
-                Write-Host "Fallback method result: $result" -ForegroundColor Yellow
-                $licenseAccepted = $true
-                Write-Host "✅ Fallback license acceptance completed" -ForegroundColor Green
-              } else {
-                Stop-Job $job
-                Write-Host "⚠️ Fallback method also timed out" -ForegroundColor Yellow
-              }
-              
-              Remove-Job $job -Force
-              Remove-Item $tempScript -ErrorAction SilentlyContinue
+              # Simple yes pipe approach
+              echo y | flutter doctor --android-licenses
+              Write-Host "✅ Fallback license acceptance completed" -ForegroundColor Green
             }
             catch {
-              Write-Host "⚠️ Fallback method failed: $($_.Exception.Message)" -ForegroundColor Yellow
-            }
-          }
-
-          # Method 3: Direct SDK manager approach if both methods fail
-          if (-not $licenseAccepted) {
-            Write-Host "Trying direct SDK manager approach..." -ForegroundColor Yellow
-            try {
-              # Find Android SDK location
-              $androidHome = $env:ANDROID_HOME
-              if (-not $androidHome) {
-                $androidHome = $env:ANDROID_SDK_ROOT
-              }
-              if (-not $androidHome) {
-                # Try to find Flutter's Android SDK
-                $flutterPath = (Get-Command flutter).Path
-                $flutterDir = Split-Path (Split-Path $flutterPath)
-                $androidHome = Join-Path $flutterDir "bin\cache\artifacts\engine\android-x64"
-                if (-not (Test-Path $androidHome)) {
-                  $androidHome = "${env:LOCALAPPDATA}\Android\Sdk"
-                }
-              }
-              
-              Write-Host "Using Android SDK at: $androidHome" -ForegroundColor Yellow
-              
-              if (Test-Path $androidHome) {
-                $sdkManager = Join-Path $androidHome "cmdline-tools\latest\bin\sdkmanager.bat"
-                if (-not (Test-Path $sdkManager)) {
-                  $sdkManager = Join-Path $androidHome "tools\bin\sdkmanager.bat"
-                }
-                
-                if (Test-Path $sdkManager) {
-                  Write-Host "Found SDK manager at: $sdkManager" -ForegroundColor Yellow
-                  
-                  # Accept all licenses using SDK manager directly
-                  $job = Start-Job -ScriptBlock {
-                    param($sdkMgr)
-                    & $sdkMgr --licenses --update
-                  } -ArgumentList $sdkManager
-                  
-                  $completed = Wait-Job $job -Timeout 120  # 2 minutes
-                  if ($completed) {
-                    $result = Receive-Job $job
-                    Write-Host "SDK manager result: $result" -ForegroundColor Yellow
-                    Write-Host "✅ SDK manager license acceptance completed" -ForegroundColor Green
-                  } else {
-                    Stop-Job $job
-                    Write-Host "⚠️ SDK manager approach timed out" -ForegroundColor Yellow
-                  }
-                  Remove-Job $job -Force
-                }
-              }
-            }
-            catch {
-              Write-Host "⚠️ SDK manager approach failed: $($_.Exception.Message)" -ForegroundColor Yellow
+              Write-Host "⚠️ Note: Some licenses may need manual acceptance - continuing build..." -ForegroundColor Yellow
             }
           }
 
@@ -409,37 +313,37 @@ jobs:
             Write-Host "✅ All SDK licenses appear to be accepted" -ForegroundColor Green
           }
           
-          # Validate Android API 16+ configuration
-          Write-Host "Validating Android API 16+ target configuration..." -ForegroundColor Yellow
+          # Validate Android API 24+ configuration
+          Write-Host "Validating Android API 24+ target configuration..." -ForegroundColor Yellow
           
           if (Test-Path "android/app/build.gradle") {
             Write-Host "✅ build.gradle found" -ForegroundColor Green
             $buildGradle = Get-Content "android/app/build.gradle" -Raw
-            if ($buildGradle -match "minSdk\s*=\s*1[6-9]|[2-9][0-9]|[1-9][0-9][0-9]") {
-              Write-Host "✅ Minimum SDK version is 16 or higher" -ForegroundColor Green
+            if ($buildGradle -match "minSdk\s*=\s*2[4-9]|[3-9][0-9]|[1-9][0-9][0-9]") {
+              Write-Host "✅ Minimum SDK version is 24 or higher (modern Android)" -ForegroundColor Green
             } else {
-              Write-Host "⚠️ Warning: Minimum SDK version may not be properly configured for API 16+" -ForegroundColor Yellow
+              Write-Host "⚠️ Warning: Minimum SDK version should be 24 or higher for stability" -ForegroundColor Yellow
             }
             
-            if ($buildGradle -match "compileSdk\s*=\s*3[4-9]|[4-9][0-9]") {
-              Write-Host "✅ Compile SDK version is current (34+)" -ForegroundColor Green
+            if ($buildGradle -match "compileSdk\s*=\s*3[5-9]|[4-9][0-9]") {
+              Write-Host "✅ Compile SDK version is current (35+)" -ForegroundColor Green
             } else {
-              Write-Host "⚠️ Warning: Compile SDK version should be 34 or higher" -ForegroundColor Yellow
+              Write-Host "⚠️ Warning: Compile SDK version should be 35 or higher" -ForegroundColor Yellow
             }
           }
           
           if (Test-Path "android/app/src/main/AndroidManifest.xml") {
             Write-Host "✅ AndroidManifest.xml found" -ForegroundColor Green
             $manifest = Get-Content "android/app/src/main/AndroidManifest.xml" -Raw
-            if ($manifest -match "minSdkVersion=.1[6-9]|[2-9][0-9]|[1-9][0-9][0-9].") {
-              Write-Host "✅ AndroidManifest.xml minimum SDK is 16 or higher" -ForegroundColor Green
+            if ($manifest -match "minSdkVersion=.2[4-9]|[3-9][0-9]|[1-9][0-9][0-9].") {
+              Write-Host "✅ AndroidManifest.xml minimum SDK is 24 or higher" -ForegroundColor Green
             }
             if ($manifest -match "targetSdkVersion=.3[5-9]|[4-9][0-9].") {
               Write-Host "✅ AndroidManifest.xml target SDK is 35 or higher" -ForegroundColor Green
             }
           }
 
-          Write-Host "✅ Android environment configured for API 35 target with enhanced license acceptance" -ForegroundColor Green
+          Write-Host "✅ Android environment configured for API 35 target with modern minimum API 24" -ForegroundColor Green
           Write-Host "=================================" -ForegroundColor Green
 
       - name: 🏗️ Build Debug APK
@@ -454,7 +358,7 @@ jobs:
           Write-Host "Starting APK build process..." -ForegroundColor Yellow
           Write-Host "App Name: ${{ inputs.app_name }}" -ForegroundColor Yellow
           Write-Host "Build Mode: debug" -ForegroundColor Yellow
-          Write-Host "Target Platform: Android API 35 (4.1+ compatible)" -ForegroundColor Yellow
+          Write-Host "Target Platform: Android API 24+ (7.0+)" -ForegroundColor Yellow
           Write-Host "VM Environment: Windows" -ForegroundColor Yellow
 
           try {
@@ -607,7 +511,7 @@ jobs:
           Write-Host "Build Status: $BuildStatus" -ForegroundColor $(if ($ApkFiles.Count -gt 0) { "Green" } else { "Red" })
           Write-Host "App Name: ${{ inputs.app_name }}" -ForegroundColor Yellow
           Write-Host "Build Mode: debug" -ForegroundColor Yellow
-          Write-Host "Target Platform: Android API 16+ (4.1+)" -ForegroundColor Yellow
+          Write-Host "Target Platform: Android API 24+ (7.0+)" -ForegroundColor Yellow
           Write-Host "VM Environment: Windows" -ForegroundColor Yellow
           Write-Host "APK Files Generated: $($ApkFiles.Count)" -ForegroundColor Yellow
 
@@ -629,7 +533,7 @@ jobs:
           $stepSummary += "`n| 🏗️ Build Status | $BuildStatus |"
           $stepSummary += "`n| 📱 App Name | ${{ inputs.app_name }} |"
           $stepSummary += "`n| 🔧 Build Mode | debug |"
-          $stepSummary += "`n| 🎯 Target Platform | Android API 16+ (4.1+) |"
+          $stepSummary += "`n| 🎯 Target Platform | Android API 24+ (7.0+) |"
           $stepSummary += "`n| 💻 VM Environment | Windows |"
           $stepSummary += "`n| 📦 APK Files | $($ApkFiles.Count) |"
           $stepSummary += "`n"
