@@ -129,6 +129,11 @@ jobs:
           
           Write-Host "==========================================" -ForegroundColor Green
 
+      - name: Accept Android Licenses
+        shell: bash
+        run: yes | flutter doctor --android-licenses
+
+        
       - name: 📦 Install Windows Dependencies
         shell: pwsh
         run: |
