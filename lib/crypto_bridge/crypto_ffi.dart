@@ -5,13 +5,70 @@ import 'package:ffi/ffi.dart';
 
 /// Constants matching the C++ crypto_bridge constants
 class CryptoConstants {
-  // Algorithm identifiers
+  // Algorithm identifiers - Tier 1-2: Modern High Security
   static const int algorithmAES = 1;
   static const int algorithmSerpent = 2;
   static const int algorithmTwofish = 3;
+  
+  // Tier 3: Strong Security - AES Finalists & Modern Ciphers
   static const int algorithmRC6 = 4;
-  static const int algorithmBlowfish = 5;
-  static const int algorithmCAST128 = 6;
+  static const int algorithmMARS = 5;
+  static const int algorithmRC5 = 6;
+  static const int algorithmSkipjack = 7;
+  
+  // Tier 4: Reliable Security - Established Algorithms
+  static const int algorithmBlowfish = 8;
+  static const int algorithmCAST128 = 9;
+  static const int algorithmCAST256 = 10;
+  static const int algorithmCamellia = 11;
+  
+  // Tier 5: Stream Ciphers - High Performance
+  static const int algorithmChaCha20 = 12;
+  static const int algorithmSalsa20 = 13;
+  static const int algorithmXSalsa20 = 14;
+  static const int algorithmHC128 = 15;
+  static const int algorithmHC256 = 16;
+  static const int algorithmRabbit = 17;
+  static const int algorithmSosemanuk = 18;
+  
+  // Tier 6: Specialized & National Algorithms
+  static const int algorithmARIA = 19;
+  static const int algorithmSEED = 20;
+  static const int algorithmSM4 = 21;
+  static const int algorithmGOST28147 = 22;
+  
+  // Tier 7: Legacy Strong Algorithms
+  static const int algorithmDES3 = 23;
+  static const int algorithmIDEA = 24;
+  static const int algorithmRC2 = 25;
+  static const int algorithmSAFER = 26;
+  static const int algorithmSAFERPlus = 27;
+  
+  // Tier 8: Historical & Compatibility
+  static const int algorithmDES = 28;
+  static const int algorithmRC4 = 29;
+  
+  // Tier 9: Experimental & Research
+  static const int algorithmThreefish256 = 30;
+  static const int algorithmThreefish512 = 31;
+  static const int algorithmThreefish1024 = 32;
+  
+  // Tier 10: Additional Algorithms
+  static const int algorithmTEA = 33;
+  static const int algorithmXTEA = 34;
+  static const int algorithmSHACAL2 = 35;
+  static const int algorithmWAKE = 36;
+  
+  // Archive/Research Ciphers
+  static const int algorithmSquare = 37;
+  static const int algorithmShark = 38;
+  static const int algorithmPanama = 39;
+  static const int algorithmSEAL = 40;
+  static const int algorithmLucifer = 41;
+  
+  // Modern lightweight ciphers (placeholders)
+  static const int algorithmSimon = 42;
+  static const int algorithmSpeck = 43;
 
   // Mode identifiers
   static const int modeCBC = 1;

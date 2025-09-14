@@ -66,38 +66,150 @@ class CryptoBridgeService {
   }
 
   /// Map Flutter algorithm enum to C++ constant
-  static int _mapAlgorithm(CryptoAlgorithm algorithm) {
+  static int _mapAlgorithm(EncryptionAlgorithm algorithm) {
     switch (algorithm) {
-      case CryptoAlgorithm.aes:
+      // Tier 1: Maximum Security - Modern & Post-Quantum Ready
+      case EncryptionAlgorithm.aes256:
         return CryptoConstants.algorithmAES;
-      case CryptoAlgorithm.serpent:
+      case EncryptionAlgorithm.serpent256:
         return CryptoConstants.algorithmSerpent;
-      case CryptoAlgorithm.twofish:
+      case EncryptionAlgorithm.twofish256:
         return CryptoConstants.algorithmTwofish;
-      case CryptoAlgorithm.rc6:
+        
+      // Tier 2: High Security - Modern Algorithms
+      case EncryptionAlgorithm.aes192:
+      case EncryptionAlgorithm.aes128:
+        return CryptoConstants.algorithmAES;
+      case EncryptionAlgorithm.serpent192:
+      case EncryptionAlgorithm.serpent128:
+        return CryptoConstants.algorithmSerpent;
+      case EncryptionAlgorithm.twofish192:
+      case EncryptionAlgorithm.twofish128:
+        return CryptoConstants.algorithmTwofish;
+        
+      // Tier 3: Strong Security - AES Finalists & Modern Ciphers
+      case EncryptionAlgorithm.rc6:
         return CryptoConstants.algorithmRC6;
-      case CryptoAlgorithm.blowfish:
+      case EncryptionAlgorithm.mars:
+        return CryptoConstants.algorithmMARS;
+      case EncryptionAlgorithm.rc5:
+        return CryptoConstants.algorithmRC5;
+      case EncryptionAlgorithm.skipjack:
+        return CryptoConstants.algorithmSkipjack;
+        
+      // Tier 4: Reliable Security - Established Algorithms  
+      case EncryptionAlgorithm.blowfish:
         return CryptoConstants.algorithmBlowfish;
-      case CryptoAlgorithm.cast128:
+      case EncryptionAlgorithm.cast128:
         return CryptoConstants.algorithmCAST128;
+      case EncryptionAlgorithm.cast256:
+        return CryptoConstants.algorithmCAST256;
+      case EncryptionAlgorithm.camellia:
+        return CryptoConstants.algorithmCamellia;
+        
+      // Tier 5: Stream Ciphers - High Performance
+      case EncryptionAlgorithm.chacha20:
+        return CryptoConstants.algorithmChaCha20;
+      case EncryptionAlgorithm.salsa20:
+        return CryptoConstants.algorithmSalsa20;
+      case EncryptionAlgorithm.xsalsa20:
+        return CryptoConstants.algorithmXSalsa20;
+      case EncryptionAlgorithm.hc128:
+        return CryptoConstants.algorithmHC128;
+      case EncryptionAlgorithm.hc256:
+        return CryptoConstants.algorithmHC256;
+      case EncryptionAlgorithm.rabbit:
+        return CryptoConstants.algorithmRabbit;
+      case EncryptionAlgorithm.sosemanuk:
+        return CryptoConstants.algorithmSosemanuk;
+        
+      // Tier 6: Specialized & National Algorithms
+      case EncryptionAlgorithm.aria:
+        return CryptoConstants.algorithmARIA;
+      case EncryptionAlgorithm.seed:
+        return CryptoConstants.algorithmSEED;
+      case EncryptionAlgorithm.sm4:
+        return CryptoConstants.algorithmSM4;
+      case EncryptionAlgorithm.gost28147:
+        return CryptoConstants.algorithmGOST28147;
+        
+      // Tier 7: Legacy Strong Algorithms
+      case EncryptionAlgorithm.des3:
+        return CryptoConstants.algorithmDES3;
+      case EncryptionAlgorithm.idea:
+        return CryptoConstants.algorithmIDEA;
+      case EncryptionAlgorithm.rc2:
+        return CryptoConstants.algorithmRC2;
+      case EncryptionAlgorithm.safer:
+        return CryptoConstants.algorithmSAFER;
+      case EncryptionAlgorithm.saferPlus:
+        return CryptoConstants.algorithmSAFERPlus;
+        
+      // Tier 8: Historical & Compatibility
+      case EncryptionAlgorithm.des:
+        return CryptoConstants.algorithmDES;
+      case EncryptionAlgorithm.rc4:
+        return CryptoConstants.algorithmRC4;
+        
+      // Tier 9: Experimental & Research
+      case EncryptionAlgorithm.threefish256:
+        return CryptoConstants.algorithmThreefish256;
+      case EncryptionAlgorithm.threefish512:
+        return CryptoConstants.algorithmThreefish512;
+      case EncryptionAlgorithm.threefish1024:
+        return CryptoConstants.algorithmThreefish1024;
+        
+      // Tier 10: Additional Crypto++ Supported Algorithms
+      case EncryptionAlgorithm.tea:
+        return CryptoConstants.algorithmTEA;
+      case EncryptionAlgorithm.xtea:
+        throw ArgumentError('XTEA algorithm not supported by Crypto++ backend');
+      case EncryptionAlgorithm.shacal2:
+        return CryptoConstants.algorithmSHACAL2;
+      case EncryptionAlgorithm.wake:
+        return CryptoConstants.algorithmWAKE;
+        
+      // Archive/Research Ciphers
+      case EncryptionAlgorithm.square:
+        return CryptoConstants.algorithmSquare;
+      case EncryptionAlgorithm.shark:
+        return CryptoConstants.algorithmShark;
+      case EncryptionAlgorithm.panama:
+        return CryptoConstants.algorithmPanama;
+      case EncryptionAlgorithm.seal:
+        return CryptoConstants.algorithmSEAL;
+      case EncryptionAlgorithm.lucifer:
+        return CryptoConstants.algorithmLucifer;
+        
+      // Modern lightweight ciphers
+      case EncryptionAlgorithm.simon:
+        return CryptoConstants.algorithmSimon;
+      case EncryptionAlgorithm.speck:
+        return CryptoConstants.algorithmSpeck;
+        
+      // If we missed any, throw an error
+      default:
+        throw ArgumentError('Unsupported algorithm: $algorithm');
     }
   }
 
   /// Map Flutter mode enum to C++ constant
-  static int _mapMode(CryptoMode mode) {
+  static int _mapMode(OperationMode mode) {
     switch (mode) {
-      case CryptoMode.cbc:
+      case OperationMode.cbc:
         return CryptoConstants.modeCBC;
-      case CryptoMode.gcm:
+      case OperationMode.gcm:
         return CryptoConstants.modeGCM;
-      case CryptoMode.ecb:
+      case OperationMode.ecb:
         return CryptoConstants.modeECB;
-      case CryptoMode.cfb:
+      case OperationMode.cfb:
         return CryptoConstants.modeCFB;
-      case CryptoMode.ofb:
+      case OperationMode.ofb:
         return CryptoConstants.modeOFB;
-      case CryptoMode.ctr:
+      case OperationMode.ctr:
         return CryptoConstants.modeCTR;
+      default:
+        throw ArgumentError('Unsupported mode: $mode');
     }
   }
 
@@ -156,40 +268,12 @@ class CryptoBridgeService {
   }
 
   /// Get supported key sizes for an algorithm
-  static List<int> getSupportedKeySizes(CryptoAlgorithm algorithm) {
-    switch (algorithm) {
-      case CryptoAlgorithm.aes:
-      case CryptoAlgorithm.serpent:
-      case CryptoAlgorithm.twofish:
-      case CryptoAlgorithm.rc6:
-        return [128, 192, 256];
-      case CryptoAlgorithm.blowfish:
-        return [32, 64, 128, 256, 448];
-      case CryptoAlgorithm.cast128:
-        return [128];
-    }
+  static List<int> getSupportedKeySizes(EncryptionAlgorithm algorithm) {
+    return algorithm.getSupportedKeySizes();
   }
 
   /// Check if mode is supported for algorithm
-  static bool isModeSupported(CryptoAlgorithm algorithm, CryptoMode mode) {
-    // All algorithms support these modes
-    const commonModes = [
-      CryptoMode.cbc,
-      CryptoMode.ecb,
-      CryptoMode.cfb,
-      CryptoMode.ofb,
-      CryptoMode.ctr,
-    ];
-    
-    if (commonModes.contains(mode)) {
-      return true;
-    }
-
-    // GCM mode only supported by AES
-    if (mode == CryptoMode.gcm) {
-      return algorithm == CryptoAlgorithm.aes;
-    }
-
-    return false;
+  static bool isModeSupported(EncryptionAlgorithm algorithm, OperationMode mode) {
+    return algorithm.getSupportedModes().contains(mode);
   }
 }

@@ -39,6 +39,41 @@
     #include <crypto++/sha.h>
     #include <crypto++/secblock.h>
     #include <crypto++/osrng.h>
+    
+    // Additional algorithms - Tier 3-4 (AES finalists and strong ciphers)
+    #include <crypto++/mars.h>
+    #include <crypto++/rc5.h>
+    #include <crypto++/skipjack.h>
+    #include <crypto++/camellia.h>
+    
+    // Stream ciphers - Tier 5
+    #include <crypto++/chacha.h>
+    #include <crypto++/salsa.h>
+    #include <crypto++/hc128.h>
+    #include <crypto++/hc256.h>
+    #include <crypto++/rabbit.h>
+    #include <crypto++/sosemanuk.h>
+    
+    // National algorithms - Tier 6
+    #include <crypto++/aria.h>
+    #include <crypto++/seed.h>
+    
+    // Legacy algorithms - Tier 7-8  
+    #include <crypto++/des.h>
+    #include <crypto++/idea.h>
+    #include <crypto++/rc2.h>
+    #include <crypto++/safer.h>
+    #include <crypto++/arc4.h>
+    
+    // Experimental and additional - Tier 9-10
+    #include <crypto++/threefish.h>
+    #include <crypto++/tea.h>
+    #include <crypto++/shacal2.h>
+    #include <crypto++/wake.h>
+    #include <crypto++/square.h>
+    #include <crypto++/shark.h>
+    #include <crypto++/panama.h>
+    #include <crypto++/seal.h>
     #define CRYPTO_HEADERS_FOUND 1
     #define CRYPTO_HEADER_PREFIX "crypto++/"
 
@@ -59,6 +94,41 @@
     #include <cryptopp/sha.h>
     #include <cryptopp/secblock.h>
     #include <cryptopp/osrng.h>
+    
+    // Additional algorithms - Tier 3-4 (AES finalists and strong ciphers)
+    #include <cryptopp/mars.h>
+    #include <cryptopp/rc5.h>
+    #include <cryptopp/skipjack.h>
+    #include <cryptopp/camellia.h>
+    
+    // Stream ciphers - Tier 5
+    #include <cryptopp/chacha.h>
+    #include <cryptopp/salsa.h>
+    #include <cryptopp/hc128.h>
+    #include <cryptopp/hc256.h>
+    #include <cryptopp/rabbit.h>
+    #include <cryptopp/sosemanuk.h>
+    
+    // National algorithms - Tier 6
+    #include <cryptopp/aria.h>
+    #include <cryptopp/seed.h>
+    
+    // Legacy algorithms - Tier 7-8  
+    #include <cryptopp/des.h>
+    #include <cryptopp/idea.h>
+    #include <cryptopp/rc2.h>
+    #include <cryptopp/safer.h>
+    #include <cryptopp/arc4.h>
+    
+    // Experimental and additional - Tier 9-10
+    #include <cryptopp/threefish.h>
+    #include <cryptopp/tea.h>
+    #include <cryptopp/shacal2.h>
+    #include <cryptopp/wake.h>
+    #include <cryptopp/square.h>
+    #include <cryptopp/shark.h>
+    #include <cryptopp/panama.h>
+    #include <cryptopp/seal.h>
     #define CRYPTO_HEADERS_FOUND 1
     #define CRYPTO_HEADER_PREFIX "cryptopp/"
 
@@ -79,6 +149,41 @@
     #include <sha.h>
     #include <secblock.h>
     #include <osrng.h>
+    
+    // Additional algorithms - Tier 3-4 (AES finalists and strong ciphers)
+    #include <mars.h>
+    #include <rc5.h>
+    #include <skipjack.h>
+    #include <camellia.h>
+    
+    // Stream ciphers - Tier 5
+    #include <chacha.h>
+    #include <salsa.h>
+    #include <hc128.h>
+    #include <hc256.h>
+    #include <rabbit.h>
+    #include <sosemanuk.h>
+    
+    // National algorithms - Tier 6
+    #include <aria.h>
+    #include <seed.h>
+    
+    // Legacy algorithms - Tier 7-8  
+    #include <des.h>
+    #include <idea.h>
+    #include <rc2.h>
+    #include <safer.h>
+    #include <arc4.h>
+    
+    // Experimental and additional - Tier 9-10
+    #include <threefish.h>
+    #include <tea.h>
+    #include <shacal2.h>
+    #include <wake.h>
+    #include <square.h>
+    #include <shark.h>
+    #include <panama.h>
+    #include <seal.h>
     #define CRYPTO_HEADERS_FOUND 1
     #define CRYPTO_HEADER_PREFIX ""
 
