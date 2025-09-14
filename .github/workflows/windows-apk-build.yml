@@ -450,6 +450,43 @@ jobs:
           
           Write-Host "======================================" -ForegroundColor Green
 
+      - name: 📦 Initialize Gradle Wrapper
+        shell: pwsh
+        run: |
+          Write-Host "=== Initializing Gradle Wrapper ===" -ForegroundColor Green
+          
+          cd android
+          
+          # Check if gradlew exists
+          if (-not (Test-Path "gradlew")) {
+            Write-Host "🔧 Creating Gradle wrapper..." -ForegroundColor Yellow
+            
+            # Create a temporary gradle wrapper using gradle init
+            # This will create the wrapper files we need
+            if (Get-Command gradle -ErrorAction SilentlyContinue) {
+              Write-Host "Using system Gradle to create wrapper..." -ForegroundColor Yellow
+              gradle wrapper --gradle-version 8.5 --distribution-type all
+            } else {
+              Write-Host "System Gradle not available, Flutter will handle Gradle during build..." -ForegroundColor Yellow
+              Write-Host "This is normal and expected in CI environments" -ForegroundColor Cyan
+            }
+          } else {
+            Write-Host "✅ Gradle wrapper already exists" -ForegroundColor Green
+          }
+          
+          # Check wrapper properties
+          if (Test-Path "gradle/wrapper/gradle-wrapper.properties") {
+            Write-Host "📋 Gradle wrapper configuration:" -ForegroundColor Cyan
+            Get-Content "gradle/wrapper/gradle-wrapper.properties" | ForEach-Object {
+              if ($_ -match "distributionUrl|gradle-") {
+                Write-Host "  $_" -ForegroundColor White
+              }
+            }
+          }
+          
+          cd ..
+          Write-Host "===============================" -ForegroundColor Green
+
         
       - name: 📦 Install Windows Dependencies
         shell: pwsh
