@@ -163,7 +163,7 @@ class CryptoBridgeService {
       case EncryptionAlgorithm.tea:
         return CryptoConstants.algorithmTEA;
       case EncryptionAlgorithm.xtea:
-        return CryptoConstants.algorithmXTEA;
+        throw ArgumentError('XTEA algorithm not supported by Crypto++ backend');
       case EncryptionAlgorithm.shacal2:
         return CryptoConstants.algorithmSHACAL2;
       case EncryptionAlgorithm.wake:

@@ -1060,6 +1060,195 @@ int crypto_bridge_process(
                 break;
             }
             
+            case ALGORITHM_IDEA: {
+                switch (mode) {
+                    case MODE_CBC: {
+                        if (operation == OPERATION_ENCRYPT) {
+                            CryptoPP::CBC_Mode<CryptoPP::IDEA>::Encryption enc;
+                            enc.SetKeyWithIV(derived_key.data(), key_len, derived_iv.data(), 8);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(enc,
+                                    new CryptoPP::StringSink(result)));
+                        } else {
+                            CryptoPP::CBC_Mode<CryptoPP::IDEA>::Decryption dec;
+                            dec.SetKeyWithIV(derived_key.data(), key_len, derived_iv.data(), 8);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(dec,
+                                    new CryptoPP::StringSink(result)));
+                        }
+                        break;
+                    }
+                    case MODE_ECB: {
+                        if (operation == OPERATION_ENCRYPT) {
+                            CryptoPP::ECB_Mode<CryptoPP::IDEA>::Encryption enc;
+                            enc.SetKey(derived_key.data(), key_len);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(enc,
+                                    new CryptoPP::StringSink(result)));
+                        } else {
+                            CryptoPP::ECB_Mode<CryptoPP::IDEA>::Decryption dec;
+                            dec.SetKey(derived_key.data(), key_len);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(dec,
+                                    new CryptoPP::StringSink(result)));
+                        }
+                        break;
+                    }
+                    case MODE_CFB: {
+                        if (operation == OPERATION_ENCRYPT) {
+                            CryptoPP::CFB_Mode<CryptoPP::IDEA>::Encryption enc;
+                            enc.SetKeyWithIV(derived_key.data(), key_len, derived_iv.data(), 8);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(enc,
+                                    new CryptoPP::StringSink(result)));
+                        } else {
+                            CryptoPP::CFB_Mode<CryptoPP::IDEA>::Decryption dec;
+                            dec.SetKeyWithIV(derived_key.data(), key_len, derived_iv.data(), 8);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(dec,
+                                    new CryptoPP::StringSink(result)));
+                        }
+                        break;
+                    }
+                    case MODE_OFB: {
+                        if (operation == OPERATION_ENCRYPT) {
+                            CryptoPP::OFB_Mode<CryptoPP::IDEA>::Encryption enc;
+                            enc.SetKeyWithIV(derived_key.data(), key_len, derived_iv.data(), 8);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(enc,
+                                    new CryptoPP::StringSink(result)));
+                        } else {
+                            CryptoPP::OFB_Mode<CryptoPP::IDEA>::Decryption dec;
+                            dec.SetKeyWithIV(derived_key.data(), key_len, derived_iv.data(), 8);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(dec,
+                                    new CryptoPP::StringSink(result)));
+                        }
+                        break;
+                    }
+                    case MODE_CTR: {
+                        if (operation == OPERATION_ENCRYPT) {
+                            CryptoPP::CTR_Mode<CryptoPP::IDEA>::Encryption enc;
+                            enc.SetKeyWithIV(derived_key.data(), key_len, derived_iv.data(), 8);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(enc,
+                                    new CryptoPP::StringSink(result)));
+                        } else {
+                            CryptoPP::CTR_Mode<CryptoPP::IDEA>::Decryption dec;
+                            dec.SetKeyWithIV(derived_key.data(), key_len, derived_iv.data(), 8);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(dec,
+                                    new CryptoPP::StringSink(result)));
+                        }
+                        break;
+                    }
+                    default:
+                        return STATUS_UNSUPPORTED_MODE;
+                }
+                break;
+            }
+            
+            case ALGORITHM_DES3: {
+                switch (mode) {
+                    case MODE_CBC: {
+                        if (operation == OPERATION_ENCRYPT) {
+                            CryptoPP::CBC_Mode<CryptoPP::DES_EDE3>::Encryption enc;
+                            enc.SetKeyWithIV(derived_key.data(), key_len, derived_iv.data(), 8);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(enc,
+                                    new CryptoPP::StringSink(result)));
+                        } else {
+                            CryptoPP::CBC_Mode<CryptoPP::DES_EDE3>::Decryption dec;
+                            dec.SetKeyWithIV(derived_key.data(), key_len, derived_iv.data(), 8);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(dec,
+                                    new CryptoPP::StringSink(result)));
+                        }
+                        break;
+                    }
+                    case MODE_ECB: {
+                        if (operation == OPERATION_ENCRYPT) {
+                            CryptoPP::ECB_Mode<CryptoPP::DES_EDE3>::Encryption enc;
+                            enc.SetKey(derived_key.data(), key_len);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(enc,
+                                    new CryptoPP::StringSink(result)));
+                        } else {
+                            CryptoPP::ECB_Mode<CryptoPP::DES_EDE3>::Decryption dec;
+                            dec.SetKey(derived_key.data(), key_len);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(dec,
+                                    new CryptoPP::StringSink(result)));
+                        }
+                        break;
+                    }
+                    default:
+                        return STATUS_UNSUPPORTED_MODE;
+                }
+                break;
+            }
+            
+            case ALGORITHM_RC4: {
+                if (mode != MODE_CTR) {
+                    return STATUS_UNSUPPORTED_MODE;
+                }
+                
+                if (operation == OPERATION_ENCRYPT) {
+                    CryptoPP::Weak::ARC4::Encryption enc;
+                    enc.SetKey(derived_key.data(), key_len);
+                    CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                        new CryptoPP::StreamTransformationFilter(enc,
+                            new CryptoPP::StringSink(result), CryptoPP::StreamTransformationFilter::NO_PADDING));
+                } else {
+                    CryptoPP::Weak::ARC4::Decryption dec;
+                    dec.SetKey(derived_key.data(), key_len);
+                    CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                        new CryptoPP::StreamTransformationFilter(dec,
+                            new CryptoPP::StringSink(result), CryptoPP::StreamTransformationFilter::NO_PADDING));
+                }
+                break;
+            }
+            
+            case ALGORITHM_TEA: {
+                switch (mode) {
+                    case MODE_CBC: {
+                        if (operation == OPERATION_ENCRYPT) {
+                            CryptoPP::CBC_Mode<CryptoPP::TEA>::Encryption enc;
+                            enc.SetKeyWithIV(derived_key.data(), key_len, derived_iv.data(), 8);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(enc,
+                                    new CryptoPP::StringSink(result)));
+                        } else {
+                            CryptoPP::CBC_Mode<CryptoPP::TEA>::Decryption dec;
+                            dec.SetKeyWithIV(derived_key.data(), key_len, derived_iv.data(), 8);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(dec,
+                                    new CryptoPP::StringSink(result)));
+                        }
+                        break;
+                    }
+                    case MODE_ECB: {
+                        if (operation == OPERATION_ENCRYPT) {
+                            CryptoPP::ECB_Mode<CryptoPP::TEA>::Encryption enc;
+                            enc.SetKey(derived_key.data(), key_len);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(enc,
+                                    new CryptoPP::StringSink(result)));
+                        } else {
+                            CryptoPP::ECB_Mode<CryptoPP::TEA>::Decryption dec;
+                            dec.SetKey(derived_key.data(), key_len);
+                            CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
+                                new CryptoPP::StreamTransformationFilter(dec,
+                                    new CryptoPP::StringSink(result)));
+                        }
+                        break;
+                    }
+                    default:
+                        return STATUS_UNSUPPORTED_MODE;
+                }
+                break;
+            }
+            
             default:
                 return STATUS_UNSUPPORTED_ALGORITHM;
         }

@@ -60,16 +60,14 @@
     
     // Legacy algorithms - Tier 7-8  
     #include <crypto++/des.h>
-    #include <crypto++/3des.h>
     #include <crypto++/idea.h>
     #include <crypto++/rc2.h>
     #include <crypto++/safer.h>
-    #include <crypto++/rc4.h>
+    #include <crypto++/arc4.h>
     
     // Experimental and additional - Tier 9-10
     #include <crypto++/threefish.h>
     #include <crypto++/tea.h>
-    #include <crypto++/xtea.h>
     #include <crypto++/shacal2.h>
     #include <crypto++/wake.h>
     #include <crypto++/square.h>
@@ -117,16 +115,14 @@
     
     // Legacy algorithms - Tier 7-8  
     #include <cryptopp/des.h>
-    #include <cryptopp/3des.h>
     #include <cryptopp/idea.h>
     #include <cryptopp/rc2.h>
     #include <cryptopp/safer.h>
-    #include <cryptopp/rc4.h>
+    #include <cryptopp/arc4.h>
     
     // Experimental and additional - Tier 9-10
     #include <cryptopp/threefish.h>
     #include <cryptopp/tea.h>
-    #include <cryptopp/xtea.h>
     #include <cryptopp/shacal2.h>
     #include <cryptopp/wake.h>
     #include <cryptopp/square.h>
@@ -174,16 +170,14 @@
     
     // Legacy algorithms - Tier 7-8  
     #include <des.h>
-    #include <3des.h>
     #include <idea.h>
     #include <rc2.h>
     #include <safer.h>
-    #include <rc4.h>
+    #include <arc4.h>
     
     // Experimental and additional - Tier 9-10
     #include <threefish.h>
     #include <tea.h>
-    #include <xtea.h>
     #include <shacal2.h>
     #include <wake.h>
     #include <square.h>
