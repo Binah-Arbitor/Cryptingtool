@@ -13,13 +13,6 @@ void main() async {
   
   if (initialized) {
     print('✅ CryptingTool backend initialized successfully');
-    // Run a quick test to verify functionality
-    final testResult = await CryptoBridgeService.testRoundTrip();
-    if (testResult) {
-      print('✅ Backend functionality verified');
-    } else {
-      print('⚠️  Backend test failed, but continuing...');
-    }
   } else {
     print('❌ Failed to initialize CryptingTool backend');
   }
