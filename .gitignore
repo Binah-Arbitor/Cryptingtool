@@ -43,6 +43,8 @@ Thumbs.db
 /tmp/
 *.tmp
 *.temp
+*.tar.xz
+*.tar.gz
 
 # Logs
 *.log
