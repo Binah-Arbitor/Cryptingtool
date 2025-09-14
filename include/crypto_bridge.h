@@ -14,12 +14,70 @@ extern "C" {
 
 // Algorithm identifiers
 typedef enum {
+    // Tier 1-2: Modern High Security
     CRYPTO_ALGORITHM_AES = 1,
     CRYPTO_ALGORITHM_SERPENT = 2,
     CRYPTO_ALGORITHM_TWOFISH = 3,
+    
+    // Tier 3: Strong Security - AES Finalists & Modern Ciphers  
     CRYPTO_ALGORITHM_RC6 = 4,
-    CRYPTO_ALGORITHM_BLOWFISH = 5,
-    CRYPTO_ALGORITHM_CAST128 = 6
+    CRYPTO_ALGORITHM_MARS = 5,
+    CRYPTO_ALGORITHM_RC5 = 6,
+    CRYPTO_ALGORITHM_SKIPJACK = 7,
+    
+    // Tier 4: Reliable Security - Established Algorithms
+    CRYPTO_ALGORITHM_BLOWFISH = 8,
+    CRYPTO_ALGORITHM_CAST128 = 9,
+    CRYPTO_ALGORITHM_CAST256 = 10,
+    CRYPTO_ALGORITHM_CAMELLIA = 11,
+    
+    // Tier 5: Stream Ciphers - High Performance
+    CRYPTO_ALGORITHM_CHACHA20 = 12,
+    CRYPTO_ALGORITHM_SALSA20 = 13,
+    CRYPTO_ALGORITHM_XSALSA20 = 14,
+    CRYPTO_ALGORITHM_HC128 = 15,
+    CRYPTO_ALGORITHM_HC256 = 16,
+    CRYPTO_ALGORITHM_RABBIT = 17,
+    CRYPTO_ALGORITHM_SOSEMANUK = 18,
+    
+    // Tier 6: Specialized & National Algorithms
+    CRYPTO_ALGORITHM_ARIA = 19,
+    CRYPTO_ALGORITHM_SEED = 20,
+    CRYPTO_ALGORITHM_SM4 = 21,
+    CRYPTO_ALGORITHM_GOST28147 = 22,
+    
+    // Tier 7: Legacy Strong Algorithms
+    CRYPTO_ALGORITHM_DES3 = 23,
+    CRYPTO_ALGORITHM_IDEA = 24,
+    CRYPTO_ALGORITHM_RC2 = 25,
+    CRYPTO_ALGORITHM_SAFER = 26,
+    CRYPTO_ALGORITHM_SAFER_PLUS = 27,
+    
+    // Tier 8: Historical & Compatibility
+    CRYPTO_ALGORITHM_DES = 28,
+    CRYPTO_ALGORITHM_RC4 = 29,
+    
+    // Tier 9: Experimental & Research
+    CRYPTO_ALGORITHM_THREEFISH256 = 30,
+    CRYPTO_ALGORITHM_THREEFISH512 = 31,
+    CRYPTO_ALGORITHM_THREEFISH1024 = 32,
+    
+    // Tier 10: Additional Algorithms
+    CRYPTO_ALGORITHM_TEA = 33,
+    CRYPTO_ALGORITHM_XTEA = 34,
+    CRYPTO_ALGORITHM_SHACAL2 = 35,
+    CRYPTO_ALGORITHM_WAKE = 36,
+    
+    // Archive/Research Ciphers
+    CRYPTO_ALGORITHM_SQUARE = 37,
+    CRYPTO_ALGORITHM_SHARK = 38,
+    CRYPTO_ALGORITHM_PANAMA = 39,
+    CRYPTO_ALGORITHM_SEAL = 40,
+    CRYPTO_ALGORITHM_LUCIFER = 41,
+    
+    // Modern lightweight ciphers (placeholders - may not be in Crypto++)
+    CRYPTO_ALGORITHM_SIMON = 42,
+    CRYPTO_ALGORITHM_SPECK = 43
 } CryptoBridgeAlgorithm;
 
 // Mode identifiers
