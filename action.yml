@@ -20,6 +20,7 @@ inputs:
   target-platform:
     description: 'Target platform (android, ios, linux, windows, macos, web)'
     required: true
+    default: 'android'
   build-mode:
     description: 'Build mode (debug, profile, release)'
     required: false
