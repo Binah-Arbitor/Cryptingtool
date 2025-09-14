@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import '../models/encryption_config.dart';
 import '../models/log_entry.dart';
 import '../models/app_state.dart';
+import '../crypto_bridge/crypto_bridge_service.dart';
 
 class AppStateProvider with ChangeNotifier {
   // Configuration
@@ -106,6 +108,12 @@ class AppStateProvider with ChangeNotifier {
   Future<void> _processFile({required bool isEncryption}) async {
     if (_isProcessing) return;
 
+    // Check if crypto service is available
+    if (!CryptoBridgeService.isInitialized) {
+      _addLog(LogEntry.error('Crypto bridge not initialized', source: 'ERROR'));
+      return;
+    }
+
     _isProcessing = true;
     final operation = isEncryption ? 'Encryption' : 'Decryption';
     final file = _selectedFile!;
@@ -133,52 +141,65 @@ class AppStateProvider with ChangeNotifier {
       ));
 
       _addLog(LogEntry.info(
-        'Initialized ${_config.threadCount} worker threads',
-        source: 'THREADING',
+        'Backend: C++ Crypto++ library v${CryptoBridgeService.getVersion()}',
+        source: 'BACKEND',
       ));
 
       final startTime = DateTime.now();
       
-      // Simulate processing with progress updates
-      for (int chunk = 0; chunk < _progress.totalChunks; chunk++) {
-        if (!_isProcessing) break; // Allow cancellation
+      // Read file data
+      _addLog(LogEntry.info('Reading file data...', source: 'FILE_IO'));
+      final fileObj = File(file.path);
+      if (!await fileObj.exists()) {
+        throw Exception('File not found: ${file.path}');
+      }
+      
+      final inputData = await fileObj.readAsBytes();
+      _addLog(LogEntry.info('Read ${inputData.length} bytes from file', source: 'FILE_IO'));
 
-        await Future.delayed(const Duration(milliseconds: 50)); // Simulate processing time
+      // Perform actual crypto operation
+      _progress = _progress.copyWith(
+        currentOperation: 'Performing $operation...',
+        currentChunk: 1,
+      );
+      notifyListeners();
 
-        final bytesProcessed = ((chunk + 1) / _progress.totalChunks * file.size).round();
+      final result = isEncryption 
+          ? await CryptoBridgeService.encrypt(config: _config, data: inputData)
+          : await CryptoBridgeService.decrypt(config: _config, data: inputData);
+
+      if (result.success) {
+        // Save output file
+        final outputPath = _generateOutputPath(file.path, isEncryption);
+        final outputFile = File(outputPath);
+        
+        _addLog(LogEntry.info('Writing output to: $outputPath', source: 'FILE_IO'));
+        await outputFile.writeAsBytes(result.data!);
+        
         final elapsed = DateTime.now().difference(startTime);
         
-        _progress = _progress.copyWith(
-          currentChunk: chunk + 1,
-          bytesProcessed: bytesProcessed,
-          elapsed: elapsed,
-          currentOperation: '$operation chunk ${chunk + 1} of ${_progress.totalChunks}...',
-        );
-
-        // Log every 20 chunks or at important milestones
-        if ((chunk + 1) % 20 == 0 || chunk == 0 || chunk == _progress.totalChunks - 1) {
-          _addLog(LogEntry.info(
-            'Processing chunk ${chunk + 1}/${_progress.totalChunks} (${_progress.formattedProgress})',
-            source: 'WORKER',
-          ));
-        }
-
-        notifyListeners();
-      }
-
-      if (_isProcessing) {
         // Success
         _progress = _progress.copyWith(
           status: ProcessingStatus.success,
           currentOperation: '$operation completed successfully',
+          currentChunk: _progress.totalChunks,
+          bytesProcessed: file.size,
+          elapsed: elapsed,
         );
         
         _addLog(LogEntry.success(
-          '$operation completed in ${_progress.elapsed.inSeconds}s',
+          '$operation completed in ${elapsed.inMilliseconds}ms',
           source: operation.toUpperCase(),
         ));
 
+        _addLog(LogEntry.success(
+          'Output saved: $outputPath (${result.data!.length} bytes)',
+          source: 'FILE_IO',
+        ));
+
         _updateStatus('$operation completed successfully');
+      } else {
+        throw Exception(result.error!);
       }
 
     } catch (e) {
@@ -259,6 +280,34 @@ class AppStateProvider with ChangeNotifier {
   void _updateStatus(String message) {
     _statusMessage = message;
     notifyListeners();
+  }
+
+  // Generate output file path based on operation
+  String _generateOutputPath(String inputPath, bool isEncryption) {
+    final file = File(inputPath);
+    final directory = file.parent.path;
+    final name = file.uri.pathSegments.last;
+    
+    if (isEncryption) {
+      // Add .enc extension for encrypted files
+      final baseName = name.contains('.') 
+          ? name.substring(0, name.lastIndexOf('.'))
+          : name;
+      final extension = name.contains('.') 
+          ? name.substring(name.lastIndexOf('.'))
+          : '';
+      return '$directory/${baseName}_encrypted${extension}.enc';
+    } else {
+      // Remove .enc extension and _encrypted suffix for decrypted files
+      if (name.endsWith('.enc')) {
+        final withoutEnc = name.substring(0, name.length - 4);
+        if (withoutEnc.contains('_encrypted')) {
+          return '$directory/${withoutEnc.replaceAll('_encrypted', '_decrypted')}';
+        }
+        return '$directory/${withoutEnc}_decrypted';
+      }
+      return '$directory/${name}_decrypted';
+    }
   }
 
   // System initialization
