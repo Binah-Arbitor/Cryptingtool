@@ -12,30 +12,6 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-def flutterRoot = localProperties.getProperty('flutter.sdk')
-if (flutterRoot == null) {
-    // Try to get Flutter root from environment variable
-    flutterRoot = System.getenv('FLUTTER_ROOT') ?: System.getenv('FLUTTER_SDK')
-    if (flutterRoot == null) {
-        // Try common Flutter installation paths
-        def possiblePaths = [
-            System.getProperty("user.home") + "/flutter",
-            "/usr/local/flutter",
-            "/opt/flutter"
-        ]
-        for (path in possiblePaths) {
-            if (new File(path).exists()) {
-                flutterRoot = path
-                break
-            }
-        }
-    }
-}
-
-if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file or set FLUTTER_ROOT environment variable.")
-}
-
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
     flutterVersionCode = '1'
@@ -143,11 +119,11 @@ android {
 }
 
 dependencies {
-    // Core Android libraries (updated to latest versions)
-    implementation "androidx.core:core-ktx:1.12.0"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.7.0"
-    implementation "androidx.activity:activity-compose:1.8.2"
+    // Core Android libraries (updated to latest stable versions)
+    implementation "androidx.core:core-ktx:1.13.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.8.4"
+    implementation "androidx.activity:activity-compose:1.9.1"
     
     // Performance monitoring (optional)
-    // implementation "androidx.benchmark:benchmark-macro-junit4:1.2.2"
+    // implementation "androidx.benchmark:benchmark-macro-junit4:1.2.4"
 }

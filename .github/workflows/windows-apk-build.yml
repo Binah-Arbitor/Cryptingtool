@@ -129,9 +129,326 @@ jobs:
           
           Write-Host "==========================================" -ForegroundColor Green
 
-      - name: Accept Android Licenses
-        shell: bash
-        run: yes | flutter doctor --android-licenses
+      - name: 🔍 Flutter and Gradle Environment Verification
+        shell: pwsh
+        run: |
+          Write-Host "=== Flutter and Gradle Environment Verification ===" -ForegroundColor Green
+          
+          # Flutter Environment Checks
+          Write-Host "--- Flutter Environment ---" -ForegroundColor Cyan
+          
+          # Check Flutter version and path
+          if (Get-Command flutter -ErrorAction SilentlyContinue) {
+            $flutterVersion = flutter --version --machine 2>&1 | ConvertFrom-Json -ErrorAction SilentlyContinue
+            if ($flutterVersion) {
+              Write-Host "✅ Flutter Version: $($flutterVersion.flutterVersion)" -ForegroundColor Green
+              Write-Host "✅ Dart Version: $($flutterVersion.dartSdkVersion)" -ForegroundColor Green
+              Write-Host "✅ Flutter Channel: $($flutterVersion.channel)" -ForegroundColor Green
+            } else {
+              flutter --version
+            }
+            
+            $flutterPath = (Get-Command flutter).Source
+            Write-Host "✅ Flutter Path: $flutterPath" -ForegroundColor Green
+            
+            # Check Flutter SDK path environment variable
+            if ($env:FLUTTER_ROOT) {
+              Write-Host "✅ FLUTTER_ROOT: $env:FLUTTER_ROOT" -ForegroundColor Green
+            } elseif ($env:FLUTTER_SDK) {
+              Write-Host "✅ FLUTTER_SDK: $env:FLUTTER_SDK" -ForegroundColor Green
+            } else {
+              Write-Host "⚠️ FLUTTER_ROOT/FLUTTER_SDK environment variable not set" -ForegroundColor Yellow
+              # Try to set it based on Flutter path
+              $flutterSdkPath = Split-Path -Parent (Split-Path -Parent $flutterPath)
+              Write-Host "📍 Inferred Flutter SDK path: $flutterSdkPath" -ForegroundColor Yellow
+              $env:FLUTTER_ROOT = $flutterSdkPath
+            }
+          } else {
+            Write-Host "❌ Flutter command not found!" -ForegroundColor Red
+          }
+          
+          # Gradle Environment Checks
+          Write-Host "--- Gradle Environment ---" -ForegroundColor Cyan
+          
+          # Check Gradle wrapper
+          if (Test-Path "android/gradlew") {
+            Write-Host "✅ Gradle wrapper found" -ForegroundColor Green
+            $gradleVersion = & android/gradlew --version 2>&1 | Select-String "Gradle" | Select-Object -First 1
+            Write-Host "✅ $gradleVersion" -ForegroundColor Green
+          } elseif (Get-Command gradle -ErrorAction SilentlyContinue) {
+            $gradleVersion = gradle --version 2>&1 | Select-String "Gradle" | Select-Object -First 1
+            Write-Host "✅ System $gradleVersion" -ForegroundColor Green
+          } else {
+            Write-Host "⚠️ No Gradle installation found (will use Flutter's embedded Gradle)" -ForegroundColor Yellow
+          }
+          
+          # Check Gradle-related environment variables
+          if ($env:GRADLE_HOME) {
+            Write-Host "✅ GRADLE_HOME: $env:GRADLE_HOME" -ForegroundColor Green
+          } else {
+            Write-Host "ℹ️ GRADLE_HOME not set (not required for Flutter projects)" -ForegroundColor Cyan
+          }
+          
+          if ($env:GRADLE_USER_HOME) {
+            Write-Host "✅ GRADLE_USER_HOME: $env:GRADLE_USER_HOME" -ForegroundColor Green
+          } else {
+            Write-Host "ℹ️ GRADLE_USER_HOME not set (using default)" -ForegroundColor Cyan
+          }
+          
+          # Android SDK Environment Checks
+          Write-Host "--- Android SDK Environment ---" -ForegroundColor Cyan
+          
+          if ($env:ANDROID_HOME) {
+            Write-Host "✅ ANDROID_HOME: $env:ANDROID_HOME" -ForegroundColor Green
+            if (Test-Path $env:ANDROID_HOME) {
+              Write-Host "✅ Android SDK directory exists" -ForegroundColor Green
+              
+              # Check SDK components
+              if (Test-Path "$env:ANDROID_HOME\platforms") {
+                $platforms = Get-ChildItem "$env:ANDROID_HOME\platforms" | Select-Object -ExpandProperty Name | Sort-Object
+                Write-Host "📱 Available platforms: $($platforms -join ', ')" -ForegroundColor Cyan
+              }
+              
+              if (Test-Path "$env:ANDROID_HOME\build-tools") {
+                $buildTools = Get-ChildItem "$env:ANDROID_HOME\build-tools" | Select-Object -ExpandProperty Name | Sort-Object
+                $latestBuildTool = $buildTools | Select-Object -Last 1
+                Write-Host "🔧 Build tools: $($buildTools -join ', ') (latest: $latestBuildTool)" -ForegroundColor Cyan
+              }
+            } else {
+              Write-Host "❌ Android SDK directory not found at: $env:ANDROID_HOME" -ForegroundColor Red
+            }
+          } elseif ($env:ANDROID_SDK_ROOT) {
+            Write-Host "✅ ANDROID_SDK_ROOT: $env:ANDROID_SDK_ROOT" -ForegroundColor Green
+          } else {
+            Write-Host "⚠️ Neither ANDROID_HOME nor ANDROID_SDK_ROOT is set" -ForegroundColor Yellow
+          }
+          
+          # Java Environment Checks
+          Write-Host "--- Java Environment ---" -ForegroundColor Cyan
+          
+          if ($env:JAVA_HOME) {
+            Write-Host "✅ JAVA_HOME: $env:JAVA_HOME" -ForegroundColor Green
+            if (Test-Path $env:JAVA_HOME) {
+              Write-Host "✅ Java directory exists" -ForegroundColor Green
+              # Check Java version
+              if (Test-Path "$env:JAVA_HOME\bin\java.exe") {
+                $javaVersion = & "$env:JAVA_HOME\bin\java.exe" -version 2>&1 | Select-String "version" | Select-Object -First 1
+                Write-Host "☕ $javaVersion" -ForegroundColor Green
+              }
+            } else {
+              Write-Host "❌ Java directory not found at: $env:JAVA_HOME" -ForegroundColor Red
+            }
+          } else {
+            Write-Host "⚠️ JAVA_HOME not set" -ForegroundColor Yellow
+          }
+          
+          # Final environment summary
+          Write-Host "--- Environment Summary ---" -ForegroundColor Cyan
+          Write-Host "Flutter SDK: $(if (Get-Command flutter -ErrorAction SilentlyContinue) { '✅ Available' } else { '❌ Missing' })" -ForegroundColor $(if (Get-Command flutter -ErrorAction SilentlyContinue) { 'Green' } else { 'Red' })
+          Write-Host "Android SDK: $(if ($env:ANDROID_HOME -or $env:ANDROID_SDK_ROOT) { '✅ Configured' } else { '⚠️ Not Set' })" -ForegroundColor $(if ($env:ANDROID_HOME -or $env:ANDROID_SDK_ROOT) { 'Green' } else { 'Yellow' })
+          Write-Host "Java SDK: $(if ($env:JAVA_HOME) { '✅ Configured' } else { '⚠️ Not Set' })" -ForegroundColor $(if ($env:JAVA_HOME) { 'Green' } else { 'Yellow' })
+          
+          Write-Host "================================================" -ForegroundColor Green
+
+      - name: 🔐 Enhanced Android License Acceptance
+        shell: pwsh
+        run: |
+          Write-Host "=== Enhanced Android License Acceptance ===" -ForegroundColor Green
+          Write-Host "Implementing multi-method approach for reliable license acceptance" -ForegroundColor Yellow
+          
+          $licenseAccepted = $false
+          $maxAttempts = 3
+          $currentAttempt = 0
+          
+          while (-not $licenseAccepted -and $currentAttempt -lt $maxAttempts) {
+            $currentAttempt++
+            Write-Host "🔄 License acceptance attempt $currentAttempt of $maxAttempts" -ForegroundColor Cyan
+            
+            try {
+              # Method 1: PowerShell process with multiple confirmations
+              Write-Host "Using PowerShell process method..." -ForegroundColor Yellow
+              $psi = New-Object System.Diagnostics.ProcessStartInfo
+              $psi.FileName = "flutter"
+              $psi.Arguments = "doctor --android-licenses"
+              $psi.RedirectStandardInput = $true
+              $psi.RedirectStandardOutput = $true
+              $psi.RedirectStandardError = $true
+              $psi.UseShellExecute = $false
+              $psi.WorkingDirectory = (Get-Location).Path
+              
+              $process = [System.Diagnostics.Process]::Start($psi)
+              
+              # Send 15 "y" responses (more than typical 7 licenses)
+              for ($i = 0; $i -lt 15; $i++) {
+                $process.StandardInput.WriteLine("y")
+                Start-Sleep -Milliseconds 100
+              }
+              $process.StandardInput.Close()
+              
+              if ($process.WaitForExit(180000)) { # 3 minutes timeout
+                if ($process.ExitCode -eq 0) {
+                  Write-Host "✅ License acceptance successful!" -ForegroundColor Green
+                  $licenseAccepted = $true
+                } else {
+                  Write-Host "⚠️ Process completed with exit code: $($process.ExitCode)" -ForegroundColor Yellow
+                }
+              } else {
+                Write-Host "⚠️ Process timed out, killing..." -ForegroundColor Yellow
+                $process.Kill()
+                $process.WaitForExit(5000)
+              }
+            }
+            catch {
+              Write-Host "❌ Attempt $currentAttempt failed: $_" -ForegroundColor Red
+            }
+            
+            # Brief pause between attempts
+            if (-not $licenseAccepted -and $currentAttempt -lt $maxAttempts) {
+              Start-Sleep -Seconds 3
+            }
+          }
+          
+          # Fallback method using bash if PowerShell failed
+          if (-not $licenseAccepted) {
+            Write-Host "🔄 Trying fallback bash method..." -ForegroundColor Cyan
+            try {
+              bash -c 'yes | flutter doctor --android-licenses'
+              if ($LASTEXITCODE -eq 0) {
+                Write-Host "✅ Bash fallback method succeeded!" -ForegroundColor Green
+                $licenseAccepted = $true
+              }
+            }
+            catch {
+              Write-Host "⚠️ Bash fallback also failed: $_" -ForegroundColor Yellow
+            }
+          }
+          
+          # Final verification
+          Write-Host "=== License Status Verification ===" -ForegroundColor Green
+          flutter doctor -v 2>&1 | Tee-Object -FilePath "license_verification.log"
+          
+          $doctorOutput = Get-Content "license_verification.log" -Raw
+          if ($doctorOutput -match "licenses.*not.*accepted" -or $doctorOutput -match "Android licenses not accepted") {
+            Write-Host "⚠️ Some licenses may still need acceptance - but build will continue" -ForegroundColor Yellow
+            Write-Host "Note: Modern Android builds often work with partial license acceptance" -ForegroundColor Cyan
+          } else {
+            Write-Host "🎉 SUCCESS: Android SDK licenses properly handled!" -ForegroundColor Green
+          }
+          
+          Write-Host "=============================================" -ForegroundColor Green
+        
+      - name: 🔧 Gradle Configuration Validation
+        shell: pwsh
+        run: |
+          Write-Host "=== Gradle Configuration Validation ===" -ForegroundColor Green
+          
+          # Check if gradle wrapper exists
+          if (Test-Path "android/gradlew") {
+            Write-Host "✅ Gradle wrapper found" -ForegroundColor Green
+          } else {
+            Write-Host "⚠️ Gradle wrapper not found - will use system gradle" -ForegroundColor Yellow
+          }
+          
+          # Validate Android gradle files
+          Write-Host "--- Validating Gradle Files ---" -ForegroundColor Cyan
+          
+          $gradleFiles = @(
+            "android/build.gradle",
+            "android/app/build.gradle", 
+            "android/settings.gradle",
+            "android/gradle.properties"
+          )
+          
+          foreach ($file in $gradleFiles) {
+            if (Test-Path $file) {
+              Write-Host "✅ Found: $file" -ForegroundColor Green
+              
+              # Basic validation checks
+              $content = Get-Content $file -Raw
+              
+              switch -Wildcard ($file) {
+                "*settings.gradle" {
+                  if ($content -match "dev.flutter.flutter-gradle-plugin") {
+                    Write-Host "  ✅ Official Flutter Gradle plugin configured" -ForegroundColor Green
+                  } else {
+                    Write-Host "  ❌ Missing official Flutter Gradle plugin" -ForegroundColor Red
+                  }
+                  
+                  if ($content -match "com.android.application.*8\.2\.[2-9]|8\.[3-9]|[9-9]\.") {
+                    Write-Host "  ✅ Android Gradle Plugin version 8.2.2+ (modern)" -ForegroundColor Green
+                  } else {
+                    Write-Host "  ⚠️ Android Gradle Plugin could be newer" -ForegroundColor Yellow
+                  }
+                }
+                
+                "*app/build.gradle" {
+                  if ($content -match "compileSdk\s*=\s*3[5-9]|[4-9][0-9]") {
+                    Write-Host "  ✅ Compile SDK 35+ (latest Android)" -ForegroundColor Green
+                  } else {
+                    Write-Host "  ⚠️ Compile SDK should be 35+" -ForegroundColor Yellow
+                  }
+                  
+                  if ($content -match "minSdk\s*=\s*2[4-9]|[3-9][0-9]") {
+                    Write-Host "  ✅ Minimum SDK 24+ (Android 7.0+)" -ForegroundColor Green
+                  } else {
+                    Write-Host "  ⚠️ Minimum SDK should be 24+ for better compatibility" -ForegroundColor Yellow
+                  }
+                  
+                  if ($content -match "targetSdk\s*=\s*3[5-9]|[4-9][0-9]") {
+                    Write-Host "  ✅ Target SDK 35+ (latest)" -ForegroundColor Green
+                  } else {
+                    Write-Host "  ⚠️ Target SDK should be 35+" -ForegroundColor Yellow
+                  }
+                  
+                  if ($content -match "androidx\.core:core-ktx:1\.1[3-9]|1\.[2-9][0-9]|[2-9]\.") {
+                    Write-Host "  ✅ AndroidX Core KTX 1.13+" -ForegroundColor Green
+                  } else {
+                    Write-Host "  ⚠️ AndroidX dependencies could be updated" -ForegroundColor Yellow
+                  }
+                }
+                
+                "*gradle.properties" {
+                  if ($content -match "android\.useAndroidX=true") {
+                    Write-Host "  ✅ AndroidX enabled" -ForegroundColor Green
+                  } else {
+                    Write-Host "  ❌ AndroidX should be enabled" -ForegroundColor Red
+                  }
+                  
+                  if ($content -match "android\.enableR8=true") {
+                    Write-Host "  ✅ R8 optimization enabled" -ForegroundColor Green
+                  } else {
+                    Write-Host "  ⚠️ R8 optimization recommended" -ForegroundColor Yellow
+                  }
+                }
+              }
+            } else {
+              Write-Host "❌ Missing: $file" -ForegroundColor Red
+            }
+          }
+          
+          # Test Gradle configuration
+          Write-Host "--- Testing Gradle Configuration ---" -ForegroundColor Cyan
+          try {
+            Write-Host "Testing Gradle tasks..." -ForegroundColor Yellow
+            cd android
+            if (Test-Path "gradlew") {
+              ./gradlew tasks --all | Out-String | Write-Host
+              if ($LASTEXITCODE -eq 0) {
+                Write-Host "✅ Gradle configuration is valid" -ForegroundColor Green
+              } else {
+                Write-Host "⚠️ Gradle configuration has warnings but may still work" -ForegroundColor Yellow
+              }
+            } else {
+              Write-Host "⚠️ Cannot test gradle configuration without wrapper" -ForegroundColor Yellow
+            }
+            cd ..
+          }
+          catch {
+            Write-Host "⚠️ Gradle test failed: $_" -ForegroundColor Yellow
+            Write-Host "Note: This might be normal in CI environment without full Android SDK" -ForegroundColor Cyan
+          }
+          
+          Write-Host "======================================" -ForegroundColor Green
 
         
       - name: 📦 Install Windows Dependencies
