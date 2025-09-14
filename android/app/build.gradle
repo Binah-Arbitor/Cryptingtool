@@ -66,13 +66,14 @@ android {
 
     defaultConfig {
         applicationId = "com.binah.cryptingtool"
-        // Minimum SDK version set to 24 for Android 7.0+ (improved stability and security)
-        minSdk = 24
+        // Minimum SDK version set to 16 for Android 4.1+ (Jelly Bean) for maximum compatibility
+        // As requested in the project requirements for API 16+ support
+        minSdk = 16
         targetSdk = 35
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
         
-        // Optimize for performance
+        // Optimize for performance across all supported architectures
         ndk {
             abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64'
         }
