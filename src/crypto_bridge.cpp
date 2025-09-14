@@ -33,6 +33,9 @@
  * -9: Unknown error
  */
 
+// Enable weak algorithms for compatibility
+#define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
+
 // Use compatibility header that handles different Crypto++ installation paths
 #include "crypto_compat.h"
 #include <cstring>
