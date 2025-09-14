@@ -204,7 +204,7 @@ int crypto_bridge_process(
         }
 
         const int key_len = key_size_bits / 8;
-        const int iv_len = 16; // Standard IV length for most modes
+        const int iv_len = (algorithm == ALGORITHM_CHACHA20) ? 12 : 16; // ChaCha20 uses 12-byte nonce, others use 16
         
         // Ensure output buffer is large enough
         int required_output_len = input_len;
@@ -1003,13 +1003,13 @@ int crypto_bridge_process(
                 }
                 
                 if (operation == OPERATION_ENCRYPT) {
-                    CryptoPP::ChaCha::Encryption enc;
-                    enc.SetKeyWithIV(derived_key.data(), key_len, derived_iv.data(), 12); // ChaCha20 uses 12-byte nonce
+                    CryptoPP::ChaChaTLS::Encryption enc;
+                    enc.SetKeyWithIV(derived_key.data(), key_len, derived_iv.data(), 12); // ChaChaTLS uses 12-byte nonce
                     CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
                         new CryptoPP::StreamTransformationFilter(enc,
                             new CryptoPP::StringSink(result), CryptoPP::StreamTransformationFilter::NO_PADDING));
                 } else {
-                    CryptoPP::ChaCha::Decryption dec;
+                    CryptoPP::ChaChaTLS::Decryption dec;
                     dec.SetKeyWithIV(derived_key.data(), key_len, derived_iv.data(), 12);
                     CryptoPP::StringSource ss((const CryptoPP::byte*)input_data, input_len, true,
                         new CryptoPP::StreamTransformationFilter(dec,
@@ -1349,7 +1349,7 @@ static int validate_algorithm_key_size(int algorithm, int key_size_bits) {
                    ? STATUS_SUCCESS : STATUS_INVALID_KEY_SIZE;
                    
         case ALGORITHM_DES3:
-            return (key_size_bits == 168) ? STATUS_SUCCESS : STATUS_INVALID_KEY_SIZE; // Effective key length
+            return (key_size_bits == 192) ? STATUS_SUCCESS : STATUS_INVALID_KEY_SIZE; // 3DES uses 192-bit keys
             
         case ALGORITHM_RC2:
             return (key_size_bits == 40 || key_size_bits == 64 || key_size_bits == 128) 
