@@ -11,8 +11,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" 
         android:maxSdkVersion="28" />
     
-    <!-- Specify minimum SDK version for Android 7.0+ (API 24) -->
-    <uses-sdk android:minSdkVersion="24" 
+    <!-- Specify minimum SDK version for Android 4.1+ (API 16) for broad compatibility -->
+    <uses-sdk android:minSdkVersion="16" 
               android:targetSdkVersion="35" />
 
     <application
