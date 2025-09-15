@@ -19,6 +19,10 @@
 #ifndef CRYPTO_COMPAT_H
 #define CRYPTO_COMPAT_H
 
+// Enable weak namespace for algorithms like ARC4/RC4 in Crypto++ 8.9+
+// This must be defined before including any Crypto++ headers
+#define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
+
 // Try to detect Crypto++ header location automatically
 // This handles the most common installation scenarios
 
