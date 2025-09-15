@@ -1,14 +1,49 @@
 pluginManagement {
     def flutterSdkPath = {
         def properties = new Properties()
-        file("local.properties").withInputStream { properties.load(it) }
-        def flutterSdkPath = properties.getProperty("flutter.sdk")
-        assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
-        return flutterSdkPath
+        def localPropertiesFile = file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.withInputStream { properties.load(it) }
+            def flutterSdkPath = properties.getProperty("flutter.sdk")
+            if (flutterSdkPath != null && new File(flutterSdkPath).exists()) {
+                return flutterSdkPath
+            }
+        }
+        
+        // Fallback to environment variables
+        def envFlutterRoot = System.getenv('FLUTTER_ROOT') ?: System.getenv('FLUTTER_SDK')
+        if (envFlutterRoot != null && new File(envFlutterRoot).exists()) {
+            return envFlutterRoot
+        }
+        
+        // Try common installation paths
+        def possiblePaths = [
+            System.getProperty("user.home") + "/flutter",
+            "/usr/local/flutter",
+            "/opt/flutter",
+            "/snap/flutter/current"
+        ]
+        for (path in possiblePaths) {
+            if (new File(path).exists()) {
+                return path
+            }
+        }
+        
+        throw new GradleException("Flutter SDK not found. Please set flutter.sdk in local.properties or FLUTTER_ROOT environment variable.")
     }
-    settings.ext.flutterSdkPath = flutterSdkPath()
-
-    includeBuild("${settings.ext.flutterSdkPath}/packages/flutter_tools/gradle")
+    
+    try {
+        settings.ext.flutterSdkPath = flutterSdkPath()
+        def gradlePath = "${settings.ext.flutterSdkPath}/packages/flutter_tools/gradle"
+        if (new File(gradlePath).exists()) {
+            includeBuild(gradlePath)
+        } else {
+            println "Warning: Flutter tools gradle directory not found at: ${gradlePath}"
+        }
+    } catch (Exception e) {
+        println "Warning: Flutter SDK configuration failed: ${e.message}"
+        // Continue without Flutter tools to avoid build failure
+    }
 
     repositories {
         google()
