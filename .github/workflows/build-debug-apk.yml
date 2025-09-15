@@ -1,0 +1,184 @@
+name: Build Debug APK
+
+on:
+  push:
+    branches: [ main, develop, master ]
+  pull_request:
+    branches: [ main, develop, master ]
+  workflow_dispatch:
+    inputs:
+      flutter_version:
+        description: 'Flutter version to use'
+        required: false
+        default: '3.24.5'
+        type: string
+
+jobs:
+  build-debug-apk:
+    name: Build Debug APK
+    runs-on: ubuntu-22.04  # Latest LTS Ubuntu for maximum stability and performance
+    timeout-minutes: 45    # Reasonable timeout for APK builds
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1  # Shallow clone for faster checkout
+      
+    - name: Setup Java 17 JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'  # Eclipse Temurin - most stable OpenJDK distribution
+        java-version: '17'
+        cache: gradle
+        
+    - name: Setup Flutter SDK
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ github.event.inputs.flutter_version || '3.24.5' }}  # Latest stable
+        channel: 'stable'
+        cache: true
+        cache-key: 'flutter-${{ github.event.inputs.flutter_version || "3.24.5" }}-stable'
+        cache-path: ${{ runner.tool_cache }}/flutter
+        
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      with:
+        api-level: 35  # Latest Android API
+        target: default
+        arch: x86_64
+        
+    - name: Install Android SDK Components
+      run: |
+        echo "📱 Installing Android SDK components for API 32+ targeting..."
+        ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager \
+          "platforms;android-32" \
+          "platforms;android-33" \
+          "platforms;android-34" \
+          "platforms;android-35" \
+          "build-tools;35.0.0" \
+          "build-tools;34.0.0" \
+          "ndk;26.1.10909125" \
+          "cmake;3.22.1" \
+          "platform-tools"
+          
+    - name: Accept Android Licenses
+      run: |
+        echo "📝 Accepting Android SDK licenses..."
+        yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --licenses || true
+        
+    - name: Install C++ Dependencies
+      run: |
+        echo "🔧 Installing C++ build dependencies and Crypto++ library..."
+        sudo apt-get update -qq
+        sudo apt-get install -y --no-install-recommends \
+          libcrypto++-dev \
+          libcrypto++-utils \
+          cmake \
+          ninja-build \
+          pkg-config \
+          build-essential \
+          libc6-dev
+          
+    - name: Verify C++ Dependencies
+      run: |
+        echo "🔍 Verifying C++ dependencies installation..."
+        # Verify Crypto++ installation
+        pkg-config --exists libcrypto++ && echo "✅ Crypto++ found via pkg-config" || echo "⚠️ Crypto++ not found via pkg-config"
+        pkg-config --modversion libcrypto++ 2>/dev/null || echo "Version info not available"
+        
+        # Find installed libraries and headers
+        echo "📚 Installed Crypto++ libraries:"
+        find /usr -name "libcrypto++*" -type f 2>/dev/null | head -5 || echo "No libraries found"
+        echo "📄 Crypto++ headers:"
+        find /usr -name "cryptlib.h" 2>/dev/null | head -3 || echo "No headers found"
+        
+    - name: Flutter Dependencies & Doctor
+      run: |
+        echo "📱 Installing Flutter dependencies and checking environment..."
+        flutter pub get
+        echo "Flutter version:"
+        flutter --version
+        echo "Flutter doctor output:"
+        flutter doctor -v
+        
+    - name: Build C++ Components
+      run: |
+        echo "🔨 Building native C++ cryptographic components..."
+        mkdir -p build
+        cd build
+        cmake .. \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -G Ninja \
+          -DCMAKE_VERBOSE_MAKEFILE=ON
+        ninja -v
+        cd ..
+        echo "✅ C++ components built successfully"
+        
+    - name: Configure Android Build Environment
+      run: |
+        echo "⚙️ Configuring Android build environment..."
+        # Create local.properties file for Android build
+        cat > android/local.properties << EOF
+        flutter.sdk=${FLUTTER_ROOT}
+        sdk.dir=${ANDROID_SDK_ROOT}
+        ndk.dir=${ANDROID_SDK_ROOT}/ndk/26.1.10909125
+        EOF
+        
+        echo "📋 Android build configuration:"
+        cat android/local.properties
+        
+    - name: Build Debug APK
+      run: |
+        echo "🏗️ Building debug APK with multi-architecture support..."
+        flutter build apk \
+          --debug \
+          --target-platform android-arm,android-arm64,android-x64 \
+          --split-per-abi \
+          --verbose
+        echo "✅ APK build completed successfully"
+          
+    - name: Verify APK Build Results
+      run: |
+        echo "🔍 Verifying APK build results..."
+        # List all generated APK files
+        echo "📱 Generated APK files:"
+        find build/app/outputs/flutter-apk/ -name "*.apk" -type f | sort
+        
+        echo "📊 APK files summary:"
+        ls -lah build/app/outputs/flutter-apk/
+        
+        # Analyze each APK
+        echo "🔬 APK Analysis:"
+        for apk in build/app/outputs/flutter-apk/app-*-debug.apk build/app/outputs/flutter-apk/app-debug.apk; do
+          if [ -f "$apk" ]; then
+            echo "===================="
+            echo "📱 APK: $(basename $apk)"
+            echo "💾 Size: $(du -h "$apk" | cut -f1)"
+            echo "📋 Info:"
+            ${ANDROID_SDK_ROOT}/build-tools/35.0.0/aapt dump badging "$apk" | grep -E "(package|sdkVersion|targetSdkVersion|application-label)" | head -10
+            echo ""
+          fi
+        done
+        
+    - name: Upload Debug APK Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: debug-apk-${{ github.sha }}
+        path: |
+          build/app/outputs/flutter-apk/app-*-debug.apk
+          build/app/outputs/flutter-apk/app-debug.apk
+        if-no-files-found: error
+        retention-days: 30
+        compression-level: 6  # Balanced compression
+        
+    - name: Upload Build Logs (on failure)
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-logs-${{ github.sha }}
+        path: |
+          build/
+          android/app/build/
+          ~/.gradle/caches/
+        retention-days: 7
