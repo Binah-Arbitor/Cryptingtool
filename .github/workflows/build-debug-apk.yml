@@ -101,8 +101,8 @@ jobs:
     - name: Build C++ Components
       run: |
         echo "🔨 Building native C++ cryptographic components..."
-        mkdir -p build
-        cd build
+        mkdir -p cmake_build
+        cd cmake_build
         cmake .. \
           -DCMAKE_BUILD_TYPE=Debug \
           -G Ninja \
@@ -174,6 +174,7 @@ jobs:
       with:
         name: build-logs-${{ github.sha }}
         path: |
+          cmake_build/
           build/
           android/app/build/
           ~/.gradle/caches/
