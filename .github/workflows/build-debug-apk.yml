@@ -38,7 +38,7 @@ jobs:
         flutter-version: ${{ github.event.inputs.flutter_version || '3.24.5' }}  # Latest stable
         channel: 'stable'
         cache: true
-        cache-key: 'flutter-${{ github.event.inputs.flutter_version || "3.24.5" }}-stable'
+        cache-key: "flutter-${{ github.event.inputs.flutter_version || '3.24.5' }}-stable"
         cache-path: ${{ runner.tool_cache }}/flutter
         
     - name: Setup Android SDK
