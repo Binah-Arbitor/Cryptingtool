@@ -7,27 +7,29 @@ English: "Some SDK parts seem to be not fully installed, please check the action
 
 The GitHub Actions workflow was experiencing issues with incomplete SDK installations, specifically:
 
-1. **Partial Android SDK Installation**: Components missing or not properly configured
+1. **YAML Package Formatting Issue**: Multi-line package list treated as single string
 2. **License Acceptance Failures**: "1 of 7 SDK package license not accepted" errors
-3. **Flutter Action Compatibility**: Outdated action versions causing issues
-4. **Environment Validation**: Insufficient verification of SDK components
+3. **Command-line Tools Version**: Outdated cmdline-tools causing compatibility issues
+4. **Timeout Issues**: License acceptance hanging indefinitely
 
 ## Root Cause Analysis
 
-Through comprehensive investigation, the following issues were identified:
+Through comprehensive investigation and Stack Overflow research, the following issues were identified:
 
-### 1. Outdated Flutter Action Version
-- **Issue**: Using `subosito/flutter-action@v2` without latest features
-- **Impact**: Missing caching improvements and bug fixes
-- **Latest**: `v2.21.0` available with significant improvements
+### 1. YAML Package Formatting Error (Primary Issue)
+- **Issue**: Multi-line YAML `packages:` section treated as single package string
+- **Error**: `Failed to find package 'platforms;android-32\nplatforms;android-33...'`
+- **Solution**: Convert to single-line space-separated format
+- **Stack Overflow Reference**: Common YAML parsing issue in GitHub Actions
 
 ### 2. Insufficient License Acceptance Mechanism
 - **Issue**: Single-method license acceptance prone to timeouts
 - **Impact**: Build failures due to unaccepted SDK licenses
-- **Solution**: Multi-method fallback approach needed
+- **Solution**: Multi-method fallback approach with timeouts and retries
 
-### 3. Limited SDK Verification
-- **Issue**: No comprehensive verification of SDK installation completeness
+### 3. Outdated Command-line Tools Version
+- **Issue**: Using cmdline-tools version '11076708' with known issues
+- **Solution**: Update to latest stable version '12.0'
 - **Impact**: Silent failures and incomplete installations
 - **Solution**: Enhanced diagnostic and verification tools needed
 
@@ -37,45 +39,76 @@ Through comprehensive investigation, the following issues were identified:
 
 ## Comprehensive Solution
 
-### 1. Updated Flutter Action to Latest Version
+### 1. Fixed YAML Package Formatting (Primary Fix)
 
-**Updated to `subosito/flutter-action@v2.21.0`** with enhanced features:
-
+**Before (Problematic multi-line format)**:
 ```yaml
-- name: Setup Flutter (Channel-based)
-  uses: subosito/flutter-action@v2.21.0
-  with:
-    channel: ${{ inputs.flutter-version }}
-    cache: true
-    cache-key: flutter-:os:-:channel:-:version:-:arch:-:hash:
-    cache-path: ${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:
+packages: |
+  platforms;android-32
+  platforms;android-33
+  platforms;android-34
+  platforms;android-35
+  build-tools;34.0.0
+  build-tools;35.0.0
+  ndk;26.1.10909125
+  cmake;3.22.1
+  platform-tools
+```
+
+**After (Correct single-line format)**:
+```yaml
+packages: 'platforms;android-32 platforms;android-33 platforms;android-34 platforms;android-35 build-tools;34.0.0 build-tools;35.0.0 ndk;26.1.10909125 cmake;3.22.1 platform-tools'
 ```
 
 **Benefits**:
-- ✅ Enhanced caching for faster builds
-- ✅ Improved cache hit detection
-- ✅ Better dynamic path support
+- ✅ Proper package parsing by sdkmanager
+- ✅ Eliminates "Failed to find package" errors
+- ✅ Maintains all required SDK components
+- ✅ Compatible with android-actions/setup-android@v3
+
+### 2. Enhanced License Acceptance System
+
+**Implemented multi-method approach with timeout and retry mechanisms**:
+
+```yaml
+- name: Accept Android Licenses (Enhanced)
+  run: |
+    echo "📝 Accepting Android SDK licenses with enhanced method..."
+    # Method 1: Standard acceptance with timeout
+    timeout 120 bash -c 'yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --licenses' || echo "⚠️ Method 1 timed out"
+    
+    # Method 2: Fallback with specific license acceptance (Stack Overflow solution)
+    echo "🔄 Fallback license acceptance method..."
+    for i in {1..3}; do
+      echo "Attempt $i/3"
+      if timeout 60 bash -c 'echo -e "y\ny\ny\ny\ny\ny\ny\ny\ny\ny" | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --licenses'; then
+        echo "✅ Licenses accepted successfully"
+        break
+      else
+        echo "⚠️ Attempt $i failed, retrying..."
+        sleep 2
+      fi
+    done
+```
+
+**Benefits**:
+- ✅ 120-second timeout prevents infinite hanging
+- ✅ 3-attempt retry mechanism with 2-second delays  
+- ✅ Multiple license acceptance methods for reliability
+- ✅ Based on proven Stack Overflow solutions
+
+### 3. Updated Command-line Tools Version
+
+**Updated from version '11076708' to '12.0'**:
+```yaml
+cmdline-tools-version: '12.0'  # Latest stable command line tools
+```
+
+**Benefits**:
 - ✅ Latest bug fixes and stability improvements
-
-### 2. Multi-Method License Acceptance System
-
-Implemented **three-tier fallback system** for reliable license acceptance:
-
-#### Method 1: Enhanced PowerShell Process Management
-```powershell
-# Enhanced PowerShell-native approach with better timeout handling
-$yesResponses = @()
-for ($i = 1; $i -le 10; $i++) {
-  $yesResponses += "y"
-}
-$responseString = ($yesResponses -join "`r`n") + "`r`n"
-
-$psi = New-Object System.Diagnostics.ProcessStartInfo
-$psi.FileName = "flutter"
-$psi.Arguments = "doctor --android-licenses"
-$psi.RedirectStandardInput = $true
-$psi.RedirectStandardOutput = $true
-$psi.RedirectStandardError = $true
+- ✅ Better compatibility with recent Android SDK packages
+- ✅ Improved license acceptance handling
+- ✅ Enhanced error reporting
 $psi.UseShellExecute = $false
 $psi.WorkingDirectory = (Get-Location).Path
 
