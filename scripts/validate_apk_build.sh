@@ -41,10 +41,11 @@ fi
 
 # Check minSdk
 min_sdk=$(grep -oP "minSdk\s*=\s*\K\d+" $gradle_file || echo "")
-if [ "$min_sdk" == "16" ]; then
-    echo "  ✅ minSdk: $min_sdk (meets target 16 requirement)"
+if [ "$min_sdk" -ge 32 ]; then
+    echo "  ✅ minSdk: $min_sdk (meets API 32+ requirement)"
 else
-    echo "  ⚠️  minSdk: $min_sdk (expected 16)"
+    echo "  ❌ minSdk: $min_sdk (does not meet API 32+ requirement)"
+    exit 1
 fi
 
 # Check targetSdk
@@ -121,7 +122,7 @@ echo ""
 echo "🚀 The workflow will:"
 echo "   - Use Ubuntu 22.04 (stable Linux environment)"
 echo "   - Target Android API 32+ with compileSdk 35"
-echo "   - Support minSdk 16 for broad compatibility"
+echo "   - Support minSdk 32 for Android 12+ compatibility"
 echo "   - Build debug APK with Dart and C++ components"
 echo "   - Install and configure all required dependencies"
 echo "   - Accept Android licenses automatically"

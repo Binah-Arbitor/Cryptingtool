@@ -6,13 +6,17 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     
-    <!-- File access permissions for modern Android -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" 
-        android:maxSdkVersion="28" />
+    <!-- File access permissions for modern Android (API 32+) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" 
+        android:maxSdkVersion="32" />
     
-    <!-- Specify minimum SDK version for Android 4.1+ (API 16) for broad compatibility -->
-    <uses-sdk android:minSdkVersion="16" 
+    <!-- Modern storage permissions for Android 13+ (API 33+) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    
+    <!-- Specify minimum SDK version for Android 12+ (API 32) -->
+    <uses-sdk android:minSdkVersion="32" 
               android:targetSdkVersion="35" />
 
     <application

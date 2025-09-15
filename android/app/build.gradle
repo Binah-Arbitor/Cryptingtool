@@ -66,9 +66,9 @@ android {
 
     defaultConfig {
         applicationId = "com.binah.cryptingtool"
-        // Target API 32+ as specified in requirements, with API 16 minimum for broad compatibility
-        // Supporting Android 4.1+ (API 16) to Android 15+ (API 32+)
-        minSdk = 16
+        // Target API 32+ as specified in requirements
+        // Supporting Android 12+ (API 32+) to Android 15+ (API 35)
+        minSdk = 32
         targetSdk = 35
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
