@@ -27,11 +27,11 @@ Through comprehensive investigation and Stack Overflow research, the following i
 - **Impact**: Build failures due to unaccepted SDK licenses
 - **Solution**: Multi-method fallback approach with timeouts and retries
 
-### 3. Outdated Command-line Tools Version
-- **Issue**: Using cmdline-tools version '11076708' with known issues
-- **Solution**: Update to latest stable version '12.0'
-- **Impact**: Silent failures and incomplete installations
-- **Solution**: Enhanced diagnostic and verification tools needed
+### 3. Incorrect Command-line Tools Version Format  
+- **Issue**: Using short version format '12.0' instead of required long version format
+- **Error**: HTTP 404 when downloading commandlinetools-linux-12.0_latest.zip
+- **Solution**: Use correct long version format '11076708' (which corresponds to version 12.0)
+- **Impact**: Action fails with "Wrong version in preinstalled sdkmanager" error
 
 ### 4. Environment Configuration Gaps
 - **Issue**: Insufficient validation of environment variables and paths
@@ -97,17 +97,28 @@ packages: 'platforms;android-32 platforms;android-33 platforms;android-34 platfo
 - ✅ Multiple license acceptance methods for reliability
 - ✅ Based on proven Stack Overflow solutions
 
-### 3. Updated Command-line Tools Version
+### 3. Fixed Command-line Tools Version Format
 
-**Updated from version '11076708' to '12.0'**:
+**Issue Fixed**: The workflow was using short version format '12.0' instead of required long version format.
+
+**Corrected from**:
 ```yaml
-cmdline-tools-version: '12.0'  # Latest stable command line tools
+cmdline-tools-version: '12.0'  # WRONG - This is short version format
 ```
 
+**To**:
+```yaml
+cmdline-tools-version: '11076708'  # CORRECT - Long version format for 12.0
+```
+
+**Version Mapping**:
+- Short version 12.0 → Long version 11076708
+- Short version 16.0 → Long version 12266719 (latest)
+
 **Benefits**:
-- ✅ Latest bug fixes and stability improvements
-- ✅ Better compatibility with recent Android SDK packages
-- ✅ Improved license acceptance handling
+- ✅ Fixes HTTP 404 error when downloading command-line tools  
+- ✅ Uses correct version format expected by android-actions/setup-android@v3
+- ✅ Eliminates "Wrong version in preinstalled sdkmanager" errors
 - ✅ Enhanced error reporting
 $psi.UseShellExecute = $false
 $psi.WorkingDirectory = (Get-Location).Path
