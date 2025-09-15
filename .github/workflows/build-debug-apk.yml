@@ -85,18 +85,22 @@ jobs:
           build-essential \
           libc6-dev
           
-    - name: Verify C++ Dependencies
+    - name: Verify C++ Dependencies (Optimized)
       run: |
-        echo "🔍 Verifying C++ dependencies installation..."
-        # Verify Crypto++ installation
-        pkg-config --exists libcrypto++ && echo "✅ Crypto++ found via pkg-config" || echo "⚠️ Crypto++ not found via pkg-config"
-        pkg-config --modversion libcrypto++ 2>/dev/null || echo "Version info not available"
+        echo "🔍 Quick verification of C++ dependencies..."
+        # Fast verification using pkg-config (no filesystem scanning)
+        if pkg-config --exists libcrypto++; then
+          echo "✅ Crypto++ found via pkg-config: $(pkg-config --modversion libcrypto++)"
+        else
+          echo "⚠️ pkg-config verification failed"
+        fi
         
-        # Find installed libraries and headers
-        echo "📚 Installed Crypto++ libraries:"
-        find /usr -name "libcrypto++*" -type f 2>/dev/null | head -5 || echo "No libraries found"
-        echo "📄 Crypto++ headers:"
-        find /usr -name "cryptlib.h" 2>/dev/null | head -3 || echo "No headers found"
+        # Quick library existence check (specific path, no find command)
+        if [ -f "/usr/lib/x86_64-linux-gnu/libcryptopp.so" ]; then
+          echo "✅ Crypto++ library available"
+        else
+          echo "⚠️ Standard library path not found"
+        fi
         
     - name: Flutter Dependencies & Doctor
       run: |
