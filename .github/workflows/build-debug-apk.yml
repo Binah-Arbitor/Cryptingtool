@@ -44,25 +44,21 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       with:
-        api-level: 35  # Latest Android API
-        target: default
-        arch: x86_64
+        cmdline-tools-version: '11076708'  # Latest stable command line tools
+        accept-android-sdk-licenses: true
+        log-accepted-android-sdk-licenses: false
+        packages: |
+          platforms;android-32
+          platforms;android-33
+          platforms;android-34
+          platforms;android-35
+          build-tools;35.0.0
+          build-tools;34.0.0
+          ndk;26.1.10909125
+          cmake;3.22.1
+          platform-tools
         
-    - name: Install Android SDK Components
-      run: |
-        echo "📱 Installing Android SDK components for API 32+ targeting..."
-        ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager \
-          "platforms;android-32" \
-          "platforms;android-33" \
-          "platforms;android-34" \
-          "platforms;android-35" \
-          "build-tools;35.0.0" \
-          "build-tools;34.0.0" \
-          "ndk;26.1.10909125" \
-          "cmake;3.22.1" \
-          "platform-tools"
-          
-    - name: Accept Android Licenses
+    - name: Accept Android Licenses (Additional)
       run: |
         echo "📝 Accepting Android SDK licenses..."
         yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --licenses || true
@@ -105,8 +101,8 @@ jobs:
     - name: Build C++ Components
       run: |
         echo "🔨 Building native C++ cryptographic components..."
-        mkdir -p build
-        cd build
+        mkdir -p cmake_build
+        cd cmake_build
         cmake .. \
           -DCMAKE_BUILD_TYPE=Debug \
           -G Ninja \
@@ -178,6 +174,7 @@ jobs:
       with:
         name: build-logs-${{ github.sha }}
         path: |
+          cmake_build/
           build/
           android/app/build/
           ~/.gradle/caches/
