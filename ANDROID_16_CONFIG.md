@@ -1,6 +1,8 @@
 # Android API 24+ Configuration for Windows VM
 
-This document describes the updated configuration for building Android APKs targeting API 35+ (Android 15) with a modern minimum API 24+ (Android 7.0) on Windows VM environment.
+This document describes the updated configuration for building Android APKs targeting API 35+ (Android 15) with a modern minimum API 16 (Android 4.1+) on Windows VM environment.
+
+**Status: ✅ Configuration fixed - AndroidManifest.xml updated to match build.gradle**
 
 ## Overview
 
@@ -16,7 +18,7 @@ The project has been modernized to:
 ### Android Platform Structure
 
 #### `android/app/build.gradle`
-- **minSdk**: Set to 24 (Android 7.0+) for improved stability and security
+- **minSdk**: Set to 16 (Android 4.1+) for broad compatibility
 - **compileSdk**: Set to 35 (Android 15)
 - **targetSdk**: Set to 35 (Android 15)
 - **Java**: Updated to version 11 for better performance
@@ -30,7 +32,7 @@ The project has been modernized to:
 - **ABI Filters**: Configured for optimal performance
 
 #### `android/app/src/main/AndroidManifest.xml`
-- Minimum SDK version specified as 24 (Android 7.0)
+- Minimum SDK version specified as 16 (Android 4.1+)
 - Target SDK version updated to 35 (Android 15)
 - Required permissions configured for crypto operations
 - Network access permissions for crypto functionality
@@ -144,7 +146,7 @@ flutter build apk --debug
 
 2. **Minimum SDK version conflicts**
    - Verify `build.gradle` minSdk = 16
-   - Check `AndroidManifest.xml` uses-sdk
+   - Check `AndroidManifest.xml` uses minSdkVersion="16" (fixed)
 
 3. **Build failures on Windows**
    - Ensure proper path separators
