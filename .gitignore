@@ -28,6 +28,19 @@ android/key.properties
 *.lib
 CMakeCache.txt
 CMakeFiles/
+cmake_build/
+cmake_install.cmake
+Makefile
+
+# Cross-compiled Android libraries (temporary build artifacts)
+android-libs/
+**/android-libs/
+
+# Native build artifacts
+**/cmake_build/
+**/CMakeFiles/
+ninja.build
+compile_commands.json
 
 # IDE
 .vscode/
@@ -48,3 +61,8 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Package manager caches
+.pub-cache/
+.pub/
+node_modules/

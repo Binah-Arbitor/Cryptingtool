@@ -20,19 +20,47 @@ add_library(crypting SHARED ${SOURCES})
 # Create static library (for platforms that need it)
 add_library(crypting_static STATIC ${SOURCES})
 
-# Optimized Crypto++ library detection - fast detection with smart fallbacks
-# This uses modern CMake practices for minimal configuration time
+# Optimized Crypto++ library detection with Android NDK support
+# This uses modern CMake practices for minimal configuration time and Android compatibility
 
 # Enable result caching for faster subsequent runs
 set(CRYPTOPP_ROOT_CACHE "" CACHE PATH "Path to Crypto++ installation root")
 
+# Android-specific library detection
+if(ANDROID)
+    message(STATUS "🤖 Android build detected - using Android-specific Crypto++ detection")
+    
+    # For Android, we expect pre-built libraries in specific locations
+    set(ANDROID_CRYPTOPP_ROOT "${CMAKE_SOURCE_DIR}/android-libs/${ANDROID_ABI}")
+    
+    if(EXISTS "${ANDROID_CRYPTOPP_ROOT}/lib/libcryptopp.so")
+        message(STATUS "✅ Found pre-built Crypto++ for ${ANDROID_ABI}: ${ANDROID_CRYPTOPP_ROOT}")
+        
+        # Create imported target for Crypto++
+        add_library(cryptopp SHARED IMPORTED)
+        set_target_properties(cryptopp PROPERTIES
+            IMPORTED_LOCATION "${ANDROID_CRYPTOPP_ROOT}/lib/libcryptopp.so"
+            INTERFACE_INCLUDE_DIRECTORIES "${ANDROID_CRYPTOPP_ROOT}/include"
+        )
+        
+        target_link_libraries(crypting cryptopp)
+        target_link_libraries(crypting_static cryptopp)
+        set(CRYPTOPP_LIB_FOUND TRUE CACHE BOOL "Crypto++ library found")
+    else
+        # Fallback: try to find system Crypto++ (unlikely on Android but possible)
+        message(WARNING "⚠️ Pre-built Crypto++ not found for ${ANDROID_ABI}, trying system detection...")
+    endif()
+endif()
+
 # Method 1: Try modern find_package first (fastest for vcpkg/conan installations)
-find_package(cryptopp CONFIG QUIET)
-if(cryptopp_FOUND)
-    message(STATUS "✅ Found Crypto++ via find_package: ${cryptopp_VERSION}")
-    target_link_libraries(crypting cryptopp::cryptopp)
-    target_link_libraries(crypting_static cryptopp::cryptopp)
-    set(CRYPTOPP_LIB_FOUND TRUE CACHE BOOL "Crypto++ library found")
+if(NOT ANDROID AND NOT CRYPTOPP_LIB_FOUND)
+    find_package(cryptopp CONFIG QUIET)
+    if(cryptopp_FOUND)
+        message(STATUS "✅ Found Crypto++ via find_package: ${cryptopp_VERSION}")
+        target_link_libraries(crypting cryptopp::cryptopp)
+        target_link_libraries(crypting_static cryptopp::cryptopp)
+        set(CRYPTOPP_LIB_FOUND TRUE CACHE BOOL "Crypto++ library found")
+    endif()
 endif()
 
 # Method 2: Try pkg-config (fast and reliable for system installations)
