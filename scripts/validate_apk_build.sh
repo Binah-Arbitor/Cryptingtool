@@ -13,6 +13,9 @@ files_to_check=(
     "pubspec.yaml"
     "android/app/build.gradle"
     "android/build.gradle"
+    "android/gradlew"
+    "android/gradle/wrapper/gradle-wrapper.properties"
+    "android/gradle/wrapper/gradle-wrapper.jar"
     "CMakeLists.txt"
     ".github/workflows/build-debug-apk.yml"
 )
@@ -25,6 +28,17 @@ for file in "${files_to_check[@]}"; do
         exit 1
     fi
 done
+
+# Validate Gradle Wrapper
+echo "⚙️ Validating Gradle Wrapper..."
+if [ -f "android/gradlew" ] && [ -x "android/gradlew" ]; then
+    echo "  ✅ Gradle wrapper is executable"
+    gradle_version=$(cd android && ./gradlew --version | grep "Gradle " | head -1 || echo "Unknown version")
+    echo "  ✅ Gradle wrapper version: $gradle_version"
+else
+    echo "  ❌ Gradle wrapper not found or not executable"
+    exit 1
+fi
 
 # Validate Android configuration
 echo "🤖 Validating Android configuration..."
@@ -127,3 +141,8 @@ echo "   - Build debug APK with Dart and C++ components"
 echo "   - Install and configure all required dependencies"
 echo "   - Accept Android licenses automatically"
 echo "   - Generate multi-architecture APKs"
+echo ""
+echo "💡 The workflow now supports Gradle wrapper for better compatibility:"
+echo "   - Use './gradlew' commands for consistent build environment"
+echo "   - Automatic Gradle version management"
+echo "   - Enhanced CI/CD reliability"

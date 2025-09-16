@@ -33,6 +33,18 @@ jobs:
         java-version: '17'
         cache: gradle
       
+    # Enable Gradle Wrapper for better dependency management
+    - name: Grant Execute Permission to Gradle Wrapper
+      run: |
+        echo "🔧 Setting up Gradle wrapper permissions..."
+        chmod +x android/gradlew
+        echo "✅ Gradle wrapper is executable"
+        
+        # Test gradlew functionality
+        echo "🔍 Testing Gradle wrapper..."
+        cd android && ./gradlew --version | head -10
+        echo "✅ Gradle wrapper is functional"
+        
     # StackOverflow Solution 1: Proper environment variables setup for NDK builds
     - name: Set Environment Variables for Native Build
       run: |
@@ -517,6 +529,10 @@ jobs:
             # Method 3: Basic build without architecture specification
             echo "🎯 Fallback: Basic debug build..."
             flutter build apk --debug --verbose
+            
+            # Method 4: Try gradlew as ultimate fallback
+            echo "🎯 Ultimate fallback: Using gradlew directly..."
+            cd android && ./gradlew assembleDebug
           fi
         fi
         
