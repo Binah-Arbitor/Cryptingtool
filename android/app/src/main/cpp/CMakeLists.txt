@@ -27,7 +27,7 @@ if(SRC_COUNT GREATER 0)
     
     # Set output properties
     set_target_properties(cryptingtool PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
     
     message(STATUS "cryptingtool: Building with ${SRC_COUNT} source files")
