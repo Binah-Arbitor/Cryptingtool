@@ -59,8 +59,17 @@ flutter run
 
 #### Android
 ```bash
+# Flutter build (recommended)
 flutter build apk --release
+
+# Or using Gradle wrapper directly for more control:
+cd android && ./gradlew assembleRelease
+
+# For debug builds:
+cd android && ./gradlew assembleDebug
 ```
+
+💡 **Using Gradle Wrapper**: The project includes a Gradle wrapper (`android/gradlew`) for consistent build environments and automatic compatibility management. This ensures all developers and CI systems use the same Gradle version.
 
 #### iOS
 ```bash
@@ -235,6 +244,38 @@ flutter analyze
 ### Formatting
 ```bash
 dart format .
+```
+
+## CI/CD Automation
+
+The project includes automated GitHub Actions workflows for continuous integration and deployment:
+
+### Available Workflows
+
+1. **`build apk.yaml`** - Simple Android APK build
+2. **`build-debug-apk.yml`** - Advanced debug APK build with native C++ components
+
+### Gradle Wrapper Integration
+
+All CI workflows use the Gradle wrapper for:
+- ✅ **Consistent build environments** - Same Gradle version across all builds
+- ✅ **Automatic compatibility management** - Gradle handles version compatibility
+- ✅ **No manual Gradle installation required** - Wrapper downloads and manages Gradle
+- ✅ **Enhanced CI reliability** - Eliminates Gradle version conflicts
+
+### Running CI Locally
+
+To test the same build process locally:
+
+```bash
+# Android build using wrapper
+cd android && ./gradlew assembleDebug
+
+# Verify build configuration
+./scripts/validate_apk_build.sh
+
+# Check Android configuration
+./verify_android_config.sh
 ```
 
 ## Contributing
