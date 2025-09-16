@@ -79,11 +79,10 @@ android {
         }
     }
 
-    // External native build configuration for C++ integration with enhanced CMake settings
+    // External native build configuration for C++ integration using NDK build system
     externalNativeBuild {
-        cmake {
-            path "src/main/cpp/CMakeLists.txt"
-            version "3.22.1"
+        ndkBuild {
+            path "src/main/jni/Android.mk"
         }
     }
 
@@ -105,12 +104,11 @@ android {
             
             // External native build arguments for release
             externalNativeBuild {
-                cmake {
-                    cppFlags "-std=c++17 -fno-exceptions -fno-rtti -Os -DNDEBUG"
-                    arguments "-DANDROID_STL=c++_shared", 
-                             "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
-                             "-DCRYPTOPP_DISABLE_ASM=1",
-                             "-DCMAKE_BUILD_TYPE=Release"
+                ndkBuild {
+                    arguments "APP_OPTIM=release", 
+                             "APP_ABI=arm64-v8a,armeabi-v7a,x86_64",
+                             "APP_STL=c++_shared",
+                             "APP_PLATFORM=android-32"
                     abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64'
                     targets "cryptingtool"
                 }
@@ -125,12 +123,11 @@ android {
             
             // External native build arguments for debug
             externalNativeBuild {
-                cmake {
-                    cppFlags "-std=c++17 -fno-exceptions -fno-rtti -O0 -g"
-                    arguments "-DANDROID_STL=c++_shared", 
-                             "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
-                             "-DCRYPTOPP_DISABLE_ASM=1",
-                             "-DCMAKE_BUILD_TYPE=Debug"
+                ndkBuild {
+                    arguments "APP_OPTIM=debug", 
+                             "APP_ABI=arm64-v8a,armeabi-v7a,x86_64",
+                             "APP_STL=c++_shared",
+                             "APP_PLATFORM=android-32"
                     abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64'
                     targets "cryptingtool"
                 }
