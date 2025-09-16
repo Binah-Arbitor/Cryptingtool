@@ -1,7 +1,6 @@
 plugins {
-    id "com.android.application"
-    id "org.jetbrains.kotlin.android"
-    id "dev.flutter.flutter-gradle-plugin"
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
 }
 
 def localProperties = new Properties()
@@ -12,30 +11,6 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-def flutterRoot = localProperties.getProperty('flutter.sdk')
-if (flutterRoot == null) {
-    // Try to get Flutter root from environment variable
-    flutterRoot = System.getenv('FLUTTER_ROOT') ?: System.getenv('FLUTTER_SDK')
-    if (flutterRoot == null) {
-        // Try common Flutter installation paths
-        def possiblePaths = [
-            System.getProperty("user.home") + "/flutter",
-            "/usr/local/flutter",
-            "/opt/flutter"
-        ]
-        for (path in possiblePaths) {
-            if (new File(path).exists()) {
-                flutterRoot = path
-                break
-            }
-        }
-    }
-}
-
-if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file or set FLUTTER_ROOT environment variable.")
-}
-
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
     flutterVersionCode = '1'
@@ -44,10 +19,6 @@ if (flutterVersionCode == null) {
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
     flutterVersionName = '1.0'
-}
-
-flutter {
-    source "../.."
 }
 
 android {
