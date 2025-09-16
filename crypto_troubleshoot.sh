@@ -63,9 +63,11 @@ echo ""
 
 echo "2. Checking for Crypto++ headers..."
 
-# Check for different header locations
+# Fast header check - direct paths only
 HEADERS_FOUND=false
+HEADER_PATH=""
 
+# Check most common locations directly
 if [[ -f "/usr/include/crypto++/cryptlib.h" ]]; then
     print_success "Found headers in /usr/include/crypto++/"
     HEADERS_FOUND=true
@@ -78,10 +80,6 @@ elif [[ -f "/usr/local/include/crypto++/cryptlib.h" ]]; then
     print_success "Found headers in /usr/local/include/crypto++/"
     HEADERS_FOUND=true
     HEADER_PATH="/usr/local/include/crypto++/"
-elif [[ -f "/usr/local/include/cryptopp/cryptlib.h" ]]; then
-    print_success "Found headers in /usr/local/include/cryptopp/"
-    HEADERS_FOUND=true
-    HEADER_PATH="/usr/local/include/cryptopp/"
 else
     print_error "Crypto++ headers not found in standard locations"
     HEADERS_FOUND=false
@@ -91,29 +89,22 @@ echo ""
 
 echo "3. Checking for Crypto++ libraries..."
 
-# Check for library files
+# Fast library check using ldconfig and direct paths
 LIBRARY_FOUND=false
-LIBRARY_PATHS=()
 
-# Common library names and paths
-LIB_NAMES=("libcryptopp" "libcrypto++" "cryptopp" "crypto++")
-LIB_EXTENSIONS=("so" "a" "dylib")
-LIB_DIRS=("/usr/lib" "/usr/local/lib" "/usr/lib/x86_64-linux-gnu" "/usr/lib64")
-
-for lib_dir in "${LIB_DIRS[@]}"; do
-    if [[ -d "$lib_dir" ]]; then
-        for lib_name in "${LIB_NAMES[@]}"; do
-            for ext in "${LIB_EXTENSIONS[@]}"; do
-                lib_file="$lib_dir/$lib_name.$ext"
-                if [[ -f "$lib_file" ]]; then
-                    print_success "Found library: $lib_file"
-                    LIBRARY_FOUND=true
-                    LIBRARY_PATHS+=("$lib_file")
-                fi
-            done
-        done
+# Use ldconfig for fast system library detection
+if ldconfig -p 2>/dev/null | grep -q "libcryptopp\|libcrypto++"; then
+    print_success "Found Crypto++ library in system cache"
+    LIBRARY_FOUND=true
+    # Show first found library
+    FOUND_LIB=$(ldconfig -p 2>/dev/null | grep -E "libcryptopp|libcrypto++" | head -1 | awk '{print $NF}')
+    if [[ -n "$FOUND_LIB" ]]; then
+        print_success "Library path: $FOUND_LIB"
     fi
-done
+elif [[ -f "/usr/lib/x86_64-linux-gnu/libcryptopp.so" ]]; then
+    print_success "Found library: /usr/lib/x86_64-linux-gnu/libcryptopp.so"
+    LIBRARY_FOUND=true
+fi
 
 if [[ "$LIBRARY_FOUND" == false ]]; then
     print_error "Crypto++ libraries not found"
@@ -150,9 +141,9 @@ if command -v g++ >/dev/null 2>&1; then
     GCC_VERSION=$(g++ --version | head -n1)
     print_success "g++ available: $GCC_VERSION"
     
-    # Test if we can compile a simple crypto++ program
-    if [[ "$HEADERS_FOUND" == true ]]; then
-        print_info "Testing compilation..."
+    # Only do compilation test if explicitly requested or if there were issues
+    if [[ "$1" == "--test-compile" ]] || [[ "$HEADERS_FOUND" == true && "$LIBRARY_FOUND" == false ]]; then
+        print_info "Running compilation test..."
         
         # Create a simple test file
         TEST_FILE=$(mktemp --suffix=.cpp)
@@ -182,6 +173,8 @@ EOF
         if [[ "$COMPILE_SUCCESS" == false ]]; then
             print_warning "Compilation test failed - may have linking issues"
         fi
+    else
+        print_info "Skipping compilation test (use --test-compile to force)"
     fi
 else
     print_error "g++ compiler not found"
