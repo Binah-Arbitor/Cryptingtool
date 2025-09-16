@@ -15,8 +15,12 @@ pubspec.lock
 android/local.properties
 android/app/.cxx/
 android/.gradle/
-android/gradle/
-android/gradlew*
+android/gradle/caches/
+android/gradle/daemon/
+android/gradle/native/
+android/gradle/wrapper/dists/
+!android/gradle/wrapper/
+!android/gradlew*
 android/key.properties
 
 # C++
