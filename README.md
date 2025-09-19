@@ -168,6 +168,9 @@ The application includes robust error handling and automatic dependency resoluti
 ```bash
 # Run the troubleshooting script
 ./scripts/troubleshoot.sh
+
+# For Flutter doctor specific issues
+./scripts/flutter-doctor-fix.sh
 ```
 
 ### Common Issues
@@ -192,6 +195,13 @@ The application includes robust error handling and automatic dependency resoluti
 
 **Solutions**:
 - `sudo apt-get install libgtk-3-dev mesa-utils`
+
+#### 4. Flutter Doctor Issues
+**Symptoms**: Multiple Flutter doctor errors like "[✗] Linux toolchain" or "[!] Android Studio (not installed)"
+
+**Solutions**:
+- Run the dedicated Flutter doctor issue resolver: `./scripts/flutter-doctor-fix.sh`
+- This script provides interactive fixing for common Flutter doctor problems
 
 ### Dependency Check
 Run a comprehensive dependency check:
