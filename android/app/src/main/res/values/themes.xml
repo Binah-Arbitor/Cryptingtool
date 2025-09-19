@@ -20,4 +20,9 @@
         <item name="android:forceDarkAllowed">true</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
+
+    <!-- Normal theme for Flutter v2 embedding -->
+    <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowBackground">@color/dark_gray</item>
+    </style>
 </resources>
