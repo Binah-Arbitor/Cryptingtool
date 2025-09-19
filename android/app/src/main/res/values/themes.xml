@@ -1,28 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base application theme for CryptingTool -->
-    <style name="Theme.CryptingTool" parent="Theme.Material3.DarkActionBar">
-        <!-- Dark theme colors matching the Flutter app -->
+    <style name="Theme.CryptingTool" parent="Theme.AppCompat.DarkActionBar">
+        <!-- Dark theme colors -->
         <item name="colorPrimary">@color/teal_accent</item>
-        <item name="colorPrimaryVariant">@color/cyan_accent</item>
-        <item name="colorOnPrimary">@color/dark_gray</item>
-        <item name="colorSecondary">@color/lime_green</item>
-        <item name="colorSecondaryVariant">@color/orange_accent</item>
-        <item name="colorOnSecondary">@color/dark_gray</item>
+        <item name="colorPrimaryDark">@color/dark_gray</item>
+        <item name="colorAccent">@color/lime_green</item>
         <item name="android:colorBackground">@color/dark_gray</item>
-        <item name="colorOnBackground">@color/light_gray</item>
-        <item name="colorSurface">@color/darker_gray</item>
-        <item name="colorOnSurface">@color/light_gray</item>
-        <item name="colorError">@color/error_red</item>
-        <item name="colorOnError">@color/light_gray</item>
-        
-        <!-- Enable material you dynamic colors -->
-        <item name="android:forceDarkAllowed">true</item>
-        <item name="android:windowLightStatusBar">false</item>
-    </style>
-
-    <!-- Normal theme for Flutter v2 embedding -->
-    <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
-        <item name="android:windowBackground">@color/dark_gray</item>
+        <item name="android:textColorPrimary">@color/light_gray</item>
     </style>
 </resources>
