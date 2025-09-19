@@ -1,0 +1,6 @@
+package com.binah.cryptingtool
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity: FlutterActivity() {
+}

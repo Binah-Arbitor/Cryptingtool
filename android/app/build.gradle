@@ -1,4 +1,8 @@
-apply plugin: 'com.android.application'
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
 
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
@@ -18,14 +22,22 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+flutter {
+    source "../.."
+}
+
 android {
     namespace = "com.binah.cryptingtool"
     compileSdk = 34
-    ndkVersion = "25.1.8937393"
+    ndkVersion = "26.1.10909125"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+    
+    kotlinOptions {
+        jvmTarget = '17'
     }
 
     defaultConfig {
@@ -40,89 +52,10 @@ android {
         }
     }
 
-    // External native build configuration for C++ integration using NDK build system
-    externalNativeBuild {
-        ndkBuild {
-            path "src/main/jni/Android.mk"
-        }
-    }
-
     buildTypes {
         release {
-            // Enable code shrinking, obfuscation, and optimization
-            minifyEnabled = true
-            shrinkResources = true
-            proguardFiles = [
-                getDefaultProguardFile('proguard-android-optimize.txt'),
-                'proguard-rules.pro'
-            ]
+            // Signing config for release builds
             signingConfig = signingConfigs.debug
-            
-            // Performance optimizations
-            ndk {
-                debugSymbolLevel = 'NONE'
-            }
-            
-            // External native build arguments for release
-            externalNativeBuild {
-                ndkBuild {
-                    arguments "APP_OPTIM=release", 
-                             "APP_ABI=arm64-v8a,armeabi-v7a,x86_64",
-                             "APP_STL=c++_shared",
-                             "APP_PLATFORM=android-24"
-                    abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64'
-                    targets "cryptingtool"
-                }
-            }
-        }
-        
-        debug {
-            // Disable optimizations for debug builds
-            minifyEnabled = false
-            shrinkResources = false
-            debuggable = true
-            
-            // External native build arguments for debug
-            externalNativeBuild {
-                ndkBuild {
-                    arguments "APP_OPTIM=debug", 
-                             "APP_ABI=arm64-v8a,armeabi-v7a,x86_64",
-                             "APP_STL=c++_shared",
-                             "APP_PLATFORM=android-24"
-                    abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64'
-                    targets "cryptingtool"
-                }
-            }
         }
     }
-    
-    // Support for modern Android versions and native library optimization
-    packagingOptions {
-        pickFirst '**/libc++_shared.so'
-        pickFirst '**/libjsc.so'
-        pickFirst '**/libcryptopp.so'  // Include our Crypto++ library
-        pickFirst '**/libcryptingtool.so'  // Include our native library
-        
-        // Exclude unnecessary files to reduce APK size
-        excludes += [
-            'META-INF/DEPENDENCIES',
-            'META-INF/LICENSE',
-            'META-INF/LICENSE.txt',
-            'META-INF/license.txt',
-            'META-INF/NOTICE',
-            'META-INF/NOTICE.txt',
-            'META-INF/notice.txt',
-            'META-INF/ASL2.0'
-        ]
-    }
-    
-    // Lint optimizations
-    lintOptions {
-        checkReleaseBuilds = false
-        abortOnError = false
-    }
-}
-
-dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.1'
 }
