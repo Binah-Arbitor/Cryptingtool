@@ -22,10 +22,11 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    # 3. Flutter SDK 설치
+    # 3. Flutter SDK 설치 - 최신 버전으로 업그레이드
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
+        flutter-version: '3.24.3' # filePermissions 이슈가 해결된 최신 버전
         channel: 'stable'
 
     # 4. Android SDK 설정
@@ -42,16 +43,22 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y build-essential cmake ninja-build libcrypto++-dev
 
-    # 7. Flutter 패키지 설치
-    - name: Get Flutter packages
-      run: flutter pub get
-
-    # 8. Gradle Wrapper 생성 (누락된 경우)
-    - name: Generate Gradle Wrapper
+    # 7. Flutter 패키지 설치 - 캐시 클리어 포함
+    - name: Clean and get Flutter packages
       run: |
-        if [ ! -f "android/gradlew" ]; then
+        flutter clean
+        flutter pub get
+
+    # 8. Gradle 캐시 클리어 및 Wrapper 생성
+    - name: Clean Gradle cache and Generate Gradle Wrapper
+      run: |
+        # Gradle 캐시 클리어
+        rm -rf ~/.gradle/caches/
+        cd android
+        # 기존 빌드 캐시 제거
+        rm -rf build/ app/build/ .gradle/
+        if [ ! -f "gradlew" ]; then
           echo "Gradle wrapper not found, generating..."
-          cd android
           gradle wrapper --gradle-version=8.4
         fi
 
