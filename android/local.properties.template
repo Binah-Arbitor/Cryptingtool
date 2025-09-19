@@ -1,14 +1,28 @@
 # This file is used by the Android Gradle Plugin to configure local paths
 # and should not be committed to version control.
+# 
+# This template shows the correct paths for resolving Kotlin "unsolved reference" errors
+# during APK build process. Copy this to android/local.properties and adjust paths as needed.
 
-# SDK location
-sdk.dir=%LOCALAPPDATA%\\Android\\Sdk
+# Android SDK location (adjust for your system)
+# Windows: sdk.dir=%LOCALAPPDATA%\\Android\\Sdk  
+# Linux: sdk.dir=/usr/local/lib/android/sdk
+sdk.dir=/usr/local/lib/android/sdk
 
-# NDK location (optional)
-ndk.dir=%LOCALAPPDATA%\\Android\\Sdk\\ndk\\25.1.8937393
+# NDK location (use latest available version)
+# Windows: ndk.dir=%LOCALAPPDATA%\\Android\\Sdk\\ndk\\25.1.8937393
+# Linux: ndk.dir=/usr/local/lib/android/sdk/ndk/28.2.13676358  
+ndk.dir=/usr/local/lib/android/sdk/ndk/28.2.13676358
 
-# Flutter SDK path (will be set dynamically by the workflow)
-flutter.sdk=
+# Flutter SDK path (critical for resolving Kotlin references to Flutter classes)
+# This prevents "unsolved reference" errors in MainActivity.kt and other Kotlin files
+flutter.sdk=/tmp/flutter
 
-# Java version compatibility
-java.home=
+# Java version compatibility for Android 17+ builds
+java.home=/usr/lib/jvm/temurin-17-jdk-amd64
+
+# Build performance optimizations
+org.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=1G
+org.gradle.daemon=true
+org.gradle.parallel=true
+org.gradle.caching=true
