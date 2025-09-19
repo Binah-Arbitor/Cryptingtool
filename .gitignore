@@ -15,8 +15,10 @@ pubspec.lock
 android/local.properties
 android/app/.cxx/
 android/.gradle/
-android/gradle/
-android/gradlew*
+android/gradle/src/
+!android/gradle/wrapper/
+!android/gradlew
+!android/gradlew.bat
 android/key.properties
 
 # C++
