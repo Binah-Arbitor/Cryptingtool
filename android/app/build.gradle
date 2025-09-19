@@ -1,8 +1,4 @@
-plugins {
-    id "com.android.application"
-    id "org.jetbrains.kotlin.android"
-    id "dev.flutter.flutter-gradle-plugin"
-}
+apply plugin: 'com.android.application'
 
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
@@ -24,22 +20,18 @@ if (flutterVersionName == null) {
 
 android {
     namespace = "com.binah.cryptingtool"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    compileSdk = 34
+    ndkVersion = "25.1.8937393"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
     defaultConfig {
         applicationId = "com.binah.cryptingtool"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 24
+        targetSdk = 34
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
         
@@ -120,8 +112,7 @@ android {
             'META-INF/NOTICE',
             'META-INF/NOTICE.txt',
             'META-INF/notice.txt',
-            'META-INF/ASL2.0',
-            'META-INF/*.kotlin_module'
+            'META-INF/ASL2.0'
         ]
     }
     
@@ -132,10 +123,6 @@ android {
     }
 }
 
-flutter {
-    source '../..'
-}
-
 dependencies {
-    // Flutter and dependencies will be managed by the Flutter tool
+    // Add any necessary Android dependencies here
 }
