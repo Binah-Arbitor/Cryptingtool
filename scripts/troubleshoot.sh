@@ -102,6 +102,42 @@ echo ""
 echo "4. Checking Flutter (optional)..."
 if command -v flutter >/dev/null 2>&1; then
     echo "✅ Flutter found: $(flutter --version | head -1)"
+    
+    # Check Linux desktop dependencies (GTK 3.0) when on Linux
+    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        echo ""
+        echo "   Checking Linux desktop dependencies..."
+        if pkg-config --exists gtk+-3.0 2>/dev/null; then
+            GTK_VERSION=$(pkg-config --modversion gtk+-3.0 2>/dev/null || echo "unknown")
+            echo "   ✅ GTK 3.0 development libraries: $GTK_VERSION"
+        else
+            echo "   ❌ GTK 3.0 development libraries not found"
+            echo "   📦 Install with: sudo apt-get install libgtk-3-dev mesa-utils"
+        fi
+    fi
+    
+    # Check Android Studio
+    echo ""
+    echo "   Checking Android Studio..."
+    ANDROID_STUDIO_PATHS=(
+        "/opt/android-studio/bin/studio.sh"
+        "/usr/local/android-studio/bin/studio.sh"
+        "$HOME/android-studio/bin/studio.sh"
+        "/Applications/Android Studio.app/Contents/bin/studio.sh"
+    )
+    ANDROID_STUDIO_FOUND=false
+    for studio_path in "${ANDROID_STUDIO_PATHS[@]}"; do
+        if [ -f "$studio_path" ]; then
+            echo "   ✅ Android Studio found at: $studio_path"
+            ANDROID_STUDIO_FOUND=true
+            break
+        fi
+    done
+    
+    if [ "$ANDROID_STUDIO_FOUND" = false ]; then
+        echo "   ⚠️  Android Studio not found (optional)"
+        echo "   💡 Download from: https://developer.android.com/studio"
+    fi
 else
     echo "⚠️  Flutter not found (optional for C++ only builds)"
 fi
@@ -144,6 +180,45 @@ if [ $found_libs -eq 0 ] || [ $found_headers -eq 0 ]; then
     echo "  wget https://github.com/weidai11/cryptopp/releases/download/${LATEST_VERSION}/cryptopp${VERSION_NUM}.zip"
     echo "  unzip cryptopp${VERSION_NUM}.zip && cd cryptopp"
     echo "  make && sudo make install"
+fi
+
+# Check for Flutter Linux desktop dependencies
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    if ! pkg-config --exists gtk+-3.0 2>/dev/null; then
+        echo ""
+        echo "❌ Flutter Linux desktop dependencies missing"
+        echo ""
+        echo "Quick fix for GTK 3.0 development libraries:"
+        echo "  Ubuntu/Debian: sudo apt-get install libgtk-3-dev mesa-utils"
+        echo "  CentOS/RHEL:   sudo yum install gtk3-devel mesa-dri-drivers"
+        echo "  Arch Linux:    sudo pacman -S gtk3"
+        echo ""
+        echo "This is required for 'flutter build linux' to work properly."
+    fi
+fi
+
+# Check for Android Studio
+ANDROID_STUDIO_PATHS=(
+    "/opt/android-studio/bin/studio.sh"
+    "/usr/local/android-studio/bin/studio.sh"
+    "$HOME/android-studio/bin/studio.sh"
+    "/Applications/Android Studio.app/Contents/bin/studio.sh"
+)
+ANDROID_STUDIO_FOUND=false
+for studio_path in "${ANDROID_STUDIO_PATHS[@]}"; do
+    if [ -f "$studio_path" ]; then
+        ANDROID_STUDIO_FOUND=true
+        break
+    fi
+done
+
+if [ "$ANDROID_STUDIO_FOUND" = false ]; then
+    echo ""
+    echo "ℹ️  Android Studio not found (optional)"
+    echo ""
+    echo "Android Studio provides enhanced Flutter development experience:"
+    echo "  Download from: https://developer.android.com/studio"
+    echo "  Alternative: Use VS Code with Flutter extension"
 fi
 
 if ! command -v cmake >/dev/null 2>&1; then
