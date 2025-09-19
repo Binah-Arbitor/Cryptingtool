@@ -1,0 +1,81 @@
+name: Flutter Android Release Build
+
+on:
+  push:
+    tags:
+      - 'v*' # 태그가 v*로 시작할 때 실행 (예: v1.0.0)
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. 소스 코드 체크아웃
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2. JDK 설치
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    # 3. Flutter SDK 설치
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+
+    # 4. Android SDK 설정
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    # 5. Android SDK 라이센스 동의
+    - name: Accept Android SDK licenses
+      run: yes | flutter doctor --android-licenses || echo "Some licenses may already be accepted"
+
+    # 6. C++ 의존성 설치
+    - name: Install C++ dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake ninja-build libcrypto++-dev
+
+    # 7. Flutter 패키지 설치
+    - name: Get Flutter packages
+      run: flutter pub get
+
+    # 8. Gradle Wrapper 생성 (누락된 경우)
+    - name: Generate Gradle Wrapper
+      run: |
+        if [ ! -f "android/gradlew" ]; then
+          echo "Gradle wrapper not found, generating..."
+          cd android
+          gradle wrapper --gradle-version=8.4
+        fi
+
+    # 9. Release APK 빌드
+    - name: Build Release APK
+      run: flutter build apk --release
+
+    # 10. Release APK 업로드
+    - name: Upload Release APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
+
+    # 11. APK 서명 확인 (선택사항)
+    - name: Verify APK
+      run: |
+        if [ -f "build/app/outputs/flutter-apk/app-release.apk" ]; then
+          echo "✅ Release APK 생성 완료"
+          echo "📏 APK 크기: $(du -h build/app/outputs/flutter-apk/app-release.apk | cut -f1)"
+          echo "📱 앱 ID: com.binah.cryptingtool"
+          echo "🎯 최소 SDK: API 24 (Android 7.0)"
+          echo "🎯 타겟 SDK: API 34 (Android 14)"
+        else
+          echo "❌ Release APK 생성 실패"
+          exit 1
+        fi

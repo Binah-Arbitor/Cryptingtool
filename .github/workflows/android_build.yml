@@ -1,0 +1,83 @@
+name: Flutter Android Build
+
+on:
+  push:
+    branches: [ "main" ] # main 브랜치에 push될 때 실행
+  pull_request:
+    branches: [ "main" ] # main 브랜치로 pull request가 올 때 실행
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # 빌드를 실행할 환경
+
+    steps:
+    # 1. 소스 코드 체크아웃
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2. JDK(Java Development Kit) 설치 (Gradle 실행에 필요)
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17' # 프로젝트의 build.gradle과 호환되는 버전으로 설정
+
+    # 3. Flutter SDK 설치 (가장 중요한 부분)
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable' # 또는 flutter-version: '3.22.x' 와 같이 특정 버전 지정
+
+    # 4. Android SDK 설정 및 라이센스 동의
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    # 5. Android SDK 라이센스 자동 동의
+    - name: Accept Android SDK licenses
+      run: yes | flutter doctor --android-licenses || echo "Some licenses may already be accepted"
+
+    # 6. C++ 컴파일러 및 필수 라이브러리 설치 (C++ 통합을 위해)
+    - name: Install C++ dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake ninja-build libcrypto++-dev
+
+    # 7. Flutter 패키지 의존성 다운로드
+    - name: Get Flutter packages
+      run: flutter pub get
+
+    # 8. Flutter 닥터 실행 (설정 확인)
+    - name: Flutter doctor
+      run: flutter doctor -v
+
+    # 9. Gradle Wrapper 생성 (누락된 경우)
+    - name: Generate Gradle Wrapper
+      run: |
+        if [ ! -f "android/gradlew" ]; then
+          echo "Gradle wrapper not found, generating..."
+          cd android
+          gradle wrapper --gradle-version=8.4
+        fi
+
+    # 10. Flutter 빌드 명령어 실행 (APK 생성)
+    # 이 명령어가 Dart 컴파일과 C++ NDK 빌드를 포함한 모든 것을 처리합니다.
+    - name: Build APK
+      run: flutter build apk --debug
+
+    # 11. 빌드된 APK 파일을 Artifact로 업로드 (결과물 다운로드용)
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: debug-apk
+        path: build/app/outputs/flutter-apk/app-debug.apk
+
+    # 12. 빌드 정보 요약 출력
+    - name: Build summary
+      run: |
+        echo "✅ APK 빌드 완료!"
+        echo "📱 앱 이름: CryptingTool"
+        echo "🔧 빌드 타입: Debug"
+        echo "📊 APK 위치: build/app/outputs/flutter-apk/app-debug.apk"
+        if [ -f "build/app/outputs/flutter-apk/app-debug.apk" ]; then
+          echo "📏 APK 크기: $(du -h build/app/outputs/flutter-apk/app-debug.apk | cut -f1)"
+        fi
