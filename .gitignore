@@ -12,11 +12,15 @@ test-output/
 pubspec.lock
 
 # Android
-android/local.properties
+# android/local.properties  # Keep this committed for proper Flutter SDK resolution
 android/app/.cxx/
 android/.gradle/
-android/gradle/
-android/gradlew*
+android/gradle/src/
+android/gradle/build/
+android/gradle/.gradle/
+!android/gradle/wrapper/
+!android/gradlew
+!android/gradlew.bat
 android/key.properties
 
 # C++

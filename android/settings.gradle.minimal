@@ -1,2 +1,0 @@
-// Minimal settings.gradle for wrapper generation
-include ":app"
