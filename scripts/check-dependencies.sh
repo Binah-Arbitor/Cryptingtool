@@ -152,8 +152,50 @@ if command_exists flutter; then
         echo "⚠️  Android SDK path not set (ANDROID_HOME/ANDROID_SDK_ROOT)"
         echo "💡 Run 'flutter doctor' for detailed diagnostics"
     fi
+    
+    # Check Android Studio (optional)
+    echo "📱 Checking Android Studio..."
+    ANDROID_STUDIO_PATHS=(
+        "/opt/android-studio/bin/studio.sh"
+        "/usr/local/android-studio/bin/studio.sh"
+        "$HOME/android-studio/bin/studio.sh"
+        "/Applications/Android Studio.app/Contents/bin/studio.sh"
+    )
+    ANDROID_STUDIO_FOUND=false
+    for studio_path in "${ANDROID_STUDIO_PATHS[@]}"; do
+        if [ -f "$studio_path" ]; then
+            echo "✅ Android Studio found at: $studio_path"
+            ANDROID_STUDIO_FOUND=true
+            break
+        fi
+    done
+    
+    if [ "$ANDROID_STUDIO_FOUND" = false ]; then
+        echo "⚠️  Android Studio not found (optional for Flutter development)"
+        echo "💡 Download from: https://developer.android.com/studio"
+    fi
 else
     echo "⚠️  Flutter not found (install from: https://docs.flutter.dev/get-started/install)"
+fi
+
+# Check Linux desktop dependencies (GTK 3.0) - needed for Flutter Linux builds
+if [ "$OS" = "linux" ]; then
+    echo "🖥️  Checking Linux desktop dependencies..."
+    if pkg-config --exists gtk+-3.0 2>/dev/null; then
+        echo "✅ GTK 3.0 development libraries found"
+        GTK_VERSION=$(pkg-config --modversion gtk+-3.0 2>/dev/null || echo "unknown")
+        echo "   Version: $GTK_VERSION"
+    else
+        echo "❌ GTK 3.0 development libraries not found"
+        echo "📦 Install with: sudo apt-get install libgtk-3-dev mesa-utils"
+        if [[ "${AUTO_INSTALL:-false}" == "true" ]]; then
+            echo "🔄 AUTO_INSTALL=true detected, attempting installation..."
+            sudo apt-get update
+            sudo apt-get install -y libgtk-3-dev mesa-utils
+        else
+            echo "💡 Run with AUTO_INSTALL=true to auto-install"
+        fi
+    fi
 fi
 
 echo "🎉 Dependency check completed!"
