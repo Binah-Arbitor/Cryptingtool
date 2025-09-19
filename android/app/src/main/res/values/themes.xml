@@ -9,4 +9,9 @@
         <item name="android:colorBackground">@color/dark_gray</item>
         <item name="android:textColorPrimary">@color/light_gray</item>
     </style>
+    
+    <!-- Flutter NormalTheme for v2 embedding -->
+    <style name="NormalTheme" parent="@style/Theme.CryptingTool">
+        <item name="android:windowBackground">?android:colorBackground</item>
+    </style>
 </resources>
