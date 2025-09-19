@@ -46,7 +46,7 @@ if(ANDROID)
         target_link_libraries(crypting cryptopp)
         target_link_libraries(crypting_static cryptopp)
         set(CRYPTOPP_LIB_FOUND TRUE CACHE BOOL "Crypto++ library found")
-    else
+    else()
         # Fallback: try to find system Crypto++ (unlikely on Android but possible)
         message(WARNING "⚠️ Pre-built Crypto++ not found for ${ANDROID_ABI}, trying system detection...")
     endif()
