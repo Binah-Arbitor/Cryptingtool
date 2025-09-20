@@ -84,9 +84,9 @@ class _FileIOPanelState extends State<FileIOPanel>
   Widget _buildCircuitPattern() {
     return CustomPaint(
       size: const Size.square(200),
-      painter: CircuitPatternPainter(
+      painter: const CircuitPatternPainter(
         // Info: Replaced deprecated 'withOpacity'
-        color: AppTheme.tealAccent.withAlpha((255 * 0.3).round()),
+        color: Color.fromRGBO(0, 255, 255, 0.3),
       ),
     );
   }
@@ -456,7 +456,7 @@ class _FileIOPanelState extends State<FileIOPanel>
 class CircuitPatternPainter extends CustomPainter {
   final Color color;
 
-  CircuitPatternPainter({required this.color});
+  const CircuitPatternPainter({required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {

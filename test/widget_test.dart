@@ -67,7 +67,7 @@ void main() {
         totalChunks: 100,
         bytesProcessed: 2500000, // 2.5 MB
         totalBytes: 10000000,    // 10 MB
-        elapsed: const Duration(seconds: 30),
+        elapsed: Duration(seconds: 30),
         status: ProcessingStatus.processing,
       );
 
