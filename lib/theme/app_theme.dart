@@ -56,7 +56,7 @@ class AppTheme {
       ),
       
       // Card Theme
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: darkGray,
         elevation: 4,
         shadowColor: tealAccent.withOpacity(0.1),
@@ -239,5 +239,15 @@ class AppTheme {
         size: 24,
       ),
     );
+  }
+  static List<Color> getPalette() {
+    return [
+      tealAccent,
+      electricBlue,
+      cyanBlue,
+      neonBlue,
+      cyanAccent,
+      limeGreen,
+    ];
   }
 }

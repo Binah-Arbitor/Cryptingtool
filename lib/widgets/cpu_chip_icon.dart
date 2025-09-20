@@ -137,7 +137,7 @@ class CpuChipPainter extends CustomPainter {
       secondaryTracePaint,
     );
     
-    // Complex vertical traces
+    // Fixed: Corrected the faulty drawPath call and replaced tracePaint
     canvas.drawPath(
       Path()
         ..moveTo(third * 0.9, 0)
@@ -148,7 +148,8 @@ class CpuChipPainter extends CustomPainter {
         ..lineTo(third * 0.9, quarter * 2.8)
         ..lineTo(third * 1.0, quarter * 2.8)
         ..lineTo(third * 1.0, size.height),
-      tracePaint,
+      primaryTracePaint, // Replaced undefined 'tracePaint'
+    );
     
     // Enhanced complex vertical traces with flowing patterns
     canvas.drawPath(
