@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 import '../models/encryption_config.dart';
+import 'crypto_constants.dart';
 import 'crypto_ffi.dart';
+import 'crypto_result.dart';
 
 /// Service for performing cryptographic operations using the C++ backend
 class CryptoBridgeService {
