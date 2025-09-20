@@ -22,6 +22,13 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+// Read signing properties for release builds
+def keyProperties = new Properties()
+def keyPropertiesFile = rootProject.file('android/key.properties')
+if (keyPropertiesFile.exists()) {
+    keyProperties.load(new FileInputStream(keyPropertiesFile))
+}
+
 flutter {
     source "../.."
 }
@@ -40,6 +47,20 @@ android {
         jvmTarget = '17'
     }
 
+    signingConfigs {
+        debug {
+            // Default debug config
+        }
+        release {
+            if (keyPropertiesFile.exists()) {
+                storeFile file(keyProperties['storeFile'])
+                storePassword keyProperties['storePassword']
+                keyAlias keyProperties['keyAlias']
+                keyPassword keyProperties['keyPassword']
+            }
+        }
+    }
+
     defaultConfig {
         applicationId = "com.binah.cryptingtool"
         minSdk = 24
@@ -54,8 +75,13 @@ android {
 
     buildTypes {
         release {
-            // Signing config for release builds
-            signingConfig = signingConfigs.debug
+            // Enables code shrinking, obfuscation, and optimization for your release build.
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            
+            // Use the release signing configuration.
+            signingConfig signingConfigs.release
         }
     }
 }

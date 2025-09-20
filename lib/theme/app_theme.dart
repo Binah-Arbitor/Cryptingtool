@@ -38,10 +38,6 @@ class AppTheme {
         onSurface: lightGray,
         error: errorRed,
         onError: lightGray,
-        // Deprecated: 'background' and 'onBackground'
-        // Use 'surface' and 'onSurface' instead for Material 3
-        background: deepOffBlack,
-        onBackground: lightGray,
       ),
       
       // App Bar Theme
@@ -61,12 +57,10 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: darkGray,
         elevation: 4,
-        // Deprecated: 'withOpacity'
         shadowColor: tealAccent.withAlpha((255 * 0.1).round()), // 0.1 opacity
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
           side: BorderSide(
-            // Deprecated: 'withOpacity'
             color: tealAccent.withAlpha((255 * 0.3).round()), // 0.3 opacity
             width: 1,
           ),
@@ -79,7 +73,6 @@ class AppTheme {
           backgroundColor: tealAccent,
           foregroundColor: deepOffBlack,
           elevation: 2,
-          // Deprecated: 'withOpacity'
           shadowColor: tealAccent.withAlpha((255 * 0.5).round()), // 0.5 opacity
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -122,7 +115,6 @@ class AppTheme {
           color: mediumGray,
         ),
         hintStyle: GoogleFonts.firaCode(
-          // Deprecated: 'withOpacity'
           color: mediumGray.withAlpha((255 * 0.7).round()), // 0.7 opacity
         ),
       ),
@@ -130,13 +122,9 @@ class AppTheme {
       // Dropdown Theme
       dropdownMenuTheme: DropdownMenuThemeData(
         menuStyle: MenuStyle(
-          // Deprecated: 'MaterialStateProperty'
           backgroundColor: WidgetStateProperty.all(darkGray),
-          // Deprecated: 'MaterialStateProperty'
           elevation: WidgetStateProperty.all(8),
-          // Deprecated: 'MaterialStateProperty' and 'withOpacity'
-          shadowColor: WidgetStateProperty.all(tealAccent.withAlpha((255 * 0.2).round())), // 0.2 opacity
-          // Deprecated: 'MaterialStateProperty' and 'withOpacity'
+          shadowColor: WidgetStateProperty.all(tealAccent.withAlpha((255 * 0.2).round())),
           shape: WidgetStateProperty.all(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -161,7 +149,6 @@ class AppTheme {
         activeTrackColor: tealAccent,
         inactiveTrackColor: darkGray,
         thumbColor: tealAccent,
-        // Deprecated: 'withOpacity'
         overlayColor: tealAccent.withAlpha((255 * 0.2).round()), // 0.2 opacity
         valueIndicatorColor: tealAccent,
         valueIndicatorTextStyle: GoogleFonts.firaCode(
