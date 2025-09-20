@@ -131,7 +131,8 @@ class _StatusBarState extends State<StatusBar>
       height: 80,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.darkGray.withOpacity(0.8),
+        // Info: Replaced deprecated 'withOpacity'
+        color: AppTheme.darkGray.withAlpha((255 * 0.8).round()),
         border: const Border(
           top: BorderSide(
             color: AppTheme.mediumGray,
@@ -157,11 +158,13 @@ class _StatusBarState extends State<StatusBar>
                 builder: (context, child) {
                   return Container(
                     decoration: BoxDecoration(
-                      color: statusColor.withOpacity(_pulseAnimation.value),
+                      // Info: Replaced deprecated 'withOpacity'
+                      color: statusColor.withAlpha((255 * _pulseAnimation.value).round()),
                       borderRadius: BorderRadius.circular(2),
                       boxShadow: isProcessing ? [
                         BoxShadow(
-                          color: statusColor.withOpacity(0.5),
+                          // Info: Replaced deprecated 'withOpacity'
+                          color: statusColor.withAlpha((255 * 0.5).round()),
                           blurRadius: 4,
                           spreadRadius: 1,
                         ),
@@ -262,7 +265,8 @@ class _StatusBarState extends State<StatusBar>
         Text(
           label,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: color.withOpacity(0.7),
+            // Info: Replaced deprecated 'withOpacity'
+            color: color.withAlpha((255 * 0.7).round()),
             fontSize: 9,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,

@@ -85,7 +85,8 @@ class _FileIOPanelState extends State<FileIOPanel>
     return CustomPaint(
       size: const Size.square(200),
       painter: CircuitPatternPainter(
-        color: AppTheme.tealAccent.withOpacity(0.3),
+        // Info: Replaced deprecated 'withOpacity'
+        color: AppTheme.tealAccent.withAlpha((255 * 0.3).round()),
       ),
     );
   }
@@ -120,13 +121,15 @@ class _FileIOPanelState extends State<FileIOPanel>
               width: double.infinity,
               height: 200,
               decoration: BoxDecoration(
+                // Info: Replaced deprecated 'withOpacity'
                 color: _isDragging 
-                    ? AppTheme.tealAccent.withOpacity(0.1)
+                    ? AppTheme.tealAccent.withAlpha((255 * 0.1).round())
                     : AppTheme.deepOffBlack,
                 border: Border.all(
+                  // Info: Replaced deprecated 'withOpacity'
                   color: _isDragging 
                       ? AppTheme.tealAccent
-                      : AppTheme.mediumGray.withOpacity(0.5),
+                      : AppTheme.mediumGray.withAlpha((255 * 0.5).round()),
                   width: 2,
                   style: BorderStyle.solid,
                 ),
@@ -145,7 +148,7 @@ class _FileIOPanelState extends State<FileIOPanel>
                     child: InkWell(
                       onTap: widget.isProcessing ? null : _selectFile,
                       borderRadius: BorderRadius.circular(12),
-                      child: Container(
+                      child: SizedBox(
                         width: double.infinity,
                         height: double.infinity,
                         child: widget.selectedFile == null
@@ -173,7 +176,8 @@ class _FileIOPanelState extends State<FileIOPanel>
                           boxShadow: widget.selectedFile != null && !widget.isProcessing
                               ? [
                                   BoxShadow(
-                                    color: AppTheme.tealAccent.withOpacity(_glowAnimation.value * 0.5),
+                                    // Info: Replaced deprecated 'withOpacity'
+                                    color: AppTheme.tealAccent.withAlpha((255 * _glowAnimation.value * 0.5).round()),
                                     blurRadius: 8,
                                     spreadRadius: 2,
                                   ),
@@ -222,7 +226,8 @@ class _FileIOPanelState extends State<FileIOPanel>
                           boxShadow: widget.selectedFile != null && !widget.isProcessing
                               ? [
                                   BoxShadow(
-                                    color: AppTheme.cyanAccent.withOpacity(_glowAnimation.value * 0.5),
+                                    // Info: Replaced deprecated 'withOpacity'
+                                    color: AppTheme.cyanAccent.withAlpha((255 * _glowAnimation.value * 0.5).round()),
                                     blurRadius: 8,
                                     spreadRadius: 2,
                                   ),
@@ -275,13 +280,13 @@ class _FileIOPanelState extends State<FileIOPanel>
         Icon(
           Icons.file_upload_outlined,
           size: 48,
-          color: AppTheme.tealAccent.withOpacity(0.7),
+          color: AppTheme.tealAccent.withAlpha((255 * 0.7).round()),
         ),
         const SizedBox(height: 16),
         Text(
           'SELECT FILE TO PROCESS',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: AppTheme.tealAccent.withOpacity(0.8),
+            color: AppTheme.tealAccent.withAlpha((255 * 0.8).round()),
           ),
           textAlign: TextAlign.center,
         ),
@@ -342,10 +347,10 @@ class _FileIOPanelState extends State<FileIOPanel>
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppTheme.darkGray.withOpacity(0.5),
+              color: AppTheme.darkGray.withAlpha((255 * 0.5).round()),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: AppTheme.tealAccent.withOpacity(0.3),
+                color: AppTheme.tealAccent.withAlpha((255 * 0.3).round()),
                 width: 1,
               ),
             ),

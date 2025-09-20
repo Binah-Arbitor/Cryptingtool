@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+// Unnecessary import: 'package:flutter/services.dart'
+// Unnecessary import: 'dart:typed_data'
 import 'dart:ui' as ui;
-import 'dart:typed_data';
 import '../theme/app_theme.dart';
 
 /// Custom widget to display the CPU chip app icon with keyhole symbol
@@ -69,17 +69,20 @@ class CpuChipPainter extends CustomPainter {
   void _drawCircuitTraces(Canvas canvas, Size size) {
     // Enhanced blue-themed trace paints with multiple tones
     final primaryTracePaint = Paint()
-      ..color = AppTheme.electricBlue.withOpacity(0.6)
+      // Info: Replaced deprecated 'withOpacity'
+      ..color = AppTheme.electricBlue.withAlpha((255 * 0.6).round())
       ..strokeWidth = 1.2
       ..style = PaintingStyle.stroke;
     
     final secondaryTracePaint = Paint()
-      ..color = AppTheme.neonBlue.withOpacity(0.5)
+      // Info: Replaced deprecated 'withOpacity'
+      ..color = AppTheme.neonBlue.withAlpha((255 * 0.5).round())
       ..strokeWidth = 0.9
       ..style = PaintingStyle.stroke;
     
     final thinTracePaint = Paint()
-      ..color = AppTheme.cyanBlue.withOpacity(0.4)
+      // Info: Replaced deprecated 'withOpacity'
+      ..color = AppTheme.cyanBlue.withAlpha((255 * 0.4).round())
       ..strokeWidth = 0.6
       ..style = PaintingStyle.stroke;
     
@@ -198,15 +201,18 @@ class CpuChipPainter extends CustomPainter {
     
     // Enhanced PCB connection pads and vias with multi-colored blue theme
     final primaryNodePaint = Paint()
-      ..color = AppTheme.electricBlue.withOpacity(0.9)
+      // Info: Replaced deprecated 'withOpacity'
+      ..color = AppTheme.electricBlue.withAlpha((255 * 0.9).round())
       ..style = PaintingStyle.fill;
       
     final secondaryNodePaint = Paint()
-      ..color = AppTheme.neonBlue.withOpacity(0.8)
+      // Info: Replaced deprecated 'withOpacity'
+      ..color = AppTheme.neonBlue.withAlpha((255 * 0.8).round())
       ..style = PaintingStyle.fill;
       
     final accentNodePaint = Paint()
-      ..color = AppTheme.cyanBlue.withOpacity(0.7)
+      // Info: Replaced deprecated 'withOpacity'
+      ..color = AppTheme.cyanBlue.withAlpha((255 * 0.7).round())
       ..style = PaintingStyle.fill;
     
     // Varied node sizes and colors for visual interest
@@ -221,7 +227,8 @@ class CpuChipPainter extends CustomPainter {
     
     // Enhanced PCB component footprints with blue outlines
     final componentPaint = Paint()
-      ..color = AppTheme.cyanBlue.withOpacity(0.5)
+      // Info: Replaced deprecated 'withOpacity'
+      ..color = AppTheme.cyanBlue.withAlpha((255 * 0.5).round())
       ..strokeWidth = 0.4
       ..style = PaintingStyle.stroke;
     
@@ -329,7 +336,8 @@ class CpuChipPainter extends CustomPainter {
         chipSize / 2,
         [
           AppTheme.darkGray,
-          AppTheme.deepOffBlack.withOpacity(0.8),
+          // Info: Replaced deprecated 'withOpacity'
+          AppTheme.deepOffBlack.withAlpha((255 * 0.8).round()), // 0.8 opacity
         ],
         [0.0, 1.0],
       )
@@ -344,13 +352,15 @@ class CpuChipPainter extends CustomPainter {
     // CPU body with enhanced blue glow effect
     if (showGlow) {
       final strongGlowPaint = Paint()
-        ..color = AppTheme.neonBlue.withOpacity(0.4)
+        // Info: Replaced deprecated 'withOpacity'
+        ..color = AppTheme.neonBlue.withAlpha((255 * 0.4).round()) // 0.4 opacity
         ..strokeWidth = 4
         ..style = PaintingStyle.stroke
         ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 3);
       
       final mediumGlowPaint = Paint()
-        ..color = AppTheme.electricBlue.withOpacity(0.3)
+        // Info: Replaced deprecated 'withOpacity'
+        ..color = AppTheme.electricBlue.withAlpha((255 * 0.3).round()) // 0.3 opacity
         ..strokeWidth = 6
         ..style = PaintingStyle.stroke
         ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 4);
@@ -409,7 +419,8 @@ class CpuChipPainter extends CustomPainter {
     
     // Inner detail lines
     final detailPaint = Paint()
-      ..color = AppTheme.mediumGray.withOpacity(0.6)
+      // Info: Replaced deprecated 'withOpacity'
+      ..color = AppTheme.mediumGray.withAlpha((255 * 0.6).round()) // 0.6 opacity
       ..strokeWidth = 0.5
       ..style = PaintingStyle.stroke;
     
@@ -431,7 +442,8 @@ class CpuChipPainter extends CustomPainter {
     
     // CPU internal detail rectangles
     final detailPaint = Paint()
-      ..color = AppTheme.mediumGray.withOpacity(0.7)
+      // Info: Replaced deprecated 'withOpacity'
+      ..color = AppTheme.mediumGray.withAlpha((255 * 0.7).round()) // 0.7 opacity
       ..strokeWidth = 0.6
       ..style = PaintingStyle.stroke;
     
@@ -456,7 +468,8 @@ class CpuChipPainter extends CustomPainter {
         ),
         const Radius.circular(1.5),
       ),
-      detailPaint..color = AppTheme.mediumGray.withOpacity(0.6),
+      // Info: Replaced deprecated 'withOpacity'
+      detailPaint..color = AppTheme.mediumGray.withAlpha((255 * 0.6).round()), // 0.6 opacity
     );
     
     canvas.drawRRect(
@@ -468,17 +481,20 @@ class CpuChipPainter extends CustomPainter {
         ),
         const Radius.circular(1),
       ),
-      detailPaint..color = AppTheme.mediumGray.withOpacity(0.5),
+      // Info: Replaced deprecated 'withOpacity'
+      detailPaint..color = AppTheme.mediumGray.withAlpha((255 * 0.5).round()), // 0.5 opacity
     );
     
     // Enhanced internal PCB traces with multi-toned blue theme
     final primaryTracePaint = Paint()
-      ..color = AppTheme.neonBlue.withOpacity(0.6)
+      // Info: Replaced deprecated 'withOpacity'
+      ..color = AppTheme.neonBlue.withAlpha((255 * 0.6).round()) // 0.6 opacity
       ..strokeWidth = 0.5
       ..style = PaintingStyle.stroke;
       
     final secondaryTracePaint = Paint()
-      ..color = AppTheme.cyanBlue.withOpacity(0.5)
+      // Info: Replaced deprecated 'withOpacity'
+      ..color = AppTheme.cyanBlue.withAlpha((255 * 0.5).round()) // 0.5 opacity
       ..strokeWidth = 0.3
       ..style = PaintingStyle.stroke;
     
@@ -510,17 +526,20 @@ class CpuChipPainter extends CustomPainter {
     canvas.drawLine(
       Offset(centerX - halfCenter * 0.6, centerY - halfCenter * 0.6),
       Offset(centerX + halfCenter * 0.6, centerY + halfCenter * 0.6),
-      Paint()..color = AppTheme.electricBlue.withOpacity(0.4)..strokeWidth = 0.25..style = PaintingStyle.stroke,
+      // Info: Replaced deprecated 'withOpacity'
+      Paint()..color = AppTheme.electricBlue.withAlpha((255 * 0.4).round())..strokeWidth = 0.25..style = PaintingStyle.stroke,
     );
     canvas.drawLine(
       Offset(centerX + halfCenter * 0.6, centerY - halfCenter * 0.6),
       Offset(centerX - halfCenter * 0.6, centerY + halfCenter * 0.6),
-      Paint()..color = AppTheme.electricBlue.withOpacity(0.4)..strokeWidth = 0.25..style = PaintingStyle.stroke,
+      // Info: Replaced deprecated 'withOpacity'
+      Paint()..color = AppTheme.electricBlue.withAlpha((255 * 0.4).round())..strokeWidth = 0.25..style = PaintingStyle.stroke,
     );
     
     // Internal micro components
     final componentPaint = Paint()
-      ..color = AppTheme.mediumGray.withOpacity(0.9)
+      // Info: Replaced deprecated 'withOpacity'
+      ..color = AppTheme.mediumGray.withAlpha((255 * 0.9).round()) // 0.9 opacity
       ..style = PaintingStyle.fill;
     
     final componentSize = centerSize * 0.08;

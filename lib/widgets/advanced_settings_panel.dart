@@ -104,10 +104,12 @@ class _AdvancedSettingsPanelState extends State<AdvancedSettingsPanel>
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: AppTheme.errorRed.withOpacity(0.2),
+                          // Info: Replaced deprecated 'withOpacity'
+                          color: AppTheme.errorRed.withAlpha((255 * 0.2).round()),
                           borderRadius: BorderRadius.circular(4),
                           border: Border.all(
-                            color: AppTheme.errorRed.withOpacity(0.5),
+                            // Info: Replaced deprecated 'withOpacity'
+                            color: AppTheme.errorRed.withAlpha((255 * 0.5).round()),
                           ),
                         ),
                         child: Text(
@@ -172,10 +174,12 @@ class _AdvancedSettingsPanelState extends State<AdvancedSettingsPanel>
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppTheme.darkGray.withOpacity(0.3),
+              // Info: Replaced deprecated 'withOpacity'
+              color: AppTheme.darkGray.withAlpha((255 * 0.3).round()),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: AppTheme.tealAccent.withOpacity(0.3),
+                // Info: Replaced deprecated 'withOpacity'
+                color: AppTheme.tealAccent.withAlpha((255 * 0.3).round()),
                 width: 1,
               ),
             ),
@@ -218,10 +222,12 @@ class _AdvancedSettingsPanelState extends State<AdvancedSettingsPanel>
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.tealAccent.withOpacity(0.2),
+                        // Info: Replaced deprecated 'withOpacity'
+                        color: AppTheme.tealAccent.withAlpha((255 * 0.2).round()),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: AppTheme.tealAccent.withOpacity(0.5),
+                          // Info: Replaced deprecated 'withOpacity'
+                          color: AppTheme.tealAccent.withAlpha((255 * 0.5).round()),
                         ),
                       ),
                       child: Text(
@@ -242,7 +248,8 @@ class _AdvancedSettingsPanelState extends State<AdvancedSettingsPanel>
                     activeTrackColor: AppTheme.tealAccent,
                     inactiveTrackColor: AppTheme.darkGray,
                     thumbColor: AppTheme.tealAccent,
-                    overlayColor: AppTheme.tealAccent.withOpacity(0.2),
+                    // Info: Replaced deprecated 'withOpacity'
+                    overlayColor: AppTheme.tealAccent.withAlpha((255 * 0.2).round()),
                     valueIndicatorColor: AppTheme.tealAccent,
                     valueIndicatorTextStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppTheme.deepOffBlack,
@@ -274,10 +281,12 @@ class _AdvancedSettingsPanelState extends State<AdvancedSettingsPanel>
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppTheme.deepOffBlack.withOpacity(0.5),
+                    // Info: Replaced deprecated 'withOpacity'
+                    color: AppTheme.deepOffBlack.withAlpha((255 * 0.5).round()),
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(
-                      color: AppTheme.mediumGray.withOpacity(0.3),
+                      // Info: Replaced deprecated 'withOpacity'
+                      color: AppTheme.mediumGray.withAlpha((255 * 0.3).round()),
                     ),
                   ),
                   child: Column(
@@ -288,9 +297,9 @@ class _AdvancedSettingsPanelState extends State<AdvancedSettingsPanel>
                           Icon(
                             Icons.info_outline,
                             color: AppTheme.cyanAccent,
-                            size: 16,
+                            size: 20,
                           ),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: 8),
                           Text(
                             'PERFORMANCE IMPACT',
                             style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -324,10 +333,12 @@ class _AdvancedSettingsPanelState extends State<AdvancedSettingsPanel>
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppTheme.darkGray.withOpacity(0.3),
+              // Info: Replaced deprecated 'withOpacity'
+              color: AppTheme.darkGray.withAlpha((255 * 0.3).round()),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: AppTheme.tealAccent.withOpacity(0.3),
+                // Info: Replaced deprecated 'withOpacity'
+                color: AppTheme.tealAccent.withAlpha((255 * 0.3).round()),
                 width: 1,
               ),
             ),
@@ -374,8 +385,13 @@ class _AdvancedSettingsPanelState extends State<AdvancedSettingsPanel>
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppTheme.deepOffBlack.withOpacity(0.5),
+                    // Info: Replaced deprecated 'withOpacity'
+                    color: AppTheme.deepOffBlack.withAlpha((255 * 0.5).round()),
                     borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      // Info: Replaced deprecated 'withOpacity'
+                      color: AppTheme.mediumGray.withAlpha((255 * 0.3).round()),
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -434,14 +450,16 @@ class _AdvancedSettingsPanelState extends State<AdvancedSettingsPanel>
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
+              // Info: Replaced deprecated 'withOpacity'
               color: isSelected 
-                  ? (rec['color'] as Color).withOpacity(0.3)
+                  ? (rec['color'] as Color).withAlpha((255 * 0.3).round())
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
+                // Info: Replaced deprecated 'withOpacity'
                 color: isSelected 
                     ? (rec['color'] as Color)
-                    : (rec['color'] as Color).withOpacity(0.5),
+                    : (rec['color'] as Color).withAlpha((255 * 0.5).round()),
                 width: isSelected ? 2 : 1,
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/app_state.dart';
 import '../providers/app_state_provider.dart';
 import '../widgets/file_io_panel.dart';
 import '../widgets/encryption_config_panel.dart';
@@ -29,18 +30,16 @@ class _CryptingToolScreenState extends State<CryptingToolScreen> {
   // --- UI Event Handlers ---
   
   void _encrypt() {
-    // Logic to start encryption is handled by the provider
     context.read<AppStateProvider>().encryptFile();
   }
 
   void _decrypt() {
-    // Logic to start decryption is handled by the provider
     context.read<AppStateProvider>().decryptFile();
   }
   
-  void _selectFile() {
-    // Logic to select a file is handled by the provider
-    context.read<AppStateProvider>().selectFile();
+  // Corrected: This now accepts the FileInfo object from the panel
+  void _selectFile(FileInfo file) {
+    context.read<AppStateProvider>().selectFile(file);
   }
 
   @override
@@ -64,7 +63,8 @@ class _CryptingToolScreenState extends State<CryptingToolScreen> {
                       return FileIOPanel(
                         selectedFile: provider.selectedFile,
                         isProcessing: provider.isProcessing,
-                        onFileSelected: _selectFile,
+                        // Corrected: The callback now correctly passes the FileInfo object
+                        onFileSelected: (file) => _selectFile(file),
                         onEncrypt: _encrypt,
                         onDecrypt: _decrypt,
                       );
@@ -138,7 +138,8 @@ class _CryptingToolScreenState extends State<CryptingToolScreen> {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: AppTheme.tealAccent.withOpacity(0.2),
+              // Info: Replaced deprecated 'withOpacity'
+              color: AppTheme.tealAccent.withAlpha(51), // 0.2 opacity
               borderRadius: BorderRadius.circular(6),
               border: Border.all(color: AppTheme.tealAccent, width: 1),
             ),
@@ -272,12 +273,14 @@ class BackgroundCircuitPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppTheme.tealAccent.withOpacity(0.02)
+      // Info: Replaced deprecated 'withOpacity'
+      ..color = AppTheme.tealAccent.withAlpha(5) // 0.02 opacity
       ..strokeWidth = 0.5
       ..style = PaintingStyle.stroke;
 
     final animatedPaint = Paint()
-      ..color = AppTheme.tealAccent.withOpacity(0.05)
+      // Info: Replaced deprecated 'withOpacity'
+      ..color = AppTheme.tealAccent.withAlpha(13) // 0.05 opacity
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
 

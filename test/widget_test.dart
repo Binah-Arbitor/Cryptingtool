@@ -142,7 +142,6 @@ void main() {
       expect(lastLog.source, equals('TEST'));
       
       // Test log clearing
-      final initialLogCount = provider.logEntries.length;
       provider.clearLogs();
       expect(provider.logEntries.length, equals(1)); // Should have "cleared" message
       

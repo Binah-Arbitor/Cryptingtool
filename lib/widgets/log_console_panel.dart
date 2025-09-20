@@ -175,10 +175,12 @@ class _LogConsolePanelState extends State<LogConsolePanel>
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.tealAccent.withOpacity(0.2),
+                        // Info: Replaced deprecated 'withOpacity'
+                        color: AppTheme.tealAccent.withAlpha((255 * 0.2).round()),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: AppTheme.tealAccent.withOpacity(0.5),
+                          // Info: Replaced deprecated 'withOpacity'
+                          color: AppTheme.tealAccent.withAlpha((255 * 0.5).round()),
                         ),
                       ),
                       child: Text(
@@ -234,7 +236,8 @@ class _LogConsolePanelState extends State<LogConsolePanel>
         // Console toolbar
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          color: AppTheme.darkGray.withOpacity(0.3),
+          // Info: Replaced deprecated 'withOpacity'
+          color: AppTheme.darkGray.withAlpha((255 * 0.3).round()),
           child: Row(
             children: [
               // Auto-scroll toggle
@@ -247,14 +250,16 @@ class _LogConsolePanelState extends State<LogConsolePanel>
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
+                    // Info: Replaced deprecated 'withOpacity'
                     color: _isAutoScrollEnabled 
-                        ? AppTheme.tealAccent.withOpacity(0.2)
+                        ? AppTheme.tealAccent.withAlpha((255 * 0.2).round())
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(
+                      // Info: Replaced deprecated 'withOpacity'
                       color: _isAutoScrollEnabled 
                           ? AppTheme.tealAccent
-                          : AppTheme.mediumGray.withOpacity(0.5),
+                          : AppTheme.mediumGray.withAlpha((255 * 0.5).round()),
                     ),
                   ),
                   child: Row(
@@ -353,7 +358,8 @@ class _LogConsolePanelState extends State<LogConsolePanel>
         // Console content
         Expanded(
           child: Container(
-            color: AppTheme.deepOffBlack.withOpacity(0.8),
+            // Info: Replaced deprecated 'withOpacity'
+            color: AppTheme.deepOffBlack.withAlpha((255 * 0.8).round()),
             child: widget.logEntries.isEmpty
                 ? _buildEmptyConsole()
                 : ListView.builder(
@@ -377,7 +383,8 @@ class _LogConsolePanelState extends State<LogConsolePanel>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: _getLogColor(level).withOpacity(0.2),
+        // Info: Replaced deprecated 'withOpacity'
+        color: _getLogColor(level).withAlpha((255 * 0.2).round()),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -413,13 +420,15 @@ class _LogConsolePanelState extends State<LogConsolePanel>
           Icon(
             Icons.code,
             size: 48,
-            color: AppTheme.mediumGray.withOpacity(0.5),
+            // Info: Replaced deprecated 'withOpacity'
+            color: AppTheme.mediumGray.withAlpha((255 * 0.5).round()),
           ),
           const SizedBox(height: 16),
           Text(
             'SYSTEM CONSOLE READY',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppTheme.mediumGray.withOpacity(0.7),
+              // Info: Replaced deprecated 'withOpacity'
+              color: AppTheme.mediumGray.withAlpha((255 * 0.7).round()),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -427,7 +436,8 @@ class _LogConsolePanelState extends State<LogConsolePanel>
           Text(
             'Log entries will appear here during operations',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppTheme.mediumGray.withOpacity(0.5),
+              // Info: Replaced deprecated 'withOpacity'
+              color: AppTheme.mediumGray.withAlpha((255 * 0.5).round()),
             ),
           ),
         ],
@@ -445,7 +455,8 @@ class _LogConsolePanelState extends State<LogConsolePanel>
         decoration: BoxDecoration(
           color: index.isEven 
               ? Colors.transparent 
-              : AppTheme.darkGray.withOpacity(0.1),
+              // Info: Replaced deprecated 'withOpacity'
+              : AppTheme.darkGray.withAlpha((255 * 0.1).round()),
           borderRadius: BorderRadius.circular(2),
         ),
         child: Row(
@@ -457,7 +468,8 @@ class _LogConsolePanelState extends State<LogConsolePanel>
               child: Text(
                 entry.formattedTimestamp,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.mediumGray.withOpacity(0.8),
+                  // Info: Replaced deprecated 'withOpacity'
+                  color: AppTheme.mediumGray.withAlpha((255 * 0.8).round()),
                   fontFamily: 'Courier',
                   fontSize: 10,
                 ),
@@ -482,7 +494,8 @@ class _LogConsolePanelState extends State<LogConsolePanel>
               width: 60,
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
               decoration: BoxDecoration(
-                color: logColor.withOpacity(0.2),
+                // Info: Replaced deprecated 'withOpacity'
+                color: logColor.withAlpha((255 * 0.2).round()),
                 borderRadius: BorderRadius.circular(3),
               ),
               child: Text(
@@ -502,7 +515,8 @@ class _LogConsolePanelState extends State<LogConsolePanel>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                 decoration: BoxDecoration(
-                  color: AppTheme.cyanAccent.withOpacity(0.2),
+                  // Info: Replaced deprecated 'withOpacity'
+                  color: AppTheme.cyanAccent.withAlpha((255 * 0.2).round()),
                   borderRadius: BorderRadius.circular(3),
                 ),
                 child: Text(

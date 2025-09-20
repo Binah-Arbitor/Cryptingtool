@@ -36,10 +36,12 @@ class AppTheme {
         onSecondary: deepOffBlack,
         surface: darkGray,
         onSurface: lightGray,
-        background: deepOffBlack,
-        onBackground: lightGray,
         error: errorRed,
         onError: lightGray,
+        // Deprecated: 'background' and 'onBackground'
+        // Use 'surface' and 'onSurface' instead for Material 3
+        background: deepOffBlack,
+        onBackground: lightGray,
       ),
       
       // App Bar Theme
@@ -59,11 +61,13 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: darkGray,
         elevation: 4,
-        shadowColor: tealAccent.withOpacity(0.1),
+        // Deprecated: 'withOpacity'
+        shadowColor: tealAccent.withAlpha((255 * 0.1).round()), // 0.1 opacity
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
           side: BorderSide(
-            color: tealAccent.withOpacity(0.3),
+            // Deprecated: 'withOpacity'
+            color: tealAccent.withAlpha((255 * 0.3).round()), // 0.3 opacity
             width: 1,
           ),
         ),
@@ -75,7 +79,8 @@ class AppTheme {
           backgroundColor: tealAccent,
           foregroundColor: deepOffBlack,
           elevation: 2,
-          shadowColor: tealAccent.withOpacity(0.5),
+          // Deprecated: 'withOpacity'
+          shadowColor: tealAccent.withAlpha((255 * 0.5).round()), // 0.5 opacity
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -117,20 +122,25 @@ class AppTheme {
           color: mediumGray,
         ),
         hintStyle: GoogleFonts.firaCode(
-          color: mediumGray.withOpacity(0.7),
+          // Deprecated: 'withOpacity'
+          color: mediumGray.withAlpha((255 * 0.7).round()), // 0.7 opacity
         ),
       ),
       
       // Dropdown Theme
       dropdownMenuTheme: DropdownMenuThemeData(
         menuStyle: MenuStyle(
-          backgroundColor: MaterialStateProperty.all(darkGray),
-          elevation: MaterialStateProperty.all(8),
-          shadowColor: MaterialStateProperty.all(tealAccent.withOpacity(0.2)),
-          shape: MaterialStateProperty.all(
+          // Deprecated: 'MaterialStateProperty'
+          backgroundColor: WidgetStateProperty.all(darkGray),
+          // Deprecated: 'MaterialStateProperty'
+          elevation: WidgetStateProperty.all(8),
+          // Deprecated: 'MaterialStateProperty' and 'withOpacity'
+          shadowColor: WidgetStateProperty.all(tealAccent.withAlpha((255 * 0.2).round())), // 0.2 opacity
+          // Deprecated: 'MaterialStateProperty' and 'withOpacity'
+          shape: WidgetStateProperty.all(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
-              side: BorderSide(color: tealAccent.withOpacity(0.3)),
+              side: BorderSide(color: tealAccent.withAlpha((255 * 0.3).round())),
             ),
           ),
         ),
@@ -151,7 +161,8 @@ class AppTheme {
         activeTrackColor: tealAccent,
         inactiveTrackColor: darkGray,
         thumbColor: tealAccent,
-        overlayColor: tealAccent.withOpacity(0.2),
+        // Deprecated: 'withOpacity'
+        overlayColor: tealAccent.withAlpha((255 * 0.2).round()), // 0.2 opacity
         valueIndicatorColor: tealAccent,
         valueIndicatorTextStyle: GoogleFonts.firaCode(
           color: deepOffBlack,

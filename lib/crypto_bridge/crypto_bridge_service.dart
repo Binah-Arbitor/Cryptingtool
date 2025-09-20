@@ -27,7 +27,7 @@ class CryptoBridgeService {
   static bool get isInitialized => _initialized;
 
   /// Get the crypto bridge version
-  static String? getVersion() => CryptoFFI.getVersion();
+  static String getVersion() => CryptoFFI.getVersion();
 
   /// Encrypt data using the specified configuration
   static Future<CryptoResult> encrypt({
@@ -38,7 +38,7 @@ class CryptoBridgeService {
       return CryptoResult.error('Crypto bridge not initialized');
     }
 
-    return await CryptoFFI.processData(
+    return CryptoFFI.processData(
       algorithm: _mapAlgorithm(config.algorithm),
       mode: _mapMode(config.mode),
       keySize: config.keySize,
@@ -57,7 +57,7 @@ class CryptoBridgeService {
       return CryptoResult.error('Crypto bridge not initialized');
     }
 
-    return await CryptoFFI.processData(
+    return CryptoFFI.processData(
       algorithm: _mapAlgorithm(config.algorithm),
       mode: _mapMode(config.mode),
       keySize: config.keySize,
@@ -165,6 +165,8 @@ class CryptoBridgeService {
       case EncryptionAlgorithm.tea:
         return CryptoConstants.algorithmTEA;
       case EncryptionAlgorithm.xtea:
+        // Note: XTEA is handled as an exception in the original code,
+        // which is a valid way to signal unsupported algorithms.
         throw ArgumentError('XTEA algorithm not supported by Crypto++ backend');
       case EncryptionAlgorithm.shacal2:
         return CryptoConstants.algorithmSHACAL2;
@@ -188,11 +190,11 @@ class CryptoBridgeService {
         return CryptoConstants.algorithmSimon;
       case EncryptionAlgorithm.speck:
         return CryptoConstants.algorithmSpeck;
-        
-      // If we missed any, throw an error
-      default:
-        throw ArgumentError('Unsupported algorithm: $algorithm');
     }
+    // Warning: The Dart compiler is smart enough to know that all enum cases are covered,
+    // making a default clause or a final return statement unreachable.
+    // If a new algorithm is added to the enum without being added here,
+    // the compiler will issue a warning, which is the desired behavior.
   }
 
   /// Map Flutter mode enum to C++ constant
@@ -210,8 +212,6 @@ class CryptoBridgeService {
         return CryptoConstants.modeOFB;
       case OperationMode.ctr:
         return CryptoConstants.modeCTR;
-      default:
-        throw ArgumentError('Unsupported mode: $mode');
     }
   }
 

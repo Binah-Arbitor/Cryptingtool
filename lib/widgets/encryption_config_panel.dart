@@ -128,10 +128,12 @@ class _EncryptionConfigPanelState extends State<EncryptionConfigPanel>
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: AppTheme.errorRed.withOpacity(0.2),
+                            // Info: Replaced deprecated 'withOpacity'
+                            color: AppTheme.errorRed.withAlpha((255 * 0.2).round()),
                             borderRadius: BorderRadius.circular(4),
                             border: Border.all(
-                              color: AppTheme.errorRed.withOpacity(0.5),
+                              // Info: Replaced deprecated 'withOpacity'
+                              color: AppTheme.errorRed.withAlpha((255 * 0.5).round()),
                             ),
                           ),
                           child: Text(
@@ -259,10 +261,12 @@ class _EncryptionConfigPanelState extends State<EncryptionConfigPanel>
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppTheme.darkGray.withOpacity(0.3),
+                      // Info: Replaced deprecated 'withOpacity'
+                      color: AppTheme.darkGray.withAlpha((255 * 0.3).round()),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: AppTheme.tealAccent.withOpacity(0.3),
+                        // Info: Replaced deprecated 'withOpacity'
+                        color: AppTheme.tealAccent.withAlpha((255 * 0.3).round()),
                         width: 1,
                       ),
                     ),
@@ -393,7 +397,8 @@ class _EncryptionConfigPanelState extends State<EncryptionConfigPanel>
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
-            color: _getKeySizeColor(keySize).withOpacity(0.2),
+            // Info: Replaced deprecated 'withOpacity'
+            color: _getKeySizeColor(keySize).withAlpha((255 * 0.2).round()),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
