@@ -9,20 +9,7 @@ import 'crypto_bridge/crypto_bridge_service.dart';
 void main() async {
   // Initialize the crypto bridge service
   WidgetsFlutterBinding.ensureInitialized();
-  final initialized = await CryptoBridgeService.initialize();
-  
-  if (initialized) {
-    print('✅ CryptingTool backend initialized successfully');
-    // Run a quick test to verify functionality
-    final testResult = await CryptoBridgeService.testRoundTrip();
-    if (testResult) {
-      print('✅ Backend functionality verified');
-    } else {
-      print('⚠️  Backend test failed, but continuing...');
-    }
-  } else {
-    print('❌ Failed to initialize CryptingTool backend');
-  }
+  await CryptoBridgeService.initialize();
   
   runApp(const CryptingToolApp());
 }

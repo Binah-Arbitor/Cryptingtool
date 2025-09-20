@@ -13,12 +13,6 @@ class CryptoBridgeService {
     if (_initialized) return true;
     
     _initialized = CryptoFFI.initialize();
-    if (_initialized) {
-      final version = CryptoFFI.getVersion();
-      print('Crypto Bridge initialized - Version: $version');
-    } else {
-      print('Failed to initialize Crypto Bridge');
-    }
     
     return _initialized;
   }
@@ -191,10 +185,6 @@ class CryptoBridgeService {
       case EncryptionAlgorithm.speck:
         return CryptoConstants.algorithmSpeck;
     }
-    // Warning: The Dart compiler is smart enough to know that all enum cases are covered,
-    // making a default clause or a final return statement unreachable.
-    // If a new algorithm is added to the enum without being added here,
-    // the compiler will issue a warning, which is the desired behavior.
   }
 
   /// Map Flutter mode enum to C++ constant
@@ -235,7 +225,6 @@ class CryptoBridgeService {
       );
 
       if (!encryptResult.success) {
-        print('Test encryption failed: ${encryptResult.error}');
         return false;
       }
 
@@ -249,22 +238,16 @@ class CryptoBridgeService {
       );
 
       if (!decryptResult.success) {
-        print('Test decryption failed: ${decryptResult.error}');
         return false;
       }
 
       final decryptedMessage = String.fromCharCodes(decryptResult.data!);
       if (decryptedMessage == testMessage) {
-        print('Crypto bridge test passed: Round-trip successful');
         return true;
       } else {
-        print('Test failed: Message mismatch');
-        print('Expected: $testMessage');
-        print('Got: $decryptedMessage');
         return false;
       }
     } catch (e) {
-      print('Test failed with exception: $e');
       return false;
     }
   }

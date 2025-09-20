@@ -1,4 +1,4 @@
-import 'dart:ffi';
+import 'dart:ffi' as ffi;
 import 'dart:io' show Platform;
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
@@ -8,19 +8,19 @@ import 'crypto_result.dart';
 // --- FFI Signature Definitions ---
 
 // C: int crypto_bridge_process(...)
-typedef CryptoProcessNative = Int32 Function(
-  Int32 algorithm,
-  Int32 mode,
-  Int32 key_size_bits,
-  Int32 operation,
-  Pointer<Utf8> password,
-  Int32 password_len,
-  Pointer<Uint8> input_data,
-  Int32 input_len,
-  Pointer<Uint8> output_data,
-  Pointer<Int32> output_len,
-  Pointer<Uint8> iv,
-  Pointer<Uint8> auth_tag,
+typedef CryptoProcessNative = ffi.Int32 Function(
+  ffi.Int32 algorithm,
+  ffi.Int32 mode,
+  ffi.Int32 keySizeBits,
+  ffi.Int32 operation,
+  ffi.Pointer<Utf8> password,
+  ffi.Int32 passwordLen,
+  ffi.Pointer<ffi.Uint8> inputData,
+  ffi.Int32 inputLen,
+  ffi.Pointer<ffi.Uint8> outputData,
+  ffi.Pointer<ffi.Int32> outputLen,
+  ffi.Pointer<ffi.Uint8> iv,
+  ffi.Pointer<ffi.Uint8> authTag,
 );
 
 // Dart: int cryptoBridgeProcess(...)
@@ -29,37 +29,37 @@ typedef CryptoProcessDart = int Function(
   int mode,
   int keySizeBits,
   int operation,
-  Pointer<Utf8> password,
+  ffi.Pointer<Utf8> password,
   int passwordLen,
-  Pointer<Uint8> inputData,
+  ffi.Pointer<ffi.Uint8> inputData,
   int inputLen,
-  Pointer<Uint8> outputData,
-  Pointer<Int32> outputLen,
-  Pointer<Uint8> iv,
-  Pointer<Uint8> authTag,
+  ffi.Pointer<ffi.Uint8> outputData,
+  ffi.Pointer<ffi.Int32> outputLen,
+  ffi.Pointer<ffi.Uint8> iv,
+  ffi.Pointer<ffi.Uint8> authTag,
 );
 
 // C: const char* crypto_bridge_version(void)
-typedef CryptoVersionNative = Pointer<Utf8> Function();
-// Dart: Pointer<Utf8> cryptoBridgeVersion()
-typedef CryptoVersionDart = Pointer<Utf8> Function();
+typedef CryptoVersionNative = ffi.Pointer<Utf8> Function();
+// Dart: ffi.Pointer<Utf8> cryptoBridgeVersion()
+typedef CryptoVersionDart = ffi.Pointer<Utf8> Function();
 
 
 /// Manages FFI calls and memory for the crypto bridge
 class CryptoFFI {
-  static final DynamicLibrary _cryptoLib = _loadDynamicLibrary();
+  static final ffi.DynamicLibrary _cryptoLib = _loadDynamicLibrary();
   static final CryptoProcessDart _cryptoProcess = _lookupCryptoProcess();
   static final CryptoVersionDart _cryptoVersion = _lookupCryptoVersion();
   static bool _initialized = false;
 
   /// Loads the dynamic library based on the platform
-  static DynamicLibrary _loadDynamicLibrary() {
+  static ffi.DynamicLibrary _loadDynamicLibrary() {
     if (Platform.isAndroid || Platform.isLinux) {
-      return DynamicLibrary.open('libcrypto.so');
+      return ffi.DynamicLibrary.open('libcrypto.so');
     } else if (Platform.isIOS || Platform.isMacOS) {
-      return DynamicLibrary.open('libcrypto.dylib');
+      return ffi.DynamicLibrary.open('libcrypto.dylib');
     } else if (Platform.isWindows) {
-      return DynamicLibrary.open('crypto.dll');
+      return ffi.DynamicLibrary.open('crypto.dll');
     } else {
       throw UnsupportedError('Unsupported platform');
     }
@@ -68,14 +68,14 @@ class CryptoFFI {
   /// Looks up the crypto_bridge_process function
   static CryptoProcessDart _lookupCryptoProcess() {
     return _cryptoLib
-      .lookup<NativeFunction<CryptoProcessNative>>('crypto_bridge_process')
+      .lookup<ffi.NativeFunction<CryptoProcessNative>>('crypto_bridge_process')
       .asFunction<CryptoProcessDart>();
   }
   
   /// Looks up the crypto_bridge_version function
   static CryptoVersionDart _lookupCryptoVersion() {
     return _cryptoLib
-      .lookup<NativeFunction<CryptoVersionNative>>('crypto_bridge_version')
+      .lookup<ffi.NativeFunction<CryptoVersionNative>>('crypto_bridge_version')
       .asFunction<CryptoVersionDart>();
   }
 
@@ -88,7 +88,7 @@ class CryptoFFI {
   
   /// Gets the version of the native crypto library
   static String getVersion() {
-    final Pointer<Utf8> versionPtr = _cryptoVersion();
+    final ffi.Pointer<Utf8> versionPtr = _cryptoVersion();
     return versionPtr.toDartString();
   }
 
@@ -107,20 +107,20 @@ class CryptoFFI {
     }
 
     // Allocate memory for inputs
-    final Pointer<Utf8> passwordPtr = password.toNativeUtf8();
-    final Pointer<Uint8> inputPtr = calloc<Uint8>(inputData.length);
+    final ffi.Pointer<Utf8> passwordPtr = password.toNativeUtf8();
+    final ffi.Pointer<ffi.Uint8> inputPtr = calloc<ffi.Uint8>(inputData.length);
     inputPtr.asTypedList(inputData.length).setAll(0, inputData);
 
     // Allocate memory for outputs
     // Output can be slightly larger than input (padding, etc.)
     final int outputBufferSize = inputData.length + 256; 
-    final Pointer<Uint8> outputPtr = calloc<Uint8>(outputBufferSize);
-    final Pointer<Int32> outputLenPtr = calloc<Int32>();
+    final ffi.Pointer<ffi.Uint8> outputPtr = calloc<ffi.Uint8>(outputBufferSize);
+    final ffi.Pointer<ffi.Int32> outputLenPtr = calloc<ffi.Int32>();
     outputLenPtr.value = outputBufferSize;
 
     // IV and Auth Tag are handled by the C++ layer for simplicity
-    final Pointer<Uint8> ivPtr = nullptr;
-    final Pointer<Uint8> authTagPtr = nullptr;
+    final ffi.Pointer<ffi.Uint8> ivPtr = ffi.nullptr;
+    final ffi.Pointer<ffi.Uint8> authTagPtr = ffi.nullptr;
     
     try {
       final int status = _cryptoProcess(
