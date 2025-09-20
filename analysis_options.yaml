@@ -1,1 +1,15 @@
+
 include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    # Code Style
+    always_declare_return_types: true
+    prefer_const_constructors: true
+    unnecessary_parenthesis: true
+    sort_child_properties_last: true
+
+    # Best Practices
+    # (You can add more rules from the official documentation as needed)
+    # https://dart.dev/lints/options
+
