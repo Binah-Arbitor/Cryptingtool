@@ -62,7 +62,7 @@ void main() {
     });
 
     test('ProcessingProgress should calculate progress correctly', () {
-      final progress = ProcessingProgress(
+      const progress = ProcessingProgress(
         currentChunk: 25,
         totalChunks: 100,
         bytesProcessed: 2500000, // 2.5 MB

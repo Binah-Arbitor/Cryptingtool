@@ -91,7 +91,7 @@ class _EncryptionConfigPanelState extends State<EncryptionConfigPanel>
                     children: [
                       Stack(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.security,
                             color: AppTheme.tealAccent,
                             size: 24,
@@ -102,11 +102,11 @@ class _EncryptionConfigPanelState extends State<EncryptionConfigPanel>
                               bottom: -2,
                               child: Container(
                                 padding: const EdgeInsets.all(2),
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   color: AppTheme.deepOffBlack,
                                   shape: BoxShape.circle,
                                 ),
-                                child: Icon(
+                                child: const Icon(
                                   Icons.lock,
                                   color: AppTheme.errorRed,
                                   size: 12,
@@ -218,7 +218,7 @@ class _EncryptionConfigPanelState extends State<EncryptionConfigPanel>
                     enabled: !widget.isLocked,
                     decoration: InputDecoration(
                       hintText: 'Enter secure password',
-                      prefixIcon: Icon(
+                      prefixIcon: const Icon(
                         Icons.vpn_key,
                         color: AppTheme.tealAccent,
                       ),
@@ -283,7 +283,7 @@ class _EncryptionConfigPanelState extends State<EncryptionConfigPanel>
                         const SizedBox(height: 8),
                         _buildSummaryRow(
                           'Algorithm:',
-                          '${widget.config.algorithm.displayName}',
+                          widget.config.algorithm.displayName,
                         ),
                         _buildSummaryRow(
                           'Key Size:',
@@ -291,7 +291,7 @@ class _EncryptionConfigPanelState extends State<EncryptionConfigPanel>
                         ),
                         _buildSummaryRow(
                           'Mode:',
-                          '${widget.config.mode.displayName}',
+                          widget.config.mode.displayName,
                         ),
                         _buildSummaryRow(
                           'Security:',
@@ -352,7 +352,7 @@ class _EncryptionConfigPanelState extends State<EncryptionConfigPanel>
               color: AppTheme.mediumGray,
             ),
           ),
-          icon: Icon(
+          icon: const Icon(
             Icons.keyboard_arrow_down,
             color: AppTheme.tealAccent,
           ),

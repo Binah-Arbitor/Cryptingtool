@@ -119,7 +119,7 @@ class _LogConsolePanelState extends State<LogConsolePanel>
                   children: [
                     Stack(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.terminal,
                           color: AppTheme.tealAccent,
                           size: 24,
@@ -196,7 +196,7 @@ class _LogConsolePanelState extends State<LogConsolePanel>
                     AnimatedRotation(
                       turns: _isExpanded ? 0.5 : 0,
                       duration: const Duration(milliseconds: 300),
-                      child: Icon(
+                      child: const Icon(
                         Icons.expand_more,
                         color: AppTheme.cyanAccent,
                         size: 24,
@@ -297,8 +297,8 @@ class _LogConsolePanelState extends State<LogConsolePanel>
                 child: InkWell(
                   onTap: _scrollToBottom,
                   borderRadius: BorderRadius.circular(4),
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
+                  child: const Padding(
+                    padding: EdgeInsets.all(4),
                     child: Icon(
                       Icons.keyboard_arrow_down,
                       size: 18,
@@ -332,7 +332,7 @@ class _LogConsolePanelState extends State<LogConsolePanel>
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.clear_all,
                           size: 14,
                           color: AppTheme.errorRed,

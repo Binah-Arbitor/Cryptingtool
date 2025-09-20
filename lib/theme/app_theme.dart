@@ -101,11 +101,11 @@ class AppTheme {
         fillColor: darkGray,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: mediumGray),
+          borderSide: const BorderSide(color: mediumGray),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: mediumGray),
+          borderSide: const BorderSide(color: mediumGray),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),

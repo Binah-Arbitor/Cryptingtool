@@ -295,7 +295,7 @@ class AppStateProvider with ChangeNotifier {
       final extension = name.contains('.') 
           ? name.substring(name.lastIndexOf('.'))
           : '';
-      return '$directory/${baseName}_encrypted${extension}.enc';
+      return '$directory/${baseName}_encrypted$extension.enc';
     } else {
       // Remove .enc extension and _encrypted suffix for decrypted files
       if (name.endsWith('.enc')) {

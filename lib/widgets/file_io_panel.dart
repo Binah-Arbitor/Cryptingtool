@@ -27,7 +27,7 @@ class _FileIOPanelState extends State<FileIOPanel>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _glowAnimation;
-  bool _isDragging = false;
+  final bool _isDragging = false;
 
   @override
   void initState() {
@@ -102,7 +102,7 @@ class _FileIOPanelState extends State<FileIOPanel>
             // Header
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.folder_open,
                   color: AppTheme.tealAccent,
                   size: 24,
@@ -189,7 +189,7 @@ class _FileIOPanelState extends State<FileIOPanel>
                               ? widget.onEncrypt
                               : null,
                           icon: widget.isProcessing
-                              ? SizedBox(
+                              ? const SizedBox(
                                   width: 16,
                                   height: 16,
                                   child: CircularProgressIndicator(
@@ -239,7 +239,7 @@ class _FileIOPanelState extends State<FileIOPanel>
                               ? widget.onDecrypt
                               : null,
                           icon: widget.isProcessing
-                              ? SizedBox(
+                              ? const SizedBox(
                                   width: 16,
                                   height: 16,
                                   child: CircularProgressIndicator(
@@ -482,7 +482,7 @@ class CircuitPatternPainter extends CustomPainter {
     }
 
     // Corner connections
-    final cornerSize = 8.0;
+    const cornerSize = 8.0;
     final corners = [
       Offset(cornerSize, cornerSize),
       Offset(size.width - cornerSize, cornerSize),

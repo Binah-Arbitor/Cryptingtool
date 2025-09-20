@@ -85,7 +85,7 @@ class _AdvancedSettingsPanelState extends State<AdvancedSettingsPanel>
                 padding: const EdgeInsets.all(20.0),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.tune,
                       color: AppTheme.tealAccent,
                       size: 24,
@@ -125,7 +125,7 @@ class _AdvancedSettingsPanelState extends State<AdvancedSettingsPanel>
                       builder: (context, child) {
                         return Transform.rotate(
                           angle: _rotationAnimation.value * 3.14159,
-                          child: Icon(
+                          child: const Icon(
                             Icons.expand_more,
                             color: AppTheme.cyanAccent,
                             size: 24,
@@ -189,7 +189,7 @@ class _AdvancedSettingsPanelState extends State<AdvancedSettingsPanel>
                 // System Info
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.memory,
                       color: AppTheme.cyanAccent,
                       size: 20,
@@ -294,7 +294,7 @@ class _AdvancedSettingsPanelState extends State<AdvancedSettingsPanel>
                     children: [
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.info_outline,
                             color: AppTheme.cyanAccent,
                             size: 20,
@@ -347,7 +347,7 @@ class _AdvancedSettingsPanelState extends State<AdvancedSettingsPanel>
               children: [
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.storage,
                       color: AppTheme.cyanAccent,
                       size: 20,
@@ -395,7 +395,7 @@ class _AdvancedSettingsPanelState extends State<AdvancedSettingsPanel>
                   ),
                   child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.lightbulb_outline,
                         color: AppTheme.warningAmber,
                         size: 16,
