@@ -85,8 +85,7 @@ class _FileIOPanelState extends State<FileIOPanel>
     return CustomPaint(
       size: const Size.square(200),
       painter: const CircuitPatternPainter(
-        // Info: Replaced deprecated 'withOpacity'
-        color: Color.fromRGBO(0, 255, 255, 0.3),
+        color: const Color.fromRGBO(0, 255, 255, 0.3),
       ),
     );
   }
@@ -121,12 +120,10 @@ class _FileIOPanelState extends State<FileIOPanel>
               width: double.infinity,
               height: 200,
               decoration: BoxDecoration(
-                // Info: Replaced deprecated 'withOpacity'
                 color: _isDragging 
                     ? AppTheme.tealAccent.withAlpha((255 * 0.1).round())
                     : AppTheme.deepOffBlack,
                 border: Border.all(
-                  // Info: Replaced deprecated 'withOpacity'
                   color: _isDragging 
                       ? AppTheme.tealAccent
                       : AppTheme.mediumGray.withAlpha((255 * 0.5).round()),
@@ -176,7 +173,6 @@ class _FileIOPanelState extends State<FileIOPanel>
                           boxShadow: widget.selectedFile != null && !widget.isProcessing
                               ? [
                                   BoxShadow(
-                                    // Info: Replaced deprecated 'withOpacity'
                                     color: AppTheme.tealAccent.withAlpha((255 * _glowAnimation.value * 0.5).round()),
                                     blurRadius: 8,
                                     spreadRadius: 2,
@@ -226,7 +222,6 @@ class _FileIOPanelState extends State<FileIOPanel>
                           boxShadow: widget.selectedFile != null && !widget.isProcessing
                               ? [
                                   BoxShadow(
-                                    // Info: Replaced deprecated 'withOpacity'
                                     color: AppTheme.cyanAccent.withAlpha((255 * _glowAnimation.value * 0.5).round()),
                                     blurRadius: 8,
                                     spreadRadius: 2,
@@ -484,7 +479,7 @@ class CircuitPatternPainter extends CustomPainter {
     // Corner connections
     const cornerSize = 8.0;
     final corners = [
-      Offset(cornerSize, cornerSize),
+      const Offset(cornerSize, cornerSize),
       Offset(size.width - cornerSize, cornerSize),
       Offset(cornerSize, size.height - cornerSize),
       Offset(size.width - cornerSize, size.height - cornerSize),
