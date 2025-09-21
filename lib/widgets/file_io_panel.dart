@@ -85,7 +85,7 @@ class _FileIOPanelState extends State<FileIOPanel>
     return CustomPaint(
       size: const Size.square(200),
       painter: const CircuitPatternPainter(
-        color: const Color.fromRGBO(0, 255, 255, 0.3),
+        color: Color.fromRGBO(0, 255, 255, 0.3),
       ),
     );
   }
