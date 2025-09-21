@@ -30,7 +30,7 @@ if (keyPropertiesFile.exists()) {
 }
 
 flutter {
-    source "../.."
+    source "../../"
 }
 
 android {
@@ -84,4 +84,8 @@ android {
             signingConfig signingConfigs.release
         }
     }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
